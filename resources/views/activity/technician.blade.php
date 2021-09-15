@@ -1,0 +1,246 @@
+@extends('layouts.tmac')
+
+@section('title', 'Gestione : tecnico')
+
+@section('navbar')
+    @include('nav')
+@endsection
+
+@section('actions')
+    <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+        <i class="bi bi-funnel me-2"></i>@lang('labels.filter') @lang('labels.activity')
+    </button>
+    <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">
+        <i class="bi bi-journal-plus me-2"></i>@lang('labels.add') @lang('labels.activity')
+    </a>
+@endsection
+
+@section('filters')
+    <form id="master_filter_form" class="mb-0" action="{{ route('activity.filter') }}" method="post">
+        @csrf
+        <div class="row">
+            <div class="col-md-7"> <!-- Prima terna di filtri -->
+                <div class="row mb-1">
+                    <label class="col-md-4 col-form-label pt-0 pt-md-2"
+                           for="#period">@lang('labels.period')</label>
+                    <div class="col-md-7 col-lg-5">
+                        <select value="" class="form-select" id="master_period_filter" name="period">
+                            <option value="" selected>@lang('labels.select') @lang('labels.period')</option>
+                            <option value="1">@lang('labels.last_week')</option>
+                            <option value="2">@lang('labels.last_two_weeks')</option>
+                            <option value="3">@lang('labels.current_month')</option>
+                            <option value="4">@lang('labels.last_month')</option>
+                            <option value="5">@lang('labels.all')</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <label class="col-md-4 col-form-label pt-0 pt-md-2"
+                           for="#master_date_filter">@lang('labels.date')</label>
+                    <div class="col-md-8">
+                        <input type="date" class="form-control" id="master_date_filter" name="date">
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-4 col-form-label" for="#finalDateFilter">@lang('labels.final_date')</label>
+                    <div class="col-md-8">
+                        <input type="date" class="form-control" id="finalDateFilter" disabled>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
+                <div class="row mb-1">
+                    <label class="col-md-4 col-form-label ps-md-4 ps-lg-5" for="#master_costumer_filter">@lang('labels.costumer')</label>
+                    <div class="col-md-8">
+                        <select class="form-select" id="master_costumer_filter" name="costumer">
+                            <option value="" selected>@lang('labels.select') @lang('labels.costumer')</option>
+                            @foreach($costumers as $costumer)
+                                <option value="{{ $costumer->id }}">{{ $costumer->nome }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-4 col-form-label ps-md-4 ps-lg-5" for="#master_state_filter">@lang('labels.state')</label>
+                    <div class="col-md-8">
+                        <select class="form-select" id="master_state_filter" name="state">
+                            <option value="" selected>@lang('labels.select') @lang('labels.state')</option>
+                            @foreach($states as $state)
+                                <option
+                                    value="{{ $state->id }}">{{ $state->descrizione_stato_attivita }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div>
+
+                <div class="d-flex justify-content-center border-top border-info mt-3 pt-2 px-sm-2">
+                    <div class="col col-md-4 col-lg-3">
+                        <div class="d-flex">
+                            <button class="btn btn-secondary flex-grow-1" onclick="event.preventDefault(); save_filters()">@lang('labels.filter')</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+@endsection
+
+@section('table_head')
+    <thead>
+    <tr>
+        <th scope="col">@lang('labels.description')</th>
+        <th scope="col">@lang('labels.date')</th>
+        <th scope="col">@lang('labels.costumer')</th>
+        <th scope="col">@lang('labels.order')</th>
+        <th scope="col">@lang('labels.from')</th>
+{{--        <th scope="col">@lang('labels.to')</th>--}}
+        <th scope="col">@lang('labels.duration')</th>
+        <th scope="col">@lang('labels.state')</th>
+        <th scope="col">@lang('labels.report')</th>
+        <th scope="col">@lang('labels.show')</th>
+        <th scope="col">@lang('labels.edit')</th>
+        <th scope="col">@lang('labels.delete')</th>
+    </tr>
+    </thead>
+@endsection
+
+
+@section('table_body')
+    <tbody id="master_tbody">
+
+    @foreach($activities as $activity)
+
+        <tr>
+            <td name="id" style="display: none">{{ $activity->id }}</td>
+            <td class="fw-bold" id="desc_{{ $activity->id }}"
+                style="min-width: 230px">{{ $activity->descrizione_attivita }}</td>
+            <td id="date_{{ $activity->id }}" class="text-nowrap">{{ $activity->data }}</td>
+            <td id="costumer_{{ $activity->id }}">{{ $activity->nome_cliente }}</td>
+            <td id="order_{{ $activity->id }}">{{ $activity->descrizione_commessa }}</td>
+            <td id="startTime_{{ $activity->id }}">{{ substr($activity->ora_inizio, 0, 5) }}</td>
+{{--            <td id="endTime_{{ $activity->id }}">{{ substr($activity->ora_fine, 0, 5) }}</td>--}}
+            <td id="duration_{{ $activity->id }}">{{ substr($activity->durata, 0, 5) }}</td>
+            <td id="state_{{ $activity->id }}">{{ $activity->descrizione_stato_attivita }}</td>
+
+            <td>
+
+                @if($activity->rapportino_cliente && $activity->rapportino_commessa)
+                    <a id="report_{{ $activity->id }}" class="btn pt-0"
+                       href="{{ route('activity.send_report', ['id' => $activity->id]) }}">
+                        @if($activity->rapportino_attivita)
+                            <i class="bi bi-clipboard-check text-success"></i>
+                        @else
+                            <i class="bi bi-clipboard text-primary"></i>
+                        @endif
+                    </a>
+                @else
+                    <a id="report_{{ $activity->id }}" class="btn pt-0 disabled">
+                        <i class="bi bi-clipboard-x text-danger"></i>
+                    </a>
+                @endif
+            </td>
+
+            <!--Bottone visualizza-->
+            <td>
+                <a id="show_{{ $activity->id }}" class="btn pt-0"
+                   href="{{ route('activity.show', ['activity' => $activity->id]) }}">
+                    <i class="bi bi-eye text-dark"></i>
+                </a>
+            </td>
+
+            <!--Bottone modifica-->
+            <td>
+                <a id="edit_{{ $activity->id }}" class="btn pt-0"
+                   href="{{ route('activity.edit', ['activity' => $activity->id]) }}">
+                    <i class="bi bi-pencil text-warning"></i>
+                </a>
+            </td>
+
+            <!--Bottone elimina-->
+            <td>
+                <a id="delete_{{ $activity->id }}" class="btn pt-0"
+                   href="{{ route('activity.destroy.confirm', ['id' => $activity->id]) }}">
+                    <i class="bi bi-trash text-danger"></i>
+                </a>
+            </td>
+            @endforeach
+        </tr>
+
+    </tbody>
+
+    <script>
+        $('document').ready(function () {
+
+            $("#technician").addClass("active");
+
+            $("tbody tr td:contains(approvata)").each(function () {
+                var id = $(this).siblings().first().text();
+                $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=report_" + id + "]").addClass('disabled')
+                    .children().removeClass('text-danger text-warning');
+                $("#desc_" + id).addClass('text-success', 1000);
+                $(this).addClass('text-success');
+            });
+
+            $("tbody tr td:contains(annullata)").each(function () {
+                var id = $(this).siblings().first().text();
+                $("#report_" + id).addClass('disabled')
+                    .children().removeClass('text-primary text-success text-danger');
+                $("#desc_" + id).addClass('text-secondary', 1000);
+                $(this).addClass('text-secondary');
+            });
+
+            $("tbody tr td:contains(completata)").each(function () {
+                var id = $(this).siblings().first().text();
+                $(this).addClass('text-primary');
+                $("#desc_" + id).addClass('text-primary', 1000);
+            });
+
+            // $("#master_search").on("keyup", function () {
+            //     var value = $(this).val().toUpperCase();
+            //     $("#master_tbody tr").filter(function () {
+            //         $(this).toggle($(this).text().toUpperCase().indexOf(value) > -1);
+            //         if (value === "") {
+            //             $("#master_tbody tr td").each(function () {
+            //                 $(this).css("background-color", "white");
+            //             });
+            //         } else {
+            //             if ($(this).text().toUpperCase().indexOf(value) > -1) {
+            //                 $(this).children().each(function () {
+            //                     var td = $(this);
+            //                     if (td.text().toUpperCase().indexOf(value) > -1) {
+            //                         td.css("background-color", "yellow");
+            //                     } else {
+            //                         td.css("background-color", "white");
+            //                     }
+            //                 });
+            //             }
+            //         }
+            //     });
+            // });
+
+            // Aggiungi la funzionalità di ricerca
+            attach_search();
+
+            // Inizializza la paginazione e attua la paginazione di default
+            pagination();
+
+            get_filters();
+
+            $("#master_period_filter").on('change', function () {
+                var value = $(this).val();
+                if (value == "") { $("#master_date_filter").removeClass("disabled"); } else {
+                    $("#master_date_filter").addClass("disabled");
+                }
+            })
+            $("#master_date_filter").on('change', function () {
+                var value = $(this).val();
+                console.log(value);
+            })
+
+        });
+    </script>
+
+@endsection
