@@ -21,6 +21,11 @@
                         <i class="bi bi-box-arrow-right me-2"></i>Logout
                     </a>
                 </li>
+                <li>
+                    <a class="dropdown-item" href="{{ route('user.change.password') }}">
+                        <i class="bi bi-key me-2"></i>@lang('labels.change') password
+                    </a>
+                </li>
                 <li class="dropdown-divider d-lg-none"></li>
                 <li class="d-lg-none">
                     <div class="span ms-3">

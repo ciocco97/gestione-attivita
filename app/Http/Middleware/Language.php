@@ -18,7 +18,7 @@ class Language
      */
     public function handle(Request $request, Closure $next)
     {
-        Log::debug('Language::hanle');
+//        Log::debug('Language::hanle');
         session_start();
         if(isset($_SESSION['lang'])) {
             App::setLocale($_SESSION['lang']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataLayer;
+use App\Http\Utils;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -129,6 +130,13 @@ class AuthController extends Controller
     {
         $this->sessionAuthentication(false);
         return Redirect::to(route('user.login'));
+    }
+
+    public function changePassword() {
+        $username = $_SESSION['username'];
+        return view('user.change_password')
+            ->with('username', $username)
+            ->with('previous_url', $_SESSION['previous_url']);
     }
 
 }

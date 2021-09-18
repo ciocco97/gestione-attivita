@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataLayer;
+use App\Http\Utils;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -18,9 +19,10 @@ class ActivityController extends Controller
 
     private function indexActivityView($activities)
     {
+        $_SESSION['previous_url'] = url()->current();
+
         Log::debug('indexActivityView');
         $username = $_SESSION['username'];
-        $user_id = $_SESSION['user_id'];
 
         $dl = new DataLayer();
 
@@ -123,9 +125,6 @@ class ActivityController extends Controller
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
-        $previous_url = url()->previous();
-        $_SESSION['back_link'] = $previous_url;
-
         $dl = new DataLayer();
         $costumers = $orders = $states = $activity = $order = $costumer = $state = null;
         if ($activity_id != -1) {
@@ -141,14 +140,13 @@ class ActivityController extends Controller
             $states = $dl->listActivityStateForTech();
         }
 
-
         return view('activity.show')
             ->with('username', $username)
             ->with('method', $method)
             ->with('SHOW', self::SHOW)->with('EDIT', self::EDIT)->with('DELETE', self::DELETE)->with('ADD', self::ADD)
             ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)
-            ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states);
-
+            ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)
+            ->with('previous_url', $_SESSION['previous_url']);
 
     }
 

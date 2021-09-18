@@ -23,7 +23,7 @@
 
                 <div class="row mb-1"> <!-- Riga selezione periodo -->
                     <label class="col-md-4 col-form-label pt-0 pt-md-2" for="#period">@lang('labels.period')</label>
-                    <div class="col-md-7 col-lg-5">
+                    <div class="col-md-8 col-lg-5">
                         <div class="d-flex">
                             <select value="" class="form-select" id="master_period_filter" name="period">
                                 <option value="" selected hidden>@lang('labels.select') @lang('labels.period')</option>

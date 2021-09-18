@@ -255,7 +255,7 @@
                         <div class="col-lg-6"></div>
                         @if($method == $EDIT)
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-secondary w-100" href="{{ url()->previous() }}">
+                                <a class="btn btn-secondary w-100" href="{{ $previous_url }}">
                                     <i class="bi bi-x-square me-2"></i>@lang('labels.cancel')</a>
                             </div>
                             <div class="col-sm-6 col-lg-3">
@@ -265,13 +265,13 @@
                         @elseif($method == $SHOW)
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0"></div>
                             <div class="col-sm-6 col-lg-3">
-                                <a class="btn btn-secondary w-100" href="{{ url()->previous() }}">
+                                <a class="btn btn-secondary w-100" href="{{ $previous_url }}">
                                     <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.back')</a>
                             </div>
 
                         @elseif($method == $DELETE)
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-secondary w-100" href="{{ url()->previous() }}">
+                                <a class="btn btn-secondary w-100" href="{{ $previous_url }}">
                                     <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')</a>
                             </div>
                             <div class="col-sm-6 col-lg-3">
@@ -281,7 +281,7 @@
 
                         @else
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-danger w-100" href="{{ url()->previous() }}">
+                                <a class="btn btn-danger w-100" href="{{ $previous_url }}">
                                     <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')</a>
                             </div>
                             <div class="col-sm-6 col-lg-3">
