@@ -24,7 +24,7 @@ class ActivityController extends Controller
 
         $dl = new DataLayer();
 
-        $costumers = $dl->listActiveCostumer();
+        $costumers = $dl->listActiveCostumerByUserID();
         $orders = $dl->listActiveOrder();
         $states = $dl->listActivityState();
 
@@ -83,9 +83,11 @@ class ActivityController extends Controller
             $start_date = super_time_parser::now()->startOf('week')->format('Y-m-d');
         } else if ($period == 2) { // current 2 weeks
             $start_date = super_time_parser::now()->startOf('week')->subDays(7)->format('Y-m-d');
-        } else if ($period == 3 || $period == 4) { // current month
+        } else if ($period == 3) { // current month
+            $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
+        } else if ($period == 4) { // last month
             $end_date = super_time_parser::now()->startOfMonth()->subDay()->format('Y-m-d');
-            $start_date = $end_date->startOfMonth()->format('Y-m-d');
+            $start_date = super_time_parser::parse($end_date)->startOfMonth()->format('Y-m-d');
         } else {
             $start_date = null;
         }
@@ -99,7 +101,8 @@ class ActivityController extends Controller
         ]);
 
         $dl = new DataLayer();
-        $activities = $dl->filterActiveActivityForActivityTableByUserID($_SESSION['user_id'], $start_date, $costumer, $state);
+        $activities = $dl->filterActiveActivityForActivityTableByUserID(
+            $_SESSION['user_id'], $start_date, $end_date, $costumer, $state, $date);
 
         foreach ($activities as $activity) {
             $activity->data = super_time_parser::parse($activity->data)->format('d-m-Y');
@@ -110,15 +113,18 @@ class ActivityController extends Controller
 
     /**
      * sedActivityView (Show, Edit e Destroy) rende parametrica l'invocazione della vista di modifica delle attività
-     * @param $activity_id
+     * @param int $activity_id
      * @param $method
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    private function sedActivityView($method, $activity_id = -1)
+    private function sedActivityView($method, int $activity_id = -1)
     {
         Log::debug('sedActivityView');
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
+
+        $previous_url = url()->previous();
+        $_SESSION['back_link'] = $previous_url;
 
         $dl = new DataLayer();
         $costumers = $orders = $states = $activity = $order = $costumer = $state = null;
@@ -192,7 +198,7 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $dl->storeActivity($user_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
 
-        return Redirect::to(route('activity.index'));
+        return Redirect::to($_SESSION['back_link']);
     }
 
     /**
@@ -232,7 +238,7 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $dl->updateActivity($activity_id, $user_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
 
-        return Redirect::to(route('activity.index'));
+        return Redirect::to($_SESSION['back_link']);
     }
 
     /**
@@ -247,7 +253,7 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $dl->destroyActivity($id);
 
-        return Redirect::to(route('activity.index'));
+        return Redirect::to($_SESSION['back_link']);
     }
 
     public function confirmDestroy($id)

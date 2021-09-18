@@ -1,42 +1,62 @@
-/* Pagina di autenticazione */
 
-function costumer_selected_activity() {
-    console.log("{function: costumer_selected_activity}");
-    var costumer = $('#costumer').val();
-    console.log("{costumer_id: " + costumer + "}");
-    $.ajax({
-        url: '/ajax/orders',
-        type: 'GET',
-        data: {costumer_id: costumer},
-        success: function (data) {
-            var order_select = $('#order');
-            order_select.find('option').remove().end();
-            $.each(data, function () {
-                order_select.append($("<option />").val(this.id).text(this.descrizione_commessa));
-            })
-        }
+function technician_script() {
+    $('document').ready(function () {
+        // Evidenzio il tab technician nella navbar
+        $("#technician").addClass("active");
+
+        // Modifico possibili azioni e colori per ogni attività
+        $("tbody tr td[id^=state]").each(function () {
+            let id = $(this).parent().children().first().text(); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
+            let state_value = $(this).text();
+            let description_td = $("#desc_" + id);
+            switch (state_value) {
+                case "completata":
+                    description_td.addClass('text-primary', 1000); // Coloro di grigio la descrizione dell'attività
+                    $(this).addClass('text-primary'); // Coloro di blu lo stato dell'attività
+                    break
+                case "aperta":
+                    // Non faccio nulla
+                    break
+                case "annullata":
+                    $("#report_" + id).addClass('disabled') // Disabilito l'invio del rapportino
+                        .children().removeClass('text-primary text-success text-danger'); // Scoloro il relativo bottone
+                    description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
+                    $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
+                    break
+                case "approvata":
+                    $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
+                        .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
+                    description_td.addClass('text-success', 1000); // Coloro di verde la descrizione dell'attività
+                    $(this).addClass('text-success'); // Coloro di verde lo stato dell'attività
+                    break
+            }
+        });
+
+        // Aggiungo l'event listener alla barra di ricerca sopra la tabella
+        $("#master_search").on("keyup", function () {
+            search_and_pagination();
+        });
+        pagination(); // Effettuo la prima paginazione
+
+        filter_setup();
+
     });
 }
 
-function order_selected_activity() {
-    console.log("{function: order_selected_activity}");
-    var costumer = $('#costumer').val();
-    var order = $("#order").val();
-    console.log("{order_id: " + order + "}");
-    $.ajax({
-        url: '/ajax/costumer',
-        type: 'GET',
-        data: {order_id: order},
-        success: function (data) {
-            $("#costumer").val(data.id);
-        }
+// Nascondi nella tabella con id master_table le righe in cui non compare la stringa input
+function search_in_table(input) {
+    console.log("{function: search_in_table}");
+    let value = input.toUpperCase();
+    console.log("{input: "+value+"}");
+    $("#master_tbody tr").filter(function () {
+        $(this).toggle($(this).text().toUpperCase().indexOf(value) > -1);
     });
 }
 
+// Pagina la tabella con id master_table in base al valore nal campo con id master_num_rowsLa
+// La pagina corrente verrà salvata nell'elemento con id pagination_selector_1
 function pagination() {
-    console.log("{function: pagination}");
-    search_in_table($("#master_search").val());
-    var n_per_page, rows, current_page, n_pages, a, b;
+    let n_per_page, rows, current_page, n_pages, a, b;
     n_per_page = Number($("#master_num_rows").val());
     rows = $("#master_tbody tr:visible");
     current_page = Number($("#pagination_selector_1").attr("data-current"));
@@ -95,7 +115,13 @@ function pagination() {
             $(this).toggle(true);
         }
     })
+}
 
+// Cerca e poi pagina
+function search_and_pagination() {
+    console.log("{function: search_and_pagination}");
+    search_in_table($("#master_search").val());
+    pagination();
 }
 
 function change_pag(method, element) {
@@ -111,23 +137,52 @@ function change_pag(method, element) {
         }
         $("#pagination_selector_1").attr("data-current", new_current);
     }
-    pagination();
+    search_and_pagination();
 }
 
-function search_in_table(input) {
-    console.log("{function: search_in_table}");
-    var value = input.toUpperCase();
-    console.log("{input: "+value+"}");
-    $("#master_tbody tr").filter(function () {
-        $(this).toggle($(this).text().toUpperCase().indexOf(value) > -1);
-    });
-}
+function filter_setup() {
 
-function attach_search() {
-    console.log("{function: attach_search}");
-    $("#master_search").on("keyup", function () {
-        pagination()
-    });
+    $("#master_period_filter").on('change', function () {
+        let value = $(this).val();
+        if (value == "") {
+            $("#master_date_filter").prop("disabled", false);
+        } else {
+            $("#master_date_filter").prop("disabled", true);
+        }
+    })
+    $("#master_date_filter").on('change', function () {
+        let value = $(this).val();
+        if (value == "") {
+            $("#master_period_filter").prop("disabled", false);
+        } else {
+            $("#master_period_filter").prop("disabled", true);
+        }
+    })
+
+    let pathname = window.location.pathname
+    if (pathname.includes("filter")) {
+        let period = localStorage["master_period_filter"];
+        if (period) {
+            if (period !== "") { $("#master_date_filter").prop('disabled', true) } // Se il periodo è settato disabilita il filtro sulla data
+            $("#master_period_filter option[value="+period+"]").prop("selected", true);
+        }
+        let costumer = localStorage["master_costumer_filter"];
+        if (costumer) {
+            $("#master_costumer_filter option[value="+costumer+"]").prop("selected", true);
+        }
+        let state = localStorage["master_state_filter"];
+        if (state) {
+            $("#master_state_filter option[value="+state+"]").prop("selected", true);
+        }
+        let date = localStorage["master_date_filter"];
+        if (date) {
+            if (date !== "") { $("#master_period_filter").prop('disabled', true) } // Se la data è settata disabilita il filtro sul periodo
+            $("#master_date_filter").val(date);
+        }
+    } else {
+        filter_reset();
+    }
+
 }
 
 function save_filters() {
@@ -139,25 +194,49 @@ function save_filters() {
     $("#master_filter_form").submit();
 }
 
-function get_filters() {
-    var period = localStorage["master_period_filter"];
-    if (period) {
-        $("#master_period_filter option[value="+period+"]").prop("selected", true);
-        localStorage.removeItem("master_period_filter");
-    }
-    var costumer = localStorage["master_costumer_filter"];
-    if (costumer) {
-        $("#master_costumer_filter option[value="+costumer+"]").prop("selected", true);
-        localStorage.removeItem("master_costumer_filter");
-    }
-    var state = localStorage["master_state_filter"];
-    if (state) {
-        $("#master_state_filter option[value="+state+"]").prop("selected", true);
-        localStorage.removeItem("master_state_filter");
-    }
-    var date = localStorage["master_date_filter"];
-    if (date) {
-        $("#master_date_filter").val(date);
-        localStorage.removeItem("master_date_filter");
-    }
+function filter_reset() {
+    localStorage.removeItem("master_period_filter");
+    localStorage.removeItem("master_costumer_filter");
+    localStorage.removeItem("master_state_filter");
+    localStorage.removeItem("master_date_filter");
+}
+
+function show_activity_script() {
+    $("document").ready(function () {
+        $("#costumer").change(function () { filter_orders_when_costumer_selected(); });
+        $("#order").change(function () { filter_costumers_when_order_selected(); });
+    });
+}
+
+function filter_orders_when_costumer_selected() {
+    console.log("{function: costumer_selected_activity}");
+    var costumer = $("#costumer").val();
+    console.log("{costumer_id: " + costumer + "}");
+    $.ajax({
+        url: '/ajax/orders',
+        type: 'GET',
+        data: {costumer_id: costumer},
+        success: function (data) {
+            var order_select = $('#order');
+            order_select.find('option').remove().end();
+            $.each(data, function () {
+                order_select.append($("<option />").val(this.id).text(this.descrizione_commessa));
+            })
+        }
+    });
+}
+
+function filter_costumers_when_order_selected() {
+    console.log("{function: order_selected_activity}");
+    var costumer = $('#costumer').val();
+    var order = $("#order").val();
+    console.log("{order_id: " + order + "}");
+    $.ajax({
+        url: '/ajax/costumer',
+        type: 'GET',
+        data: {order_id: order},
+        success: function (data) {
+            $("#costumer").val(data.id);
+        }
+    });
 }

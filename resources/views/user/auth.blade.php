@@ -69,20 +69,4 @@
         </div>
     </div>
 
-{{--    @if($wrong_login)--}}
-{{--        <div class="position-fixed bottom-0 end-0 p-3">--}}
-{{--            <div class="toast fade show">--}}
-{{--                <div class="toast-header">--}}
-{{--                    <i class="bi bi-exclamation-circle me-2"></i>--}}
-
-{{--                    <strong class="me-auto text-warning">Errore login</strong>--}}
-{{--                    <small>{{ $time_stamp }}</small>--}}
-{{--                </div>--}}
-{{--                <div class="toast-body">--}}
-{{--                    {{ $login_error }}--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    @endif--}}
-
 @endsection

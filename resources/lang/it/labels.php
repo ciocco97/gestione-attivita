@@ -38,9 +38,10 @@ return [
     'search_placeholder' => 'Cerca Nella tabella',
     'num_rows' => 'Numero righe',
     'period' => 'Periodo',
-    'last_week' => 'Ultima settimana',
+    'last_week' => 'Settimana corrente',
     'last_two_weeks' => 'Ultime due settimane',
-    'last_month' => 'Ultimo mese',
+    'current_month' => 'Mese corrente',
+    'last_month' => 'Mese scorso',
     'last_year' => 'Ultimo anno',
     'last_two_years' => 'Ultimi due anni',
     'all' => 'tutto'

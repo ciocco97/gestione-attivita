@@ -56,7 +56,7 @@ class DataLayer
             ->get();
     }
 
-    public function filterActiveActivityForActivityTableByUserID(int $user_id, $start_date, $costumer, $state)
+    public function filterActiveActivityForActivityTableByUserID(int $user_id, $start_date, $end_date, $costumer, $state, $date)
     {
         $basic_query = DB::table('attivita')
             ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
@@ -81,8 +81,13 @@ class DataLayer
             ->where('stato_commessa.descrizione_stato_commessa', '=', 'aperta')
             ->where('attivita.persona_id', '=', $user_id)
             ->orderBy('data', 'desc');
-        if ($start_date != null) {
+        if ($date != null) {
+            $basic_query->where('attivita.data', '=', $date);
+        } else if ($start_date != null) {
             $basic_query->where('attivita.data', '>=', $start_date);
+            if ($end_date != null) {
+                $basic_query->where('attivita.data', '<=', $end_date);
+            }
         }
         if ($costumer != null) {
             $basic_query->where('cliente.id', '=', $costumer);
@@ -158,6 +163,28 @@ class DataLayer
             ->join('commessa', 'commessa.cliente_id', '=', 'cliente.id')
             ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
             ->where('stato_commessa.descrizione_stato_commessa', '=', 'aperta')
+            ->distinct()
+            ->get();
+    }
+
+    public function listActiveCostumerByUserID()
+    {
+        return DB::table('cliente')
+            ->select('cliente.id', 'cliente.nome')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('commessa')
+                    ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
+                    ->whereColumn('commessa.cliente_id', 'cliente.id')
+                    ->where('stato_commessa.descrizione_stato_commessa', '=', 'aperta')
+                    ->whereExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('attivita')
+                            ->whereColumn('attivita.commessa_id', 'commessa.id')
+                            ->where('attivita.persona_id', '=', $_SESSION['user_id']);
+                    });
+            })
+
             ->distinct()
             ->get();
     }

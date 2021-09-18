@@ -44,7 +44,7 @@
                             <label class="form-label" for="costumer">@lang('labels.costumer')</label>
                             @if($method != $ADD)
                                 @if($method == $EDIT)
-                                    <select class="form-select" id="costumer" name="costumer" onchange="costumer_selected_activity()" required>
+                                    <select class="form-select" id="costumer" name="costumer" required>
                                         @foreach($costumers as $costumer)
                                             @if($costumer->id == $current_costumer->id)
                                                 <option value="{{ $costumer->id }}"
@@ -60,7 +60,7 @@
                                     </select>
                                 @endif
                             @else
-                                <select class="form-select" id="costumer" name="costumer" onchange="costumer_selected_activity()" required>
+                                <select class="form-select" id="costumer" name="costumer" required>
                                     <option value="" disabled selected hidden>@lang('labels.select') @lang('labels.costumer')</option>
                                     @foreach($costumers as $costumer)
                                         <option value="{{ $costumer->id }}">{{ $costumer->nome }}</option>
@@ -90,7 +90,7 @@
                                     </select>
                                 @endif
                             @else
-                                <select class="form-select" id="order" name="order" onchange="order_selected_activity()" required>
+                                <select class="form-select" id="order" name="order" required>
                                     <option value="" disabled selected hidden>@lang('labels.select') @lang('labels.order')</option>
                                     @foreach($orders as $order)
                                         <option value="{{ $order->id }}">{{ $order->descrizione_commessa }}</option>
@@ -255,7 +255,7 @@
                         <div class="col-lg-6"></div>
                         @if($method == $EDIT)
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-secondary w-100" href="{{ route('activity.index') }}">
+                                <a class="btn btn-secondary w-100" href="{{ url()->previous() }}">
                                     <i class="bi bi-x-square me-2"></i>@lang('labels.cancel')</a>
                             </div>
                             <div class="col-sm-6 col-lg-3">
@@ -265,13 +265,13 @@
                         @elseif($method == $SHOW)
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0"></div>
                             <div class="col-sm-6 col-lg-3">
-                                <a class="btn btn-secondary w-100" href="{{ route('activity.index') }}">
+                                <a class="btn btn-secondary w-100" href="{{ url()->previous() }}">
                                     <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.back')</a>
                             </div>
 
                         @elseif($method == $DELETE)
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-secondary w-100" href="{{ route('activity.index') }}">
+                                <a class="btn btn-secondary w-100" href="{{ url()->previous() }}">
                                     <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')</a>
                             </div>
                             <div class="col-sm-6 col-lg-3">
@@ -281,7 +281,7 @@
 
                         @else
                             <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-danger w-100" href="{{ route('activity.index') }}">
+                                <a class="btn btn-danger w-100" href="{{ url()->previous() }}">
                                     <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')</a>
                             </div>
                             <div class="col-sm-6 col-lg-3">
@@ -300,15 +300,18 @@
         </div>
     </div>
 
-    @if($method == $ADD)
-        <script>
+    <script>
+
+        show_activity_script();
+
+        @if($method == $ADD)
             $(document).ready(function () {
                 var now = moment();
                 $("#date").val(now.format("YYYY-MM-DD"));
                 $("#startTime").val(moment("8:00", "H:mm").format("HH:mm"));
                 $("#duration").val(moment("0:00", "H:mm").format("HH:mm"))
             });
-        </script>
-    @endif
+        @endif
+    </script>
 
 @endsection

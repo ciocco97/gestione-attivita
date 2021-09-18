@@ -40,6 +40,7 @@ return [
     'period' => 'Period',
     'last_week' => 'Last week',
     'last_two_weeks' => 'Last two weeks',
+    'current_month' => 'Current month',
     'last_month' => 'Last month',
     'last_year' => 'Last year',
     'last_two_years' => 'Last two years',
