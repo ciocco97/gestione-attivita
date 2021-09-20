@@ -44,5 +44,13 @@ return [
     'last_month' => 'Mese scorso',
     'last_year' => 'Ultimo anno',
     'last_two_years' => 'Ultimi due anni',
-    'all' => 'tutto'
+    'all' => 'tutto',
+    'change' => 'Modifica',
+    'old_password' => 'vecchia password',
+    'new_password' => 'nuova password',
+    'retype' => 'Riscrivi',
+    'type' => 'Scrivi',
+    'password_validity_alert' => 'La password deve essere lunga almeno 8 caratteri,
+    deve contenere almeno una lettera minuscola, una maiuscola e un numero',
+    'retype_password_alert' => 'Gli ultimi due campi devono contenere la stessa password'
 ];

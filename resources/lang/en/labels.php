@@ -44,5 +44,13 @@ return [
     'last_month' => 'Last month',
     'last_year' => 'Last year',
     'last_two_years' => 'Last two years',
-    'all' => 'All'
+    'all' => 'All',
+    'change' => 'Change',
+    'old_password' => 'old password',
+    'new_password' => 'new password',
+    'retype' => 'Retype',
+    'type' => 'Type',
+    'password_validity_alert' => 'The password must be at least 8 characters long,
+    it must contain at least one lowercase letter, one uppercase letter and one number',
+    'retype_password_alert' => 'The last two fields must contains the same password'
 ];

@@ -109,7 +109,7 @@ class AuthController extends Controller
             $this->sessionAuthentication(true, $user);
 
             if ($remember_me) {
-                setcookie('email', $email, time() + 3600*48);
+                setcookie('email', $email, time() + 3600 * 48);
                 Log::debug('Email salvata nei cookie', ['email' => $email]);
             } else {
                 setcookie('email', '', -1);
@@ -132,11 +132,30 @@ class AuthController extends Controller
         return Redirect::to(route('user.login'));
     }
 
-    public function changePassword() {
+    public function choosePassword()
+    {
         $username = $_SESSION['username'];
         return view('user.change_password')
             ->with('username', $username)
             ->with('previous_url', $_SESSION['previous_url']);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $user_id = $_SESSION['user_id'];
+        $old_password = $request->get('oldPassword');
+        $new_password = $request->get('newPassword');
+
+        // Check credenziali nel DB
+        $dataLayer = new DataLayer();
+        $user = $dataLayer->validUser(null, md5($old_password), $user_id);
+
+        if ($user) { // pwd can be changed
+            $dataLayer->changePassword($user_id, md5($new_password));
+            return redirect($_SESSION['previous_url']);
+        }
+        return redirect()->back();
+
     }
 
 }

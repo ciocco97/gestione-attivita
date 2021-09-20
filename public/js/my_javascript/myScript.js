@@ -240,3 +240,31 @@ function filter_costumers_when_order_selected() {
         }
     });
 }
+
+function change_password_script() {
+    $("#password_validity_alert").toggle(false);
+    $("#retype_password_alert").toggle(false);
+
+    $("#newPassword").on('keyup', function () { check_password_validity($(this).val());});
+    $("#retype_password").on('keyup', function () { check_password_equality($("#newPassword").val(), $(this).val()) });
+    $("change_password_button").on('click', function () {
+        if (check_password_validity($("#newPassword").val()) &&
+            check_password_equality($("#newPassword").val(), $("#retype_password").val())) {
+            $("#change_password_form").submit();
+        }
+    });
+}
+
+function check_password_validity(password) {
+    let regular_expression = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/;
+    let valid = password.search(regular_expression) !== -1;
+    console.log(valid);
+    $("#password_validity_alert").toggle(!valid && password !== "");
+    return valid;
+}
+
+function check_password_equality(p_new, p_retipe) {
+    let equal = p_new === p_retipe;
+    $("#retype_password_alert").toggle(!equal && p_retipe !== "");
+    return equal;
+}

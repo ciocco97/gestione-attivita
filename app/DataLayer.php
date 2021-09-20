@@ -17,14 +17,29 @@ use mysql_xdevapi\Statement;
 
 class DataLayer
 {
-    public function validUser($email, $password)
+    public function validUser($email, $password, $user_id = -1)
     {
-        $persona = Persona::where('email', $email)->where('password', $password)->get()->first();
-        if (isset($persona)) {
-            return $persona;
+        if ($email != null) {
+            $persona = Persona::where('email', $email)->where('password', $password)->get()->first();
+            if (isset($persona)) {
+                return $persona;
+            } else {
+                return false;
+            }
         } else {
-            return false;
+            $persona = Persona::find($user_id)->where('password', $password)->get()->first();
+            if (isset($persona)) {
+                return $persona;
+            } else {
+                return false;
+            }
         }
+    }
+
+    public function changePassword($user_id, $password) {
+        $user = Persona::find($user_id);
+        $user->password = $password;
+        $user->save();
     }
 
     public function listActiveActivityForActivityTableByUserID(int $user_id, $start_date)

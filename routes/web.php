@@ -32,7 +32,8 @@ Route::middleware([Language::class])->group(function () {
 
 
     Route::middleware([MyAuth::class])->group(function () {
-        Route::get('/user/change/password', [AuthController::class, 'changePassword'])->name('user.change.password');
+        Route::get('/user/choose/password', [AuthController::class, 'choosePassword'])->name('user.choose.password');
+        Route::post('/user/change/password', [AuthController::class, 'changePassword'])->name('user.change.password');
         Route::resource('activity', ActivityController::class);
         Route::post('/activity/{id}/update', [ActivityController::class, 'update'])->name('activity.update');
         Route::get('/activity/{id}/destroy', [ActivityController::class, 'destroy'])->name('activity.destroy');

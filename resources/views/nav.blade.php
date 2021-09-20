@@ -17,13 +17,13 @@
 
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
                 <li>
-                    <a class="dropdown-item" href="{{ route('user.logout') }}">
-                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                    <a class="dropdown-item" href="{{ route('user.choose.password') }}">
+                        <i class="bi bi-key me-2"></i>@lang('labels.change') password
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="{{ route('user.change.password') }}">
-                        <i class="bi bi-key me-2"></i>@lang('labels.change') password
+                    <a class="dropdown-item" href="{{ route('user.logout') }}">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout
                     </a>
                 </li>
                 <li class="dropdown-divider d-lg-none"></li>
