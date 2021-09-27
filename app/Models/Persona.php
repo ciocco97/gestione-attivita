@@ -12,8 +12,22 @@ class Persona extends Model
     protected $table = 'persona';
     protected $fillable = ['nome', 'cognome', 'email', 'password'];
     public $timestamps = false;
+    protected $hidden = ['pivot', 'password'];
 
     public function attivita() {
-        return $this->belongsToMany(Attivita::class);
+        return $this->belongsTo(Attivita::class);
+    }
+
+    public function sottoposti() {
+        return $this->belongsToMany(Persona::class, 'manager_sottoposto', 'manager_id', 'sottoposto_id');
+    }
+
+    public function manager() {
+        return $this->belongsToMany(Persona::class, 'manager_sottoposto', 'sottoposto_id', 'manager_id');
+    }
+
+    public function ruoli()
+    {
+        return $this->belongsToMany(Ruolo::class, 'persona_ruolo');
     }
 }

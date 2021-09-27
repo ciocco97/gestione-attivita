@@ -26,6 +26,7 @@ return [
     'edit' => 'Modifica',
     'delete' => 'Elimina',
     'activity' => 'attività',
+    'activities' => 'attività',
     'select' => 'Seleziona',
     'cancel' => 'Annulla',
     'date_and_start_time' => 'Data e ora di inizio',
@@ -50,7 +51,10 @@ return [
     'new_password' => 'nuova password',
     'retype' => 'Riscrivi',
     'type' => 'Scrivi',
-    'password_validity_alert' => 'La password deve essere lunga almeno 8 caratteri,
-    deve contenere almeno una lettera minuscola, una maiuscola e un numero',
-    'retype_password_alert' => 'Gli ultimi due campi devono contenere la stessa password'
+    'confirm' => 'Pota sì',
+    'approve' => 'Approva',
+    'other_states' => 'Altri stati',
+    'set' => 'Imposta',
+    'complete' => 'Completa',
+    'open' => 'Apri'
 ];

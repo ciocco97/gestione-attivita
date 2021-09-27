@@ -28,15 +28,15 @@
                     @csrf
 
                     @if($method == $EDIT)
-                        <h3>@lang('labels.edit') @lang('labels.activity')</h3>
+                        <h3>@lang('labels.edit') @lang('labels.activity')
                     @elseif($method == $SHOW)
-                        <h3>@lang('labels.show') @lang('labels.activity')</h3>
+                        <h3>@lang('labels.show') @lang('labels.activity')
                     @elseif($method == $DELETE)
-                        <h3>@lang('labels.delete') @lang('labels.activity')</h3>
+                        <h3>@lang('labels.delete') @lang('labels.activity')
                     @else
-                        <h3>@lang('labels.add') @lang('labels.activity')</h3>
+                        <h3>@lang('labels.add') @lang('labels.activity')
                     @endif
-
+                         - {{ $tech_name }}</h3>
 
                     <div class="row mb-md-2 mt-3"> <!-- Primi due campi -->
 

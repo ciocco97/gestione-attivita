@@ -14,7 +14,8 @@ class CreateStatoCommessaTable extends Migration
     public function up()
     {
         Schema::create('stato_commessa', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id');
+            $table->primary('id');
             $table->string('descrizione_stato_commessa');
         });
     }

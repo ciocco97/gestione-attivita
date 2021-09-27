@@ -50,20 +50,20 @@
 
         <div class="order-lg-1 collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a id="commercial" class="nav-link" href="">@lang('labels.commercial_tab')</a>
+                <li id="commercial_nav_tab" class="nav-item">
+                    <a class="nav-link" href="">@lang('labels.commercial_tab')</a>
                 </li>
 
-                <li class="nav-item">
-                    <a id="admin" class="nav-link" href="">@lang('labels.admin_tab')</a>
+                <li id="admin_nav_tab" class="nav-item">
+                    <a class="nav-link" href="">@lang('labels.admin_tab')</a>
                 </li>
 
-                <li class="nav-item">
-                    <a id="manager" class="nav-link" href="">@lang('labels.manager_tab')</a>
+                <li id="manager_nav_tab" class="nav-item">
+                    <a class="nav-link" href="{{ route('manager.index') }}">@lang('labels.manager_tab')</a>
                 </li>
 
-                <li class="nav-item">
-                    <a id="technician" class="nav-link" href="{{ route('activity.index') }}" active>@lang('labels.tech_tab')</a>
+                <li id="technician_nav_tab" class="nav-item">
+                    <a class="nav-link" href="{{ route('activity.index') }}">@lang('labels.tech_tab')</a>
                 </li>
 
             </ul>
@@ -73,3 +73,7 @@
     </div>
 
 </nav>
+
+<script>
+    nav_script();
+</script>

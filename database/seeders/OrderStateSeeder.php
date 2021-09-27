@@ -15,10 +15,12 @@ class OrderStateSeeder extends Seeder
     public function run()
     {
         StatoCommessa::create([
+            'id' => 1,
             'descrizione_stato_commessa' => 'aperta'
         ]);
 
         StatoCommessa::create([
+            'id' => 2,
             'descrizione_stato_commessa' => 'annullata'
         ]);
     }

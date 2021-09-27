@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class AjaxController extends Controller
 {
+    // Dato un cliente, ritorna i relativi ordini aperti
     public function orders(Request $request)
     {
         $costumer_id = $request->input('costumer_id');
@@ -17,14 +18,7 @@ class AjaxController extends Controller
         return response()->json($orders);
     }
 
-//    public function activeCostumer(Request $request) {
-//        $costumer_id = $request->input('costumer_id');
-//        Log::debug('Ajax_active_costumer', ['id' => $costumer_id]);
-//        $dl = new DataLayer();
-//        $active = $dl->isCostumerActive($costumer_id);
-//        return response()->json($active);
-//    }
-
+    // Dato un ordine, ritorna il relativo cliente
     public function costumer(Request $request)
     {
         $order_id = $request->input('order_id');
@@ -32,6 +26,23 @@ class AjaxController extends Controller
         $dl = new DataLayer();
         $costumer = $dl->getCostumerByOrderID($order_id)->toArray();
         return response()->json($costumer);
+    }
+
+    // Dato un utente, ritorna se l'utente loggato è manager, amministratore e/o commerciale
+    // Se nessun utente è loggato, ritorna {stato: false}
+    public function userRoles(Request $request) {
+        $user_id = $_SESSION['user_id'];
+        $dl = new DataLayer();
+        $roles = $dl->listUserRoles($user_id)->pluck('id');
+        return response()->json($roles);
+    }
+
+    public function massChangeActivities(Request $request) {
+        $user_id = $_SESSION['user_id'];
+        $ids = $request->input('ids');
+        $state = $request->input('state');
+        $dl = new DataLayer();
+        $dl->stateUpdateByIDS($user_id, $ids, $state);
     }
 
 }

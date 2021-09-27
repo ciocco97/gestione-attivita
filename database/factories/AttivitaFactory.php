@@ -22,14 +22,14 @@ class AttivitaFactory extends Factory
      */
     public function definition()
     {
-        $date_after = clone $date_time = $this->faker->dateTimeBetween;
+        $date_after = clone $date_time = $this->faker->dateTimeBetween('-2 month');
         $date_after->add(new \DateInterval('P1D'))->setTime(0, 0);
         $timestamp_middle = rand($date_time->getTimestamp(), $date_after->getTimestamp());
 
         $date = $date_time->format('Y-m-d');
-        $start_time = $date_time->format('H:i:s');
-        $end_time = date('H:i:s', $timestamp_middle);
-        $duration = date('H:i:s', $date_after->getTimestamp() - $timestamp_middle);
+        $start_time = $date_time->format('H:i');
+        $end_time = date('H:i', $timestamp_middle);
+        $duration = date('H:i', $date_after->getTimestamp() - $timestamp_middle);
 
         return [
             'data' => $date,

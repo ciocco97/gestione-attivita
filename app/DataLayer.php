@@ -7,6 +7,7 @@ use App\Models\AttivitaInfo;
 use App\Models\Cliente;
 use App\Models\Commessa;
 use App\Models\Persona;
+use App\Models\Ruolo;
 use App\Models\StatoAttivita;
 use App\Models\StatoCommessa;
 use Faker\Provider\Person;
@@ -42,13 +43,14 @@ class DataLayer
         $user->save();
     }
 
-    public function listActiveActivityForActivityTableByUserID(int $user_id, $start_date)
+    private function basicQueryForListActiveActivity(): \Illuminate\Database\Query\Builder
     {
         return DB::table('attivita')
             ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
             ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
             ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
             ->join('stato_attivita', 'attivita.stato_attivita_id', '=', 'stato_attivita.id')
+            ->join('persona', 'attivita.persona_id', '=', 'persona.id')
             ->selectRaw('attivita.id,
                                     attivita.descrizione_attivita,
                                     attivita.data,
@@ -63,39 +65,68 @@ class DataLayer
                                     commessa.rapportino_commessa,
                                     stato_commessa.id AS stato_commessa_id,
                                     stato_commessa.descrizione_stato_commessa,
-                                    attivita.persona_id')
-            ->where('stato_commessa.descrizione_stato_commessa', '=', 'aperta')
+                                    attivita.persona_id,
+                                    persona.nome')
+            ->where('stato_commessa.id', '=', 1);
+    }
+
+    public function listActiveActivityForActivityTableByUserID(int $user_id, $start_date): \Illuminate\Support\Collection
+    {
+        return $this->basicQueryForListActiveActivity()
             ->where('attivita.persona_id', '=', $user_id)
             ->where('attivita.data', '>=', $start_date)
             ->orderBy('data', 'desc')
             ->get();
     }
 
-    public function filterActiveActivityForActivityTableByUserID(int $user_id, $start_date, $end_date, $costumer, $state, $date)
+    // Ritorna lista di sottoposti + manager
+    public function listTeam(int $user_id) {
+        $user = Persona::find($user_id);
+        return $user->sottoposti()->get()->push($user);
+    }
+
+    public function listTeamIDS(int $user_id)
     {
-        $basic_query = DB::table('attivita')
-            ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
-            ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
-            ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
-            ->join('stato_attivita', 'attivita.stato_attivita_id', '=', 'stato_attivita.id')
-            ->selectRaw('attivita.id,
-                                    attivita.descrizione_attivita,
-                                    attivita.data,
-                                    cliente.nome AS nome_cliente,
-                                    commessa.descrizione_commessa,
-                                    attivita.ora_inizio,
-                                    attivita.ora_fine,
-                                    attivita.durata,
-                                    stato_attivita.descrizione_stato_attivita,
-                                    attivita.rapportino_attivita,
-                                    cliente.rapportino_cliente,
-                                    commessa.rapportino_commessa,
-                                    stato_commessa.id AS stato_commessa_id,
-                                    stato_commessa.descrizione_stato_commessa,
-                                    attivita.persona_id')
-            ->where('stato_commessa.descrizione_stato_commessa', '=', 'aperta')
-            ->where('attivita.persona_id', '=', $user_id)
-            ->orderBy('data', 'desc');
+        return $this->listTeam($user_id)->pluck('id')->toArray();
+    }
+
+    public function listUserRoles(int $user_id) {
+        $user = Persona::find($user_id);
+        $roles = $user->ruoli()->get();
+        $team = $this->listTeam($user_id);
+        if ($team->count() > 1) {
+            $manager_role = new Ruolo();
+            $manager_role->id = 3;
+            $manager_role->descrizione_ruolo = 'manager';
+            $roles->push($manager_role);
+        }
+        return $roles;
+    }
+
+    public function listActiveActivityForManagerTableByUserID(int $user_id, $start_date)
+    {
+        $query = $this->basicQueryForListActiveActivity();
+        $team = $this->listTeamIDS($user_id);
+        return $query->whereIn('attivita.persona_id', $team)
+            ->where('data', '>=', $start_date)
+            ->orderBy('data', 'desc')
+            ->orderBy('ora_inizio', 'desc')
+            ->get();
+    }
+
+    public function filterActiveActivityForActivityTableByUserID(int $user_id, $start_date, $end_date, $costumer, $state, $date, $team_selected_ids)
+    {
+        $basic_query = $this->basicQueryForListActiveActivity();
+        $team_ids = $this->listTeamIDS($user_id);
+
+        if ($team_selected_ids != null && count(array_intersect($team_selected_ids, $team_ids)) == count($team_selected_ids)) {
+            $basic_query->whereIn('attivita.persona_id', $team_selected_ids);
+        } else {
+            $basic_query->where('attivita.persona_id', '=', $user_id);
+        }
+        $basic_query->orderBy('data', 'desc')
+            ->orderBy('ora_inizio', 'desc');
+
         if ($date != null) {
             $basic_query->where('attivita.data', '=', $date);
         } else if ($start_date != null) {
@@ -115,7 +146,13 @@ class DataLayer
 
     public function getActivityByActivityAndUserID(int $activity_id, int $user_id)
     {
-        return Attivita::where('persona_id', $user_id)->where('id', $activity_id)->get()->first();
+        $activity = Attivita::find($activity_id);
+        $activity_user_id = $activity->persona_id;
+        if ($activity_user_id == $user_id || in_array($activity_user_id, $this->listTeamIDS($user_id))) {
+            return $activity;
+        } else {
+            return null;
+        }
     }
 
     public function storeActivity($user_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
@@ -135,10 +172,9 @@ class DataLayer
         ]);
     }
 
-    public function updateActivity($activity_id, $user_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
+    public function updateActivity($activity_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
     {
         Attivita::find($activity_id)->update([
-            'persona_id' => $user_id,
             'commessa_id' => $order_id,
             'data' => $date,
             'ora_inizio' => $startTime,
@@ -163,7 +199,7 @@ class DataLayer
 
     public function listActivityStateForTech()
     {
-        return StatoAttivita::where('descrizione_stato_attivita', '!=', 'approvata')->get();
+        return StatoAttivita::where('id', '!=', 4)->get();
     }
 
     public function listCostumer()
@@ -177,7 +213,7 @@ class DataLayer
             ->select('cliente.id', 'cliente.nome')
             ->join('commessa', 'commessa.cliente_id', '=', 'cliente.id')
             ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
-            ->where('stato_commessa.descrizione_stato_commessa', '=', 'aperta')
+            ->where('stato_commessa.id', '=', 1)
             ->distinct()
             ->get();
     }
@@ -191,7 +227,7 @@ class DataLayer
                     ->from('commessa')
                     ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
                     ->whereColumn('commessa.cliente_id', 'cliente.id')
-                    ->where('stato_commessa.descrizione_stato_commessa', '=', 'aperta')
+                    ->where('stato_commessa.id', '=', 1)
                     ->whereExists(function ($query) {
                         $query->select(DB::raw(1))
                             ->from('attivita')
@@ -221,13 +257,21 @@ class DataLayer
 
     public function listActiveOrder()
     {
-        return StatoCommessa::where('descrizione_stato_commessa', 'aperta')->first()->commesse()->get();
+        return StatoCommessa::where('id', 1)->first()->commesse()->get();
     }
 
     public function listActiveOrderByCostumerID(int $costumer_id)
     {
-        return StatoCommessa::where('descrizione_stato_commessa', 'aperta')
+        return StatoCommessa::where('id', 1)
             ->first()->commesse()->where('cliente_id', $costumer_id)->get();
+    }
+
+    public function stateUpdateByIDS($user_id, $ids, $state)
+    {
+        $team = $this->listTeamIDS($user_id);
+        Attivita::whereIn('persona_id', $team)
+            ->whereIn('id', $ids)
+            ->update(['stato_attivita_id' => $state]);
     }
 
 }

@@ -12,6 +12,7 @@ class StatoAttivita extends Model
     protected $table = 'stato_attivita';
     protected $fillable = ['descrizione_stato_attivita'];
     public $timestamps = false;
+    public $incrementing = false;
 
     public function attivita()
     {

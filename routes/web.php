@@ -40,7 +40,10 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/activity/{id}/confirm', [ActivityController::class, 'confirmDestroy'])->name('activity.destroy.confirm');
         Route::get('/activity/{id}/send_report', [ActivityController::class, 'sendReport'])->name('activity.send_report');
         Route::post('/activity/index/filter', [ActivityController::class, 'filterPost'])->name('activity.filter');
-        Route::get('/activity/filter/{period}/{costumer}/{state}/{date}', [ActivityController::class, 'filter'])->name('activity.filter.get');
+        Route::get('/activity/filter/{period}/{costumer}/{state}/{date}/{user}', [ActivityController::class, 'filter'])->name('activity.filter.get');
+        Route::get('/ajax/user/roles', [AjaxController::class, 'userRoles']);
+        Route::get('/ajax/activity/mass/change', [AjaxController::class, 'massChangeActivities']);
+        Route::get('/activity/manager/index', [ActivityController::class, 'managerIndex'])->name('manager.index');
     });
 });
 

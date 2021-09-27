@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStatoAttivitaTable extends Migration
+class CreateRuoloTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateStatoAttivitaTable extends Migration
      */
     public function up()
     {
-        Schema::create('stato_attivita', function (Blueprint $table) {
+        Schema::create('ruolo', function (Blueprint $table) {
             $table->unsignedBigInteger('id');
             $table->primary('id');
-            $table->string('descrizione_stato_attivita');
+            $table->string('descrizione_ruolo');
         });
     }
 
@@ -27,6 +27,6 @@ class CreateStatoAttivitaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stato_attivita');
+        Schema::dropIfExists('ruolo');
     }
 }

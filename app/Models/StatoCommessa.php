@@ -10,8 +10,9 @@ class StatoCommessa extends Model
     use HasFactory;
 
     protected $table = 'stato_commessa';
-    protected $fillable = ['descrizione_stato_commessa'];
+    protected $fillable = ['id', 'descrizione_stato_commessa'];
     public $timestamps = false;
+    public $incrementing = false;
 
     public function commesse()
     {

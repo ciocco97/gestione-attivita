@@ -7,12 +7,7 @@
 @section('body')
     <div class="container-md"> <!-- Corpo della pagina -->
         <div class="row mt-0 mt-md-1 mt-lg-0"> <!-- Azioni -->
-            <div class="col-md-6 col-lg-7"></div>
-            <div class="col-md-6 col-lg-5">
-                <div class="btn-group w-100" role="group">
-                    @yield('actions')
-                </div>
-            </div>
+            @yield('actions')
         </div>
 
         <div class="collapse" id="filterCollapse"> <!-- Filtri -->
@@ -47,7 +42,8 @@
                             <label class="col-form-label">@lang('labels.num_rows')</label>
                         </div>
                         <div class="p-2 flex-grow-1">
-                            <select class="form-select" id="master_num_rows" name="num_rows" onchange="search_and_pagination()">
+                            <select class="form-select" id="master_num_rows" name="num_rows"
+                                    onchange="search_and_pagination()">
                                 <option>5</option>
                                 <option>10</option>
                                 <option selected>15</option>

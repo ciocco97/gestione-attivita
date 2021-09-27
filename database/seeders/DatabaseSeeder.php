@@ -22,26 +22,27 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
-        foreach (Attivita::all() as $i) {
-            $i->delete();
-        }
-        foreach (Commessa::all() as $i) {
-            $i->delete();
-        }
-        foreach (Cliente::all() as $i) {
-            $i->delete();
-        }
-        foreach (Persona::all() as $i) {
-            $i->delete();
-        }
-        foreach (StatoCommessa::all() as $i) {
-            $i->delete();
-        }
-        foreach (StatoAttivita::all() as $i) {
-            $i->delete();
-        }
+//        foreach (Attivita::all() as $i) {
+//            $i->delete();
+//        }
+//        foreach (Commessa::all() as $i) {
+//            $i->delete();
+//        }
+//        foreach (Cliente::all() as $i) {
+//            $i->delete();
+//        }
+//        foreach (Persona::all() as $i) {
+//            $i->delete();
+//        }
+//        foreach (StatoCommessa::all() as $i) {
+//            $i->delete();
+//        }
+//        foreach (StatoAttivita::all() as $i) {
+//            $i->delete();
+//        }
 
         $this->call([
+            RoleSeeder::class,
             UserSeeder::class,
             OrderStateSeeder::class,
             ActivityStateSeeder::class,
@@ -66,7 +67,7 @@ class DatabaseSeeder extends Seeder
                                 ])
                                 ->has(
                                     Attivita::factory()
-                                        ->count(5)
+                                        ->count(1)
                                         ->state([
                                             'persona_id' => $p->id,
                                             'stato_attivita_id' => $sa->id

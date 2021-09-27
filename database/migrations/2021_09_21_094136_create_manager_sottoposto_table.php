@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStatoAttivitaTable extends Migration
+class CreateManagerSottopostoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateStatoAttivitaTable extends Migration
      */
     public function up()
     {
-        Schema::create('stato_attivita', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
-            $table->primary('id');
-            $table->string('descrizione_stato_attivita');
+        Schema::create('manager_sottoposto', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('manager_id')->constrained('persona');
+            $table->foreignId('sottoposto_id')->constrained('persona');
         });
     }
 
@@ -27,6 +27,6 @@ class CreateStatoAttivitaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stato_attivita');
+        Schema::dropIfExists('manager_sottoposto');
     }
 }

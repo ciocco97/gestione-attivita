@@ -26,6 +26,7 @@ return [
     'edit' => 'Edit',
     'delete' => 'Delete',
     'activity' => 'activity',
+    'activities' => 'activities',
     'select' => 'Select',
     'cancel' => 'Cancel',
     'date_and_start_time' => 'Initial date and time',
@@ -50,7 +51,10 @@ return [
     'new_password' => 'new password',
     'retype' => 'Retype',
     'type' => 'Type',
-    'password_validity_alert' => 'The password must be at least 8 characters long,
-    it must contain at least one lowercase letter, one uppercase letter and one number',
-    'retype_password_alert' => 'The last two fields must contains the same password'
+    'confirm' => 'Confirm',
+    'approve' => 'Approve',
+    'other_states' => 'Other states',
+    'set' => 'Set',
+    'complete' => 'Complete',
+    'open' => 'Open'
 ];

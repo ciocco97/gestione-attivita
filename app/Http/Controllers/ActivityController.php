@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataLayer;
 use App\Http\Utils;
+use App\Models\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -17,7 +18,7 @@ class ActivityController extends Controller
     const DELETE = 2;
     const ADD = 3;
 
-    private function indexActivityView($activities)
+    private function indexActivityView($activities, $manager = false)
     {
         $_SESSION['previous_url'] = url()->current();
 
@@ -29,6 +30,10 @@ class ActivityController extends Controller
         $costumers = $dl->listActiveCostumerByUserID();
         $orders = $dl->listActiveOrder();
         $states = $dl->listActivityState();
+        $team = null;
+        if ($manager) {
+            $team = $dl->listTeam($_SESSION['user_id']);
+        }
 
 
         return view('activity.technician')
@@ -36,7 +41,15 @@ class ActivityController extends Controller
             ->with('username', $username)
             ->with('costumers', $costumers)
             ->with('orders', $orders)
-            ->with('states', $states);
+            ->with('states', $states)
+            ->with('team', $team);
+    }
+
+    private function changeActivityDateFormat($activities)
+    {
+        foreach ($activities as $activity) {
+            $activity->data = super_time_parser::parse($activity->data)->format('d-m-Y');
+        }
     }
 
     /**
@@ -52,33 +65,57 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $activities = $dl->listActiveActivityForActivityTableByUserID($_SESSION['user_id'], $start_date);
 
-        foreach ($activities as $activity) {
-            $activity->data = super_time_parser::parse($activity->data)->format('d-m-Y');
-        }
+        $this->changeActivityDateFormat($activities);
 
         return $this->indexActivityView($activities);
 
     }
 
-    public function filterPost(Request $request) {
-        $period = $request->get('period');$period = $period == null?-1:$period;
-        $costumer = $request->get('costumer'); $state = $request->get('state'); $date = $request->get('date');
-        $costumer = $costumer == null?-1:$costumer; $state = $state == null?-1:$state; $date = $date == null?-1:$date;
+    public function managerIndex()
+    {
+        Log::debug('Manager index');
+        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
+
+        $dl = new DataLayer();
+        $activities = $dl->listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
+
+        $this->changeActivityDateFormat($activities);
+
+        return $this->indexActivityView($activities, true);
+    }
+
+    public function filterPost(Request $request)
+    {
+        $period = $request->get('period');
+        $period = $period == null ? -1 : $period;
+        $costumer = $request->get('costumer');
+        $state = $request->get('state');
+        $date = $request->get('date');
+        $team_member_id = $request->get('user');
+        $costumer = $costumer == null ? -1 : $costumer;
+        $state = $state == null ? -1 : $state;
+        $date = $date == null ? -1 : $date;
+        $team_member_id = $team_member_id == null ? -1 : $team_member_id;
+
         Log::debug('filterPost', [
             'period' => $period,
             'costumer' => $costumer,
             'state' => $state,
-            'date' => $date]);
+            'date' => $date,
+            'user' => $team_member_id]);
         return redirect()->route('activity.filter.get',
-            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date]);
+            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id]);
     }
 
-    public function filter($period, $costumer, $state, $date)
+    public function filter($period, $costumer, $state, $date, $team_member_id)
     {
-        $period = $period == -1?null:$period;
-        $costumer = $costumer == -1?null:$costumer;
-        $state = $state == -1?null:$state;
-        $date = $date == -1?null:$date;
+        $user_id = $_SESSION['user_id'];
+
+        $period = $period == -1 ? null : $period;
+        $costumer = $costumer == -1 ? null : $costumer;
+        $state = $state == -1 ? null : $state;
+        $date = $date == -1 ? null : $date;
+        $team_member_id = $team_member_id == -1 ? null : $team_member_id;
 
         $end_date = null;
         if ($period == 1) { // current week
@@ -103,14 +140,20 @@ class ActivityController extends Controller
         ]);
 
         $dl = new DataLayer();
-        $activities = $dl->filterActiveActivityForActivityTableByUserID(
-            $_SESSION['user_id'], $start_date, $end_date, $costumer, $state, $date);
-
-        foreach ($activities as $activity) {
-            $activity->data = super_time_parser::parse($activity->data)->format('d-m-Y');
+        $team_member_ids = null;
+        if ($team_member_id != null) {
+            if ($team_member_id == -2) {
+                $team_member_ids = $dl->listTeamIDS($user_id);
+            } else {
+                $team_member_ids = array($team_member_id);
+            }
         }
+        $activities = $dl->filterActiveActivityForActivityTableByUserID(
+            $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
 
-        return $this->indexActivityView($activities);
+        $this->changeActivityDateFormat($activities);
+
+        return $this->indexActivityView($activities, $team_member_id != null);
     }
 
     /**
@@ -121,28 +164,38 @@ class ActivityController extends Controller
      */
     private function sedActivityView($method, int $activity_id = -1)
     {
+        $manager = str_contains($_SESSION['previous_url'], 'manager');
+
         Log::debug('sedActivityView');
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
         $dl = new DataLayer();
         $costumers = $orders = $states = $activity = $order = $costumer = $state = null;
+        $tech_name = $username;
         if ($activity_id != -1) {
             $activity = $dl->getActivityByActivityAndUserID($activity_id, $user_id);
             $order = $activity->commessa()->get()->first();
             $costumer = $order->cliente()->get()->first();
+            $tech_name = Persona::find($activity->persona_id)->nome;
+
             $state = $activity->statoAttivita()->get()->first();
         }
 
         if ($method == self::ADD || $method == self::EDIT) {
             $costumers = $dl->listActiveCostumer();
             $orders = $dl->listActiveOrder();
-            $states = $dl->listActivityStateForTech();
+            if ($manager) {
+                $states = $dl->listActivityState();
+            } else {
+                $states = $dl->listActivityStateForTech();
+            }
         }
 
         return view('activity.show')
             ->with('username', $username)
             ->with('method', $method)
+            ->with('tech_name', $tech_name)
             ->with('SHOW', self::SHOW)->with('EDIT', self::EDIT)->with('DELETE', self::DELETE)->with('ADD', self::ADD)
             ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)
             ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)
@@ -196,7 +249,7 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $dl->storeActivity($user_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
 
-        return Redirect::to($_SESSION['back_link']);
+        return Redirect::to($_SESSION['previous_url']);
     }
 
     /**
@@ -221,7 +274,6 @@ class ActivityController extends Controller
     public function update(Request $request, $id)
     {
         Log::debug('Update_activity', ['id' => $id]);
-        $user_id = $_SESSION['user_id'];
         $activity_id = $id;
         $order = $request->get('order');
         $date = super_time_parser::parse($request->get('date'))->format('Y-m-d');
@@ -234,9 +286,9 @@ class ActivityController extends Controller
         $state = $request->get('state');
 
         $dl = new DataLayer();
-        $dl->updateActivity($activity_id, $user_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
+        $dl->updateActivity($activity_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
 
-        return Redirect::to($_SESSION['back_link']);
+        return Redirect::to($_SESSION['previous_url']);
     }
 
     /**
@@ -251,7 +303,7 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $dl->destroyActivity($id);
 
-        return Redirect::to($_SESSION['back_link']);
+        return Redirect::to($_SESSION['previous_url']);
     }
 
     public function confirmDestroy($id)

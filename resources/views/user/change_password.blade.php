@@ -29,7 +29,7 @@
                             <input type="password" class="form-control" id="newPassword" name="newPassword"
                                    placeholder="@lang('labels.new_password')" required>
                             <div id="password_validity_alert" class="alert alert-danger mt-2" role="alert">
-                                @lang('labels.password_validity_alert')
+                                @lang('text.password_validity_alert')
                             </div>
                         </div>
                         <div class="mb-3">
@@ -37,7 +37,7 @@
                             <input type="password" class="form-control" id="retype_password" name="retipePassword"
                                    placeholder="@lang('labels.new_password')" required>
                             <div id="retype_password_alert" class="alert alert-danger mt-2" role="alert">
-                                @lang('labels.retype_password_alert')
+                                @lang('text.retype_password_alert')
                             </div>
                         </div>
                         <div class="d-flex justify-content-between mx-5 mt-5">
