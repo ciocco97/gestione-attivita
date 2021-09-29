@@ -7,46 +7,40 @@
 @endsection
 
 @section('actions')
-    @if($team == null) {{-- Technician --}}
-    {{--    <div class="col-md-6 col-lg-7"></div>--}}
-    {{--    <div class="col-md-6 col-lg-5">--}}
-    {{--        <div class="btn-group w-100" role="group">--}}
-    {{--            <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filterCollapse">--}}
-    {{--                <i class="bi bi-funnel me-2"></i>@lang('labels.filter') @lang('labels.activity')--}}
-    {{--            </button>--}}
-    {{--            <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">--}}
-    {{--                <i class="bi bi-journal-plus me-2"></i>@lang('labels.add') @lang('labels.activity')--}}
-    {{--            </a>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
     <div class="d-flex justify-content-end">
         <div class="btn-group" role="group">
             <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
                 <i class="bi bi-funnel me-2"></i>@lang('labels.filter') @lang('labels.activity')
             </button>
+            @if($team == null)
             <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">
                 <i class="bi bi-journal-plus me-2"></i>@lang('labels.add') @lang('labels.activity')
             </a>
-        </div>
-    </div>
-    @else {{-- Manager --}}
-    <div class="d-flex justify-content-end">
-        <div class="btn-group" role="group">
-            <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
-                <i class="bi bi-funnel me-2"></i>@lang('labels.filter') @lang('labels.activity')
-            </button>
-            <button id="activities_change_4" data-state="4" class="btn btn-outline-primary border-end-0 pe-1" style="display: none;">
+            @endif
+            @if($team != null) {{-- Manager --}}
+            <button id="activities_change_4" data-state="4" class="btn btn-outline-success border-end-0 pe-1"
+                    style="display: none;">
                 <i class="bi bi-pencil me-2"></i>@lang('labels.approve')
             </button>
-            <button id="activities_change_btn" class="btn btn-outline-primary rounded-end border-start-0 px-1" data-bs-toggle="dropdown" style="display: none;">
+            @endif
+            <button id="activities_change_btn" class="btn btn-outline-success rounded-end border-start-0 px-1"
+                    data-bs-toggle="dropdown" style="display: none;">
+                @if($team == null) {{-- Technician --}}
+                    @lang('labels.change') @lang('labels.state')
+                @endif
                 <i class="bi bi-three-dots-vertical"></i>
             </button>
             <ul class="dropdown-menu">
+                @if($team != null)
                 <li><h6 class="dropdown-header">@lang('labels.other_states')</h6></li>
+                @else
+                    <li><h6 class="dropdown-header">@lang('labels.states')</h6></li>
+                @endif
                 @foreach($states as $state)
                     @if($state->id != 4)
                         <li>
-                            <button id="activities_change_{{ $state->id }}" class="dropdown-item" data-state="{{ $state->id }}">
+                            <button id="activities_change_{{ $state->id }}" class="dropdown-item"
+                                    data-state="{{ $state->id }}">
                                 @lang('labels.set') {{ $state->descrizione_stato_attivita }}
                             </button>
                         </li>
@@ -56,7 +50,7 @@
             @include('activity.modal_confirmation')
         </div>
     </div>
-    @endif
+    {{--    @endif--}}
 @endsection
 
 @section('filters')
@@ -70,8 +64,8 @@
                     <div class="col-md-8 col-lg-5">
                         <div class="d-flex">
                             <select value="" class="form-select" id="master_period_filter" name="period">
-                                <option value="" selected hidden>@lang('labels.select') @lang('labels.period')</option>
-                                <option value="1">@lang('labels.last_week')</option>
+                                <option value="" hidden>@lang('labels.select') @lang('labels.period')</option>
+                                <option value="1" selected>@lang('labels.last_week')</option>
                                 <option value="2">@lang('labels.last_two_weeks')</option>
                                 <option value="3">@lang('labels.current_month')</option>
                                 <option value="4">@lang('labels.last_month')</option>
@@ -181,8 +175,8 @@
 @section('table_head')
     <thead>
     <tr>
-        @if ($team != null) {{-- Manager --}}
         <th scope="col"></th>
+        @if ($team != null) {{-- Manager --}}
         <th scope="col">@lang('labels.tech_tab')</th>
         @endif
         <th scope="col">@lang('labels.description')</th>
@@ -211,12 +205,12 @@
         <tr>
             <td name="id" style="display: none">{{ $activity->id }}</td>
             <!-- Serve a javascrit per il get dell'activity ID -->
-            @if($team != null) {{-- Manager --}}
             <td id="select_{{ $activity->id }}">
                 <div class="d-flex justify-content-center">
                     <input class="form-check" type="checkbox">
                 </div>
             </td>
+            @if($team != null) {{-- Manager --}}
             <td id="technician_{{ $activity->id }}">{{ $activity->nome }}</td>
             @endif
             <td class="fw-bold" id="desc_{{ $activity->id }}"
@@ -232,14 +226,18 @@
             <!-- Bottone rapportino -->
             <td>
                 @if($activity->rapportino_cliente && $activity->rapportino_commessa)
-                    <a id="report_{{ $activity->id }}" class="btn pt-0"
-                       href="{{ route('activity.send_report', ['id' => $activity->id]) }}">
+                    <button id="report_{{ $activity->id }}" class="btn pt-0">
                         @if($activity->rapportino_attivita)
                             <i class="bi bi-clipboard-check text-success"></i>
                         @else
                             <i class="bi bi-clipboard text-primary"></i>
                         @endif
-                    </a>
+                    </button>
+                    <div id="wait_{{ $activity->id }}" class="spinner-border spinner-border-sm text-success"
+                         role="status"
+                         style="display: none;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 @else
                     <a id="report_{{ $activity->id }}" class="btn pt-0 disabled">
                         <i class="bi bi-clipboard-x text-danger"></i>

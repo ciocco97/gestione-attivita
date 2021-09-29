@@ -32,26 +32,4 @@ class Attivita extends Model
         return $this->belongsTo(StatoAttivita::class);
     }
 
-    // State
-
-    public function isCompleted()
-    {
-        return $this->statoAttivita()->get()->first()->descrizione_stato_attivita == 'completata';
-    }
-
-    public function isOpened()
-    {
-        return $this->statoAttivita()->descrizione_stato_attivita == 'aperta';
-    }
-
-    public function isCancelled()
-    {
-        $this->statoAttivita()->descrizione_stato_attivita == 'annullata';
-    }
-
-    public function isApproved()
-    {
-        $this->statoAttivita()->descrizione_stato_attivita == 'approvata';
-    }
-
 }

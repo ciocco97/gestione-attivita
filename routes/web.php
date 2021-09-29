@@ -8,6 +8,7 @@ use App\Http\Controllers\ActivityController;
 use \App\Http\Middleware\MyAuth;
 use \App\Http\Middleware\Language;
 use \App\Http\Controllers\AjaxController;
+use \App\Http\Controllers\ActivityMailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ Route::middleware([Language::class])->group(function () {
     Route::get('/user/login', [AuthController::class, 'login'])->name('user.login');
     Route::post('/user/authentication', [AuthController::class, 'authentication'])->name('user.authentication');
     Route::get('/user/logout', [AuthController::class, 'logout'])->name('user.logout');
+    Route::match(['get', 'post'], '/user/reset/password/', [AuthController::class, 'resetPasswordProcedure'])->name('user.reset.password');
 
 
     Route::middleware([MyAuth::class])->group(function () {
@@ -38,11 +40,11 @@ Route::middleware([Language::class])->group(function () {
         Route::post('/activity/{id}/update', [ActivityController::class, 'update'])->name('activity.update');
         Route::get('/activity/{id}/destroy', [ActivityController::class, 'destroy'])->name('activity.destroy');
         Route::get('/activity/{id}/confirm', [ActivityController::class, 'confirmDestroy'])->name('activity.destroy.confirm');
-        Route::get('/activity/{id}/send_report', [ActivityController::class, 'sendReport'])->name('activity.send_report');
         Route::post('/activity/index/filter', [ActivityController::class, 'filterPost'])->name('activity.filter');
         Route::get('/activity/filter/{period}/{costumer}/{state}/{date}/{user}', [ActivityController::class, 'filter'])->name('activity.filter.get');
         Route::get('/ajax/user/roles', [AjaxController::class, 'userRoles']);
         Route::get('/ajax/activity/mass/change', [AjaxController::class, 'massChangeActivities']);
+        Route::get('/ajax/activity/send/report', [ActivityMailController::class, 'ajaxSendActivityReport']);
         Route::get('/activity/manager/index', [ActivityController::class, 'managerIndex'])->name('manager.index');
     });
 });
@@ -50,4 +52,5 @@ Route::middleware([Language::class])->group(function () {
 Route::get('/ajax/orders', [AjaxController::class, 'orders']);
 //Route::get('/ajax/active_costumer', [AjaxController::class, 'activeCostumer']);
 Route::get('/ajax/costumer', [AjaxController::class, 'costumer']);
+
 

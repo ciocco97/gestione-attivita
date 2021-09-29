@@ -10,7 +10,9 @@ use App\Models\Persona;
 use App\Models\Ruolo;
 use App\Models\StatoAttivita;
 use App\Models\StatoCommessa;
+use Carbon\Carbon;
 use Faker\Provider\Person;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Monolog\Logger;
@@ -37,10 +39,12 @@ class DataLayer
         }
     }
 
-    public function changePassword($user_id, $password) {
+    public function changePassword($user_id, $password_md5)
+    {
         $user = Persona::find($user_id);
-        $user->password = $password;
+        $user->password = $password_md5;
         $user->save();
+        Log::debug('password salvata correttamente');
     }
 
     private function basicQueryForListActiveActivity(): \Illuminate\Database\Query\Builder
@@ -67,7 +71,9 @@ class DataLayer
                                     stato_commessa.descrizione_stato_commessa,
                                     attivita.persona_id,
                                     persona.nome')
-            ->where('stato_commessa.id', '=', 1);
+            ->where('stato_commessa.id', '=', 1)
+            ->orderBy('data', 'desc')
+            ->orderBy('ora_inizio', 'desc');
     }
 
     public function listActiveActivityForActivityTableByUserID(int $user_id, $start_date): \Illuminate\Support\Collection
@@ -75,14 +81,15 @@ class DataLayer
         return $this->basicQueryForListActiveActivity()
             ->where('attivita.persona_id', '=', $user_id)
             ->where('attivita.data', '>=', $start_date)
-            ->orderBy('data', 'desc')
             ->get();
     }
 
     // Ritorna lista di sottoposti + manager
-    public function listTeam(int $user_id) {
+    public function listTeam(int $user_id)
+    {
         $user = Persona::find($user_id);
-        return $user->sottoposti()->get()->push($user);
+//        $user = $user == null ? new Collection() : $user;
+        return $user->sottoposti()->get();
     }
 
     public function listTeamIDS(int $user_id)
@@ -90,11 +97,12 @@ class DataLayer
         return $this->listTeam($user_id)->pluck('id')->toArray();
     }
 
-    public function listUserRoles(int $user_id) {
+    public function listUserRoles(int $user_id)
+    {
         $user = Persona::find($user_id);
         $roles = $user->ruoli()->get();
         $team = $this->listTeam($user_id);
-        if ($team->count() > 1) {
+        if ($team->count() > 0) {
             $manager_role = new Ruolo();
             $manager_role->id = 3;
             $manager_role->descrizione_ruolo = 'manager';
@@ -109,8 +117,6 @@ class DataLayer
         $team = $this->listTeamIDS($user_id);
         return $query->whereIn('attivita.persona_id', $team)
             ->where('data', '>=', $start_date)
-            ->orderBy('data', 'desc')
-            ->orderBy('ora_inizio', 'desc')
             ->get();
     }
 
@@ -124,8 +130,6 @@ class DataLayer
         } else {
             $basic_query->where('attivita.persona_id', '=', $user_id);
         }
-        $basic_query->orderBy('data', 'desc')
-            ->orderBy('ora_inizio', 'desc');
 
         if ($date != null) {
             $basic_query->where('attivita.data', '=', $date);
@@ -144,12 +148,40 @@ class DataLayer
         return $basic_query->get();
     }
 
+    public function havePermissionOnActivity($user_id, $activity)
+    {
+        $activity_user_id = $activity->persona_id;
+        if ($activity_user_id == $user_id || in_array($activity_user_id, $this->listTeamIDS($user_id))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function getActivityByActivityAndUserID(int $activity_id, int $user_id)
     {
         $activity = Attivita::find($activity_id);
-        $activity_user_id = $activity->persona_id;
-        if ($activity_user_id == $user_id || in_array($activity_user_id, $this->listTeamIDS($user_id))) {
+        if ($this->havePermissionOnActivity($user_id, $activity)) {
             return $activity;
+        } else {
+            return null;
+        }
+    }
+
+    public function getActivityForActivityReport(int $activity_id, int $user_id)
+    {
+        $activity = Attivita::find($activity_id);
+        if ($this->havePermissionOnActivity($user_id, $activity)) {
+            return DB::table('attivita')
+                ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
+                ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
+                ->join('persona', 'attivita.persona_id', '=', 'persona.id')
+                ->where('attivita.id', $activity_id)
+                ->selectRaw('attivita.descrizione_attivita,
+                                        persona.nome,
+                                        attivita.durata,
+                                        cliente.email')
+                ->get()->first();
         } else {
             return null;
         }
@@ -172,24 +204,41 @@ class DataLayer
         ]);
     }
 
-    public function updateActivity($activity_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
+    public function updateActivity($user_id, $activity_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
     {
-        Attivita::find($activity_id)->update([
-            'commessa_id' => $order_id,
-            'data' => $date,
-            'ora_inizio' => $startTime,
-            'ora_fine' => $endTime,
-            'durata' => $duration,
-            'luogo' => $location,
-            'descrizione_attivita' => $description,
-            'note_interne' => $internalNotes,
-            'stato_attivita_id' => $state
-        ]);
+        $activity = Attivita::find($activity_id);
+        if ($this->havePermissionOnActivity($user_id, $activity)) {
+            $activity->update([
+                'commessa_id' => $order_id,
+                'data' => $date,
+                'ora_inizio' => $startTime,
+                'ora_fine' => $endTime,
+                'durata' => $duration,
+                'luogo' => $location,
+                'descrizione_attivita' => $description,
+                'note_interne' => $internalNotes,
+                'stato_attivita_id' => $state
+            ]);
+        }
     }
 
-    public function destroyActivity($id)
+    public function updateActivityReport($activity_id, $user_id, bool $sent)
     {
-        Attivita::destroy($id);
+        $activity = Attivita::find($activity_id);
+        if ($this->havePermissionOnActivity($user_id, $activity)) {
+            $val = $sent ? 1 : 0;
+            $activity->update([
+                'rapportino_attivita' => $val
+            ]);
+        }
+    }
+
+    public function destroyActivity($id, $user_id)
+    {
+        $activity = Attivita::find($id);
+        if ($this->havePermissionOnActivity($user_id, $activity)) {
+            Attivita::destroy($id);
+        }
     }
 
     public function listActivityState()
@@ -235,7 +284,6 @@ class DataLayer
                             ->where('attivita.persona_id', '=', $_SESSION['user_id']);
                     });
             })
-
             ->distinct()
             ->get();
     }
@@ -269,9 +317,38 @@ class DataLayer
     public function stateUpdateByIDS($user_id, $ids, $state)
     {
         $team = $this->listTeamIDS($user_id);
+        array_push($team, $user_id);
         Attivita::whereIn('persona_id', $team)
             ->whereIn('id', $ids)
             ->update(['stato_attivita_id' => $state]);
+    }
+
+    public function storeToken($email, $token)
+    {
+        return Persona::where('email', $email)
+            ->update([
+                'token' => md5($token),
+                'istante_creazione_token' => Carbon::now()->toDateTimeString()
+            ]);
+    }
+
+    public function validToken($email, $token)
+    {
+        $user = Persona::where('email', $email)->get()->first();
+        $before = new Carbon($user->istante_creazione_token);
+        $now = Carbon::now();
+        if ($user->token == md5($token) && $before->diffInSeconds($now) < 240) {
+            Log::debug('Token valido');
+            return true;
+        }
+        Log::debug('Token non valido');
+        return false;
+    }
+
+    public function resetPassword($email, $password)
+    {
+        $user_id = Persona::where('email', $email)->get()->first()->id;
+        $this->changePassword($user_id, $password);
     }
 
 }

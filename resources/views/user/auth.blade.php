@@ -59,7 +59,11 @@
                             <div class="flex-fill border-bottom mx-5 mb-2"></div>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
-                            <div><a class="text-decoration-none link-primary" href="">@lang('labels.forgot_password')</a></div>
+                            <div>
+                                <a class="text-decoration-none link-primary" href="{{ route('user.reset.password') }}">
+                                    @lang('labels.forgot_password')
+                                </a>
+                            </div>
                         </div>
                     </form>
                 </div>

@@ -209,7 +209,7 @@ class ActivityController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         Log::debug('Show_activity', ['id' => $id]);
         return $this->sedActivityView(self::SHOW, $id);
@@ -274,6 +274,7 @@ class ActivityController extends Controller
     public function update(Request $request, $id)
     {
         Log::debug('Update_activity', ['id' => $id]);
+        $user_id = $_SESSION['user_id'];
         $activity_id = $id;
         $order = $request->get('order');
         $date = super_time_parser::parse($request->get('date'))->format('Y-m-d');
@@ -286,7 +287,7 @@ class ActivityController extends Controller
         $state = $request->get('state');
 
         $dl = new DataLayer();
-        $dl->updateActivity($activity_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
+        $dl->updateActivity($user_id, $activity_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -301,7 +302,7 @@ class ActivityController extends Controller
     {
         Log::debug('Destroy_activity', ['id' => $id]);
         $dl = new DataLayer();
-        $dl->destroyActivity($id);
+        $dl->destroyActivity($id, $_SESSION['user_id']);
 
         return Redirect::to($_SESSION['previous_url']);
     }

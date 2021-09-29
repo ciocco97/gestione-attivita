@@ -6,6 +6,9 @@ function technician_script() {
 
         table_setup();
 
+        change_state_setup();
+        $("#activities_change_btn").removeClass("px-1");
+
     });
 }
 
@@ -16,12 +19,18 @@ function manager_script() {
 
         table_setup(true);
 
-        checked_activity_ids = [];
-        $("input:checkbox").on("change", function () { activity_checked($(this)); });
+        change_state_setup();
 
-        $("[id^=activities_change_]").not("[id=activities_change_btn]").on("click", function(){ activities_approve_confirmation($(this)) });
     });
 
+}
+
+function change_state_setup() {
+    checked_activity_ids = [];
+    $("input:checkbox").on("change", function () { activity_checked($(this)); });
+    $("[id^=activities_change_]").not("[id=activities_change_btn]").on("click", function(){
+        activities_approve_confirmation($(this));
+    });
 }
 
 function activities_approve_confirmation(button) {
@@ -35,6 +44,7 @@ function activities_approve_confirmation(button) {
 }
 
 function activities_change_state(state) {
+    console.log(checked_activity_ids)
     $.ajax({
         url: '/ajax/activity/mass/change',
         type: 'GET',
@@ -91,6 +101,7 @@ function table_setup(manager = false) {
                 if (!manager) {
                     $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
                         .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
+                    $("td[id$="+ id +"] input.form-check").attr('disabled', true);
                 }
                 description_td.addClass('text-success', 1000); // Coloro di verde la descrizione dell'attività
                 $(this).addClass('text-success'); // Coloro di verde lo stato dell'attività
@@ -104,7 +115,25 @@ function table_setup(manager = false) {
     });
     pagination(); // Effettuo la prima paginazione
 
+    $("[id^=report_]").on("click", function () {
+        send_activity_report($(this));
+    });
+
     filter_setup();
+}
+
+function send_activity_report(button) {
+    let activity_id = button.parent().parent().children().first().text();
+    $("[id=wait_"+ activity_id +"]").show();
+    $.ajax({
+        url: '/ajax/activity/send/report',
+        type: 'GET',
+        data: {activity_id: activity_id},
+        success: function () {
+            $("[id=wait_"+ activity_id +"]").hide();
+            $("[id=report_"+ activity_id +"]").html("<i class=\"bi bi-clipboard-check text-success\"></i>");
+        }
+    });
 }
 
 // Nascondi nella tabella con id master_table le righe in cui non compare la stringa input
@@ -322,7 +351,8 @@ function change_password_script() {
         $("#retype_password").on('keyup', function () {
             check_password_equality($("#newPassword").val(), $(this).val())
         });
-        $("change_password_button").on('click', function () {
+        $("#change_password_button").on('click', function () {
+            event.preventDefault();
             if (check_password_validity($("#newPassword").val()) &&
                 check_password_equality($("#newPassword").val(), $("#retype_password").val())) {
                 $("#change_password_form").submit();
@@ -334,13 +364,14 @@ function change_password_script() {
 function check_password_validity(password) {
     let regular_expression = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/;
     let valid = password.search(regular_expression) !== -1;
-    console.log(valid);
+    console.log("check_password_validity" + valid);
     $("#password_validity_alert").toggle(!valid && password !== "");
     return valid;
 }
 
 function check_password_equality(p_new, p_retipe) {
     let equal = p_new === p_retipe;
+    console.log("check_password_equality" + equal);
     $("#retype_password_alert").toggle(!equal && p_retipe !== "");
     return equal;
 }

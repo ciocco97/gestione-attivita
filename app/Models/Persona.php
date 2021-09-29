@@ -10,7 +10,7 @@ class Persona extends Model
     use HasFactory;
 
     protected $table = 'persona';
-    protected $fillable = ['nome', 'cognome', 'email', 'password'];
+    protected $fillable = ['nome', 'cognome', 'email', 'password', 'token', 'istante_creazione_token'];
     public $timestamps = false;
     protected $hidden = ['pivot', 'password'];
 

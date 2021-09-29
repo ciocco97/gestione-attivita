@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
                                 ])
                                 ->has(
                                     Attivita::factory()
-                                        ->count(1)
+                                        ->count(3)
                                         ->state([
                                             'persona_id' => $p->id,
                                             'stato_attivita_id' => $sa->id

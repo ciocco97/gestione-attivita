@@ -15,6 +15,13 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        $francesco = Persona::create([
+            'nome' => 'Francesco',
+            'cognome' => 'Cremascoli',
+            'email' => 'francesco.cremascoli97@gmail.com',
+            'password' => md5('password')
+        ]);
+
         $paolo = Persona::create([
             'nome' => 'Paolo',
             'cognome' => 'Cremascoli',
@@ -59,8 +66,10 @@ class UserSeeder extends Seeder
         ]);
 
         DB::table('manager_sottoposto')->insert([
+            ['manager_id' => $paolo->id, 'sottoposto_id' => $paolo->id],
             ['manager_id' => $paolo->id, 'sottoposto_id' => $andrea->id],
             ['manager_id' => $paolo->id, 'sottoposto_id' => $alice->id],
+            ['manager_id' => $gianmarco->id, 'sottoposto_id' => $gianmarco->id],
             ['manager_id' => $gianmarco->id, 'sottoposto_id' => $andrea->id],
             ['manager_id' => $andrea->id, 'sottoposto_id' => $riccardo->id],
         ]);

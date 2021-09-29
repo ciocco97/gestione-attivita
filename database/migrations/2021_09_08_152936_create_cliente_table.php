@@ -16,6 +16,7 @@ class CreateClienteTable extends Migration
         Schema::create('cliente', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
+            $table->string('email')->nullable();
             $table->unsignedTinyInteger('rapportino_cliente');
         });
     }

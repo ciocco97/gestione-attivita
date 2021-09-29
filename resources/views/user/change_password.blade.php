@@ -7,7 +7,7 @@
 @endsection
 
 @section('body')
-    <div class="container mt-3 mt-lg-5 mb-3"> <!-- Form di login -->
+    <div class="container mt-3 mt-lg-5 mb-3"> <!-- Form -->
         <div class="row">
             <div class="col-md-2 col-lg-3"></div>
 
@@ -28,7 +28,7 @@
                             <label for="#newPassword" class="form-label">@lang('labels.type') @lang('labels.new_password')</label>
                             <input type="password" class="form-control" id="newPassword" name="newPassword"
                                    placeholder="@lang('labels.new_password')" required>
-                            <div id="password_validity_alert" class="alert alert-danger mt-2" role="alert">
+                            <div id="password_validity_alert" class="alert alert-danger mt-2" role="alert" style="display: none;">
                                 @lang('text.password_validity_alert')
                             </div>
                         </div>
@@ -36,7 +36,7 @@
                             <label for="#retype_password" class="form-label">@lang('labels.retype') @lang('labels.new_password')</label>
                             <input type="password" class="form-control" id="retype_password" name="retipePassword"
                                    placeholder="@lang('labels.new_password')" required>
-                            <div id="retype_password_alert" class="alert alert-danger mt-2" role="alert">
+                            <div id="retype_password_alert" class="alert alert-danger mt-2" role="alert" style="display: none;">
                                 @lang('text.retype_password_alert')
                             </div>
                         </div>

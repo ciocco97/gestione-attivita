@@ -41,6 +41,7 @@ class AjaxController extends Controller
         $user_id = $_SESSION['user_id'];
         $ids = $request->input('ids');
         $state = $request->input('state');
+        Log::debug('massChange', ['ids' => $ids, 'state' => $state]);
         $dl = new DataLayer();
         $dl->stateUpdateByIDS($user_id, $ids, $state);
     }

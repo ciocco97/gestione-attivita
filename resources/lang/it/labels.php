@@ -56,5 +56,9 @@ return [
     'other_states' => 'Altri stati',
     'set' => 'Imposta',
     'complete' => 'Completa',
-    'open' => 'Apri'
+    'open' => 'Apri',
+    'yours' => 'il tuo',
+    'go_on' => 'Vai avanti',
+    'start_time' => 'Ora di inizio',
+    'back_to_login' => 'Torna alla pagina di login'
 ];

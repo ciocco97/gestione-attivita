@@ -23,6 +23,7 @@ class ClienteFactory extends Factory
     {
         return [
             'nome' => $this->faker->company(),
+            'email' => 'team.biteam.srl@gmail.com',
             'rapportino_cliente' => random_int(0, 1)
         ];
     }

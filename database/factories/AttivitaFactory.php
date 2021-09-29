@@ -39,7 +39,7 @@ class AttivitaFactory extends Factory
             'luogo' => $this->faker->city,
             'descrizione_attivita' => $this->faker->sentence(rand(2, 5)),
             'note_interne' => $this->faker->sentence(rand(0, 10)),
-            'rapportino_attivita' => rand(0, 1)
+            'rapportino_attivita' => 0
         ];
     }
 }

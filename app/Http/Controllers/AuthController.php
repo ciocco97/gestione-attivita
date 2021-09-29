@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\DataLayer;
 use App\Http\Utils;
+use App\Mail\ResetPasswordToken;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -156,6 +160,64 @@ class AuthController extends Controller
         }
         return redirect()->back();
 
+    }
+
+    public function resetPasswordProcedure(Request $request)
+    {
+        $dl = new DataLayer();
+
+        $email = $request->input('email');
+        $inserted_token = $request->input('token');
+        $new_password = $request->input('newPassword');
+        $retipe_password = $request->input('retipePassword');
+
+        $success = false;
+
+        Log::debug('resetPassowrd', [
+            'email' => $email,
+            'token' => md5($inserted_token),
+            'new_password' => $new_password,
+            'retipe_password' => $retipe_password
+        ]);
+
+        if ($email == null) {
+            Log::debug(1);
+            return view('user.reset_password');
+        } else if ($inserted_token == null) {
+            Log::debug(2);
+            $generated_token = Str::random(10);
+            $dl->storeToken($email, $generated_token);
+            Mail::to($email)
+                ->queue(new ResetPasswordToken($generated_token));
+            return view('user.reset_password')
+                ->with('email', $email);
+        } else if ($new_password == null && $retipe_password == null){
+            Log::debug(3);
+            if ($dl->validToken($email, $inserted_token)) {
+                return view('user.reset_password')
+                    ->with('email', $email)
+                    ->with('token', $inserted_token);
+            }
+        } else {
+            Log::debug(4);
+            if ($new_password == $retipe_password) {
+                if ($dl->validToken($email, $inserted_token)) {
+                    $dl->resetPassword($email, md5($new_password));
+                    $success = true;
+                }
+            }
+        }
+        if ($success) {
+            return view('user.reset_password')
+                ->with('email', $email)
+                ->with('token', $inserted_token)
+                ->with('success', true);
+        } else {
+            return view('user.reset_password')
+                ->with('email', $email)
+                ->with('token', $inserted_token)
+                ->with('success', false);
+        }
     }
 
 }
