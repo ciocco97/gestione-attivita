@@ -1,4 +1,3 @@
-
 function technician_script() {
     $('document').ready(function () {
         // Evidenzio il tab technician nella navbar
@@ -27,8 +26,10 @@ function manager_script() {
 
 function change_state_setup() {
     checked_activity_ids = [];
-    $("input:checkbox").on("change", function () { activity_checked($(this)); });
-    $("[id^=activities_change_]").not("[id=activities_change_btn]").on("click", function(){
+    $("input:checkbox").on("change", function () {
+        activity_checked($(this));
+    });
+    $("[id^=activities_change_]").not("[id=activities_change_btn]").on("click", function () {
         activities_approve_confirmation($(this));
     });
 }
@@ -37,9 +38,11 @@ function activities_approve_confirmation(button) {
     let state = button.attr("data-state");
     let titles = $("#modal_confirmation_title").attr("data-titles").trim().replace(/(\r\n|\n|\r)/gm, "").split("-");
     titles.forEach((val, index) => titles[index] = val.trim());
-    $("#modal_confirmation_title").text(titles[state-1]);
+    $("#modal_confirmation_title").text(titles[state - 1]);
     $("#modal_confirmation_num_activities").text(checked_activity_ids.length);
-    $("#modal_confirmation_confirm").on("click", function () { activities_change_state(state); });
+    $("#modal_confirmation_confirm").on("click", function () {
+        activities_change_state(state);
+    });
     $("#modal_confirmation").modal("show");
 }
 
@@ -48,7 +51,7 @@ function activities_change_state(state) {
     $.ajax({
         url: '/ajax/activity/mass/change',
         type: 'GET',
-        data: { ids: checked_activity_ids, state: state },
+        data: {ids: checked_activity_ids, state: state},
         success: function (data) {
             location.reload();
         }
@@ -101,7 +104,7 @@ function table_setup(manager = false) {
                 if (!manager) {
                     $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
                         .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
-                    $("td[id$="+ id +"] input.form-check").attr('disabled', true);
+                    $("td[id$=" + id + "] input.form-check").attr('disabled', true);
                 }
                 description_td.addClass('text-success', 1000); // Coloro di verde la descrizione dell'attività
                 $(this).addClass('text-success'); // Coloro di verde lo stato dell'attività
@@ -109,11 +112,10 @@ function table_setup(manager = false) {
         }
     });
 
-    // Aggiungo l'event listener alla barra di ricerca sopra la tabella
-    $("#master_search").on("keyup", function () {
-        search_and_pagination();
-    });
-    pagination(); // Effettuo la prima paginazione
+    attach_table_tools("#master_tbody",
+        "#master_search",
+        "#master_num_rows",
+        "#pagination_selector_1");
 
     $("[id^=report_]").on("click", function () {
         send_activity_report($(this));
@@ -122,87 +124,123 @@ function table_setup(manager = false) {
     filter_setup();
 }
 
-function send_activity_report(button) {
-    let activity_id = button.parent().parent().children().first().text();
-    $("[id=wait_"+ activity_id +"]").show();
-    $.ajax({
-        url: '/ajax/activity/send/report',
-        type: 'GET',
-        data: {activity_id: activity_id},
-        success: function () {
-            $("[id=wait_"+ activity_id +"]").hide();
-            $("[id=report_"+ activity_id +"]").html("<i class=\"bi bi-clipboard-check text-success\"></i>");
-        }
+function attach_table_tools(tbody_id, search_field_id, select_num_rows_id, save_current_page_element_id) {
+    $(search_field_id).on("keyup", function () {
+        search_and_pagination(tbody_id, search_field_id, select_num_rows_id, save_current_page_element_id);
     });
+    $(select_num_rows_id).on("change", function () {
+        search_and_pagination(tbody_id, search_field_id, select_num_rows_id, save_current_page_element_id);
+    })
+
+    change_pag_function_to_call = function f(method, clicked_element) {
+        if (!clicked_element.hasClass("disabled")) {
+            search_in_table(tbody_id, $(search_field_id).val());
+            change_pag(method, clicked_element, save_current_page_element_id, tbody_id, select_num_rows_id);
+        }
+    }
+
+    $("#pagination_back").on("click", function () {
+        change_pag_function_to_call(0, $(this));
+    });
+    $('#pagination_selector_1').on("click", function () {
+        change_pag_function_to_call(1, $(this));
+    });
+    $('#pagination_selector_2').on("click", function () {
+        change_pag_function_to_call(1, $(this));
+    });
+    $('#pagination_selector_3').on("click", function () {
+        change_pag_function_to_call(1, $(this));
+    });
+    $("#pagination_forward").on("click", function () {
+        change_pag_function_to_call(3, $(this));
+    });
+
+    pagination(tbody_id, select_num_rows_id, save_current_page_element_id);
 }
 
-// Nascondi nella tabella con id master_table le righe in cui non compare la stringa input
-function search_in_table(input) {
+// Cerca e poi pagina
+function search_and_pagination(tbody_id, search_field_id, select_num_rows_id, save_current_page_element_id) {
+    console.log("{function: search_and_pagination}");
+    search_in_table(tbody_id, $(search_field_id).val());
+    pagination(tbody_id, select_num_rows_id, save_current_page_element_id);
+}
+
+// Nascondi nella tabella le righe in cui non compare la stringa input
+function search_in_table(tbody_id, input) {
     console.log("{function: search_in_table}");
     let value = input.toUpperCase();
-    console.log("{input: "+value+"}");
-    $("#master_tbody tr").filter(function () {
+    console.log("{input: " + value + "}");
+    $(tbody_id + " tr").filter(function () {
         $(this).toggle($(this).text().toUpperCase().indexOf(value) > -1);
     });
 }
 
-// Pagina la tabella con id master_table in base al valore nal campo con id master_num_rowsLa
-// La pagina corrente verrà salvata nell'elemento con id pagination_selector_1
-function pagination() {
+/* Pagina la tabella con id tbody_id in base al valore nal campo con id select_num_rows_id
+La pagina corrente verrà salvata nell'elemento con id save_current_page_element_id*/
+function pagination(tbody_id, select_num_rows_id, save_current_page_element_id) {
     let n_per_page, rows, current_page, n_pages, a, b;
-    n_per_page = Number($("#master_num_rows").val());
-    rows = $("#master_tbody tr:visible");
-    current_page = Number($("#pagination_selector_1").attr("data-current"));
-    n_pages = Math.ceil(rows.length/n_per_page);
+    n_per_page = Number($(select_num_rows_id).val());
+    rows = $(tbody_id + " tr:visible");
+    current_page = Number($(save_current_page_element_id).attr("data-current"));
+    n_pages = Math.ceil(rows.length / n_per_page);
 
-    console.log("{num_rows: "+n_per_page+", " +
-        "total: "+rows.length+", " +
-        "n_pages: "+n_pages+", " +
-        "current_page: "+current_page+"}");
+    let back = $("#pagination_back");
+    let sel_1 = $('#pagination_selector_1');
+    let sel_2 = $('#pagination_selector_2');
+    let sel_3 = $('#pagination_selector_3');
+    let forward = $("#pagination_forward");
+
+    console.log("{num_rows: " + n_per_page + ", " +
+        "total: " + rows.length + ", " +
+        "n_pages: " + n_pages + ", " +
+        "current_page: " + current_page + "}");
 
     // Manca il caso in cui la current_page è maggiore del n_pages
 
     // Abilita o disabilita forward e back pagination e costruisce la navbar delle pagine
-    if(current_page == n_pages) {
-        $("#pagination_forward").addClass('disabled');
-        b=true;
+    if (current_page == n_pages) {
+        forward.addClass('disabled');
+        b = true;
     } else {
-        $("#pagination_forward").removeClass('disabled');
-        b=false;
+        forward.removeClass('disabled');
+        b = false;
     }
-    if(current_page == 1) {
-        $("#pagination_back").addClass('disabled');
-        $('#pagination_selector_1').addClass("active").children().first().text(1);
-        a=true;
+    if (current_page == 1) {
+        back.addClass('disabled');
+        sel_1.addClass("active").children().first().text(1);
+        a = true;
     } else {
-        $("#pagination_back").removeClass('disabled');
-        a=false;
+        back.removeClass('disabled');
+        a = false;
     }
 
-    if(a && b || rows.length === 0) {
-        $('#pagination_selector_2').toggle(false);
-        $('#pagination_selector_3').toggle(false);
+    if (a && b || rows.length === 0) {
+        sel_2.toggle(false);
+        sel_3.toggle(false);
     } else if (!a && !b) {
-        $('#pagination_selector_1').removeClass("active").children().first().text(current_page-1);
-        $('#pagination_selector_2').addClass("active").toggle(true).children().first().text(current_page);
-        $('#pagination_selector_3').removeClass("active").toggle(true).children().first().text(current_page+1);
+        sel_1.removeClass("active").children().first().text(current_page - 1);
+        sel_2.addClass("active").toggle(true).children().first().text(current_page);
+        sel_3.removeClass("active").toggle(true).children().first().text(current_page + 1);
     } else if (a) {
-        $('#pagination_selector_2').removeClass("active").toggle(true).children().first().text(2);
-        if(3>n_pages){$('#pagination_selector_3').toggle(false);}
-        else {$('#pagination_selector_3').removeClass("active").toggle(true).children().first().text(3);}
-    } else {
-        if(current_page-2 > 0) {
-            $('#pagination_selector_1').removeClass("active").children().first().text(current_page-2);
-            $('#pagination_selector_2').removeClass("active").toggle(true).children().first().text(current_page-1);
-            $('#pagination_selector_3').addClass("active").toggle(true).children().first().text(current_page);
+        sel_2.removeClass("active").toggle(true).children().first().text(2);
+        if (3 > n_pages) {
+            sel_3.toggle(false);
         } else {
-            $('#pagination_selector_1').removeClass("active").children().first().text(1);
-            $('#pagination_selector_2').addClass("active").toggle(true).children().first().text(2);
+            sel_3.removeClass("active").toggle(true).children().first().text(3);
+        }
+    } else {
+        if (current_page - 2 > 0) {
+            sel_1.removeClass("active").children().first().text(current_page - 2);
+            sel_2.removeClass("active").toggle(true).children().first().text(current_page - 1);
+            sel_3.addClass("active").toggle(true).children().first().text(current_page);
+        } else {
+            sel_1.removeClass("active").children().first().text(1);
+            sel_2.addClass("active").toggle(true).children().first().text(2);
         }
     }
 
     rows.each(function (index) {
-        if (index<(current_page-1)*n_per_page || index>(current_page*n_per_page)) {
+        if (index < (current_page - 1) * n_per_page || index > (current_page * n_per_page)) {
             $(this).toggle(false);
         } else {
             $(this).toggle(true);
@@ -210,27 +248,33 @@ function pagination() {
     })
 }
 
-// Cerca e poi pagina
-function search_and_pagination() {
-    console.log("{function: search_and_pagination}");
-    search_in_table($("#master_search").val());
-    pagination();
+function change_pag(method, clicked_element, save_current_page_element_id, tbody_id, select_num_rows_id) {
+    console.log("{function: change_pag}");
+    let new_current;
+    let current = $(save_current_page_element_id);
+    if (method == 0) {
+        new_current = Number(current.attr("data-current")) - 1;
+    } else if (method == 1) {
+        new_current = clicked_element.children().first().text();
+    } else {
+        new_current = Number(current.attr("data-current")) + 1;
+    }
+    current.attr("data-current", new_current);
+    pagination(tbody_id, select_num_rows_id, save_current_page_element_id);
 }
 
-function change_pag(method, element) {
-    console.log("{function: change_pag}");
-    if (!element.hasClass("disabled")) {
-        var new_current;
-        if(method == 0){
-            new_current = Number($("#pagination_selector_1").attr("data-current")) - 1;
-        } else if (method == 1) {
-            new_current = element.children().first().text();
-        } else {
-            new_current = Number($("#pagination_selector_1").attr("data-current")) + 1;
+function send_activity_report(button) {
+    let activity_id = button.parent().parent().children().first().text();
+    $("[id=wait_" + activity_id + "]").show();
+    $.ajax({
+        url: '/ajax/activity/send/report',
+        type: 'GET',
+        data: {activity_id: activity_id},
+        success: function () {
+            $("[id=wait_" + activity_id + "]").hide();
+            $("[id=report_" + activity_id + "]").html("<i class=\"bi bi-clipboard-check text-success\"></i>");
         }
-        $("#pagination_selector_1").attr("data-current", new_current);
-    }
-    search_and_pagination();
+    });
 }
 
 function filter_setup() {
@@ -256,24 +300,28 @@ function filter_setup() {
     if (pathname.includes("filter")) {
         let period = localStorage["master_period_filter"];
         if (period) {
-            if (period !== "") { $("#master_date_filter").prop('disabled', true) } // Se il periodo è settato disabilita il filtro sulla data
-            $("#master_period_filter option[value="+period+"]").prop("selected", true);
+            if (period !== "") {
+                $("#master_date_filter").prop('disabled', true)
+            } // Se il periodo è settato disabilita il filtro sulla data
+            $("#master_period_filter option[value=" + period + "]").prop("selected", true);
         }
         let costumer = localStorage["master_costumer_filter"];
         if (costumer) {
-            $("#master_costumer_filter option[value="+costumer+"]").prop("selected", true);
+            $("#master_costumer_filter option[value=" + costumer + "]").prop("selected", true);
         }
         let state = localStorage["master_state_filter"];
         if (state) {
-            $("#master_state_filter option[value="+state+"]").prop("selected", true);
+            $("#master_state_filter option[value=" + state + "]").prop("selected", true);
         }
         let user = localStorage["master_user_filter"];
         if (user) {
-            $("#master_user_filter option[value="+user+"]").prop("selected", true);
+            $("#master_user_filter option[value=" + user + "]").prop("selected", true);
         }
         let date = localStorage["master_date_filter"];
         if (date) {
-            if (date !== "") { $("#master_period_filter").prop('disabled', true) } // Se la data è settata disabilita il filtro sul periodo
+            if (date !== "") {
+                $("#master_period_filter").prop('disabled', true)
+            } // Se la data è settata disabilita il filtro sul periodo
             $("#master_date_filter").val(date);
         }
     } else {
@@ -302,8 +350,12 @@ function filter_reset() {
 
 function show_activity_script() {
     $("document").ready(function () {
-        $("#costumer").change(function () { filter_orders_when_costumer_selected(); });
-        $("#order").change(function () { filter_costumers_when_order_selected(); });
+        $("#costumer").change(function () {
+            filter_orders_when_costumer_selected();
+        });
+        $("#order").change(function () {
+            filter_costumers_when_order_selected();
+        });
     });
 }
 

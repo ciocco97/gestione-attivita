@@ -42,8 +42,7 @@
                             <label class="col-form-label">@lang('labels.num_rows')</label>
                         </div>
                         <div class="p-2 flex-grow-1">
-                            <select class="form-select" id="master_num_rows" name="num_rows"
-                                    onchange="search_and_pagination()">
+                            <select class="form-select" id="master_num_rows" name="num_rows">
                                 <option>5</option>
                                 <option>10</option>
                                 <option selected>15</option>
@@ -70,19 +69,19 @@
 
         <div class="d-flex flex-row-reverse">
             <ul class="pagination">
-                <li id="pagination_back" class="page-item" onclick="change_pag(0, $(this))">
+                <li id="pagination_back" class="page-item">
                     <a class="page-link" href="#"><span>&laquo;</span></a>
                 </li>
-                <li id="pagination_selector_1" data-current="1" class="page-item" onclick="change_pag(1, $(this))">
+                <li id="pagination_selector_1" data-current="1" class="page-item">
                     <a class="page-link" href="#">1</a>
                 </li>
-                <li id="pagination_selector_2" class="page-item" onclick="change_pag(1, $(this))">
+                <li id="pagination_selector_2" class="page-item">
                     <a class="page-link" href="#">2</a>
                 </li>
-                <li id="pagination_selector_3" class="page-item" onclick="change_pag(1, $(this))">
+                <li id="pagination_selector_3" class="page-item">
                     <a class="page-link" href="#">3</a>
                 </li>
-                <li id="pagination_forward" class="page-item" onclick="change_pag(2, $(this))">
+                <li id="pagination_forward" class="page-item">
                     <a class="page-link" href="#"><span>&raquo;</span></a>
                 </li>
             </ul>
