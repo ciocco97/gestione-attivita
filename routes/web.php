@@ -9,6 +9,7 @@ use \App\Http\Middleware\MyAuth;
 use \App\Http\Middleware\Language;
 use \App\Http\Controllers\AjaxController;
 use \App\Http\Controllers\ActivityMailController;
+use \App\Http\Controllers\CostumerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +46,9 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/ajax/user/roles', [AjaxController::class, 'userRoles']);
         Route::get('/ajax/activity/mass/change', [AjaxController::class, 'massChangeActivities']);
         Route::get('/ajax/activity/send/report', [ActivityMailController::class, 'ajaxSendActivityReport']);
+        Route::get('/ajax/activity/change/billing_state', [AjaxController::class, 'ajaxChangeActivityBillingState']);
         Route::get('/activity/manager/index', [ActivityController::class, 'managerIndex'])->name('manager.index');
+        Route::resource('costumer', CostumerController::class);
     });
 });
 

@@ -8,6 +8,7 @@ use App\Models\Commessa;
 use App\Models\Persona;
 use App\Models\StatoAttivita;
 use App\Models\StatoCommessa;
+use App\Models\StatoFatturazione;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +46,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             OrderStateSeeder::class,
+            BillingStateSeeder::class,
             ActivityStateSeeder::class,
             CostumerSeeder::class,
             OrderSeeder::class
@@ -52,29 +54,33 @@ class DatabaseSeeder extends Seeder
 
         $stati_commessa = StatoCommessa::all();
         $stati_attivita = StatoAttivita::all();
+        $stati_fatturazione = StatoFatturazione::all();
         $persone = Persona::all();
 
-        foreach ($persone as $p) {
-            foreach ($stati_commessa as $sc) {
-                foreach ($stati_attivita as $sa) {
-                    Cliente::factory()->count(1)
-                        ->has(
-                            Commessa::factory()
-                                ->count(2)
-                                ->state([
-                                    'persona_id' => $p->id,
-                                    'stato_commessa_id' => $sc->id
-                                ])
-                                ->has(
-                                    Attivita::factory()
-                                        ->count(3)
-                                        ->state([
-                                            'persona_id' => $p->id,
-                                            'stato_attivita_id' => $sa->id
+        foreach ($stati_attivita as $sa) {
+            foreach ($stati_fatturazione as $sf) {
+                foreach ($stati_commessa as $sc) {
+                    foreach ($persone as $p) {
+                        Cliente::factory()->count(1)
+                            ->has(
+                                Commessa::factory()
+                                    ->count(2)
+                                    ->state([
+                                        'persona_id' => $p->id,
+                                        'stato_commessa_id' => $sc->id
+                                    ])
+                                    ->has(
+                                        Attivita::factory()
+                                            ->count(3)
+                                            ->state([
+                                                'persona_id' => $p->id,
+                                                'stato_attivita_id' => $sa->id,
+                                                'stato_fatturazione_id' => $sf->id
                                         ]),
-                                    'attivita'),
-                            'commesse')
-                        ->create();
+                                        'attivita'),
+                                'commesse')
+                            ->create();
+                    }
                 }
             }
         }

@@ -23,6 +23,7 @@ class CommessaFactory extends Factory
     {
         return [
             'descrizione_commessa' => $this->faker->sentence(rand(2, 5)),
+//            'stato_fatturazione_dafault_id' => rand(1, 3),
             'rapportino_commessa' => 1
         ];
     }

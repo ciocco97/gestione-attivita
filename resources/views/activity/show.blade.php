@@ -166,6 +166,32 @@
 
                     </div> <!-- Fine secondi tre campi -->
 
+                    @if($manager)
+
+                        <div class="row mb-md-2"> <!-- Fatturazione -->
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                <label class="form-label" for="billing_state">@lang('labels.billing_state')</label>
+                                @if($method == $EDIT)
+                                    <select class="form-select" id="billing_state" name="billing_state" required>
+                                        @foreach($billing_states as $billing_state)
+                                            @if($billing_state->id == $current_billing_state->id)
+                                                <option value="{{ $billing_state->id }}"
+                                                        selected>{{ $billing_state->descrizione_stato_fatturazione }}</option>
+                                            @else
+                                                <option value="{{ $billing_state->id }}">{{ $billing_state->descrizione_stato_fatturazione }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    @else
+                                        <select class="form-select" id="billing_state" name="billing_state" disabled>
+                                            <option selected>{{ $current_billing_state->descrizione_stato_fatturazione }}</option>
+                                        </select>
+                                @endif
+                            </div>
+                        </div>
+
+                    @endif
+
                     <div class="row mb-md-2"> <!-- Terzo gruppo -->
                         <div class="col-md-12 mb-2 mb-md-0">
                             <label class="form-label" for="location">@lang('labels.location')</label>

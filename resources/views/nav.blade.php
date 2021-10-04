@@ -54,8 +54,8 @@
                     <a class="nav-link" href="">@lang('labels.commercial_tab')</a>
                 </li>
 
-                <li id="admin_nav_tab" class="nav-item">
-                    <a class="nav-link" href="">@lang('labels.admin_tab')</a>
+                <li id="administrative_nav_tab" class="nav-item">
+                    <a class="nav-link" href="{{ route('costumer.index') }}">@lang('labels.administrative_tab')</a>
                 </li>
 
                 <li id="manager_nav_tab" class="nav-item">

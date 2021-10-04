@@ -19,6 +19,7 @@ class CreateCommessaTable extends Migration
             $table->foreignId('cliente_id')->constrained('cliente');
             $table->foreignId('stato_commessa_id')->constrained('stato_commessa');
             $table->foreignId('persona_id')->constrained('persona');
+//            $table->foreignId('stato_fatturazione_dafault_id')->constrained('stato_fatturazione');
             $table->unsignedTinyInteger('rapportino_commessa');
         });
     }

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Cliente;
 use App\Models\Persona;
 use App\Models\StatoCommessa;
+use App\Models\StatoFatturazione;
 use Illuminate\Database\Seeder;
 use App\Models\Commessa;
 
@@ -24,6 +25,7 @@ class OrderSeeder extends Seeder
             'cliente_id' => $c->id,
             'stato_commessa_id' => $s->id,
             'persona_id' => Persona::take(1)->get()->first()->id,
+//            'stato_fatturazione_dafault_id' => 3,
             'rapportino_commessa' => 0
         ]);
     }

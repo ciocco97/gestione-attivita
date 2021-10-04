@@ -46,4 +46,14 @@ class AjaxController extends Controller
         $dl->stateUpdateByIDS($user_id, $ids, $state);
     }
 
+    public function ajaxChangeActivityBillingState(Request $request)
+    {
+        $user_id = $_SESSION['user_id'];
+        $activity_id = $request->input('activity_id');
+        $billing_state = $request->input('billing_state');
+        Log::debug('ajaxChangeActivityBillingState', ['id' => $activity_id, 'state' => $billing_state]);
+        $dl = new DataLayer();
+        $dl->changeActivityBillingState($user_id, $activity_id, $billing_state);
+    }
+
 }

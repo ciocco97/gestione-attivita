@@ -10,6 +10,7 @@ use App\Models\Persona;
 use App\Models\Ruolo;
 use App\Models\StatoAttivita;
 use App\Models\StatoCommessa;
+use App\Models\StatoFatturazione;
 use Carbon\Carbon;
 use Faker\Provider\Person;
 use Illuminate\Support\Collection;
@@ -47,6 +48,34 @@ class DataLayer
         Log::debug('password salvata correttamente');
     }
 
+    public function storeToken($email, $token)
+    {
+        return Persona::where('email', $email)
+            ->update([
+                'token' => md5($token),
+                'istante_creazione_token' => Carbon::now()->toDateTimeString()
+            ]);
+    }
+
+    public function validToken($email, $token)
+    {
+        $user = Persona::where('email', $email)->get()->first();
+        $before = new Carbon($user->istante_creazione_token);
+        $now = Carbon::now();
+        if ($user->token == md5($token) && $before->diffInSeconds($now) < 240) {
+            Log::debug('Token valido');
+            return true;
+        }
+        Log::debug('Token non valido');
+        return false;
+    }
+
+    public function resetPassword($email, $password)
+    {
+        $user_id = Persona::where('email', $email)->get()->first()->id;
+        $this->changePassword($user_id, $password);
+    }
+
     private function basicQueryForListActiveActivity(): \Illuminate\Database\Query\Builder
     {
         return DB::table('attivita')
@@ -55,6 +84,7 @@ class DataLayer
             ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
             ->join('stato_attivita', 'attivita.stato_attivita_id', '=', 'stato_attivita.id')
             ->join('persona', 'attivita.persona_id', '=', 'persona.id')
+            ->join('stato_fatturazione', 'attivita.stato_fatturazione_id', '=', 'stato_fatturazione.id')
             ->selectRaw('attivita.id,
                                     attivita.descrizione_attivita,
                                     attivita.data,
@@ -70,7 +100,9 @@ class DataLayer
                                     stato_commessa.id AS stato_commessa_id,
                                     stato_commessa.descrizione_stato_commessa,
                                     attivita.persona_id,
-                                    persona.nome')
+                                    persona.nome,
+                                    attivita.stato_fatturazione_id,
+                                    stato_fatturazione.descrizione_stato_fatturazione')
             ->where('stato_commessa.id', '=', 1)
             ->orderBy('data', 'desc')
             ->orderBy('ora_inizio', 'desc');
@@ -88,7 +120,6 @@ class DataLayer
     public function listTeam(int $user_id)
     {
         $user = Persona::find($user_id);
-//        $user = $user == null ? new Collection() : $user;
         return $user->sottoposti()->get();
     }
 
@@ -115,6 +146,7 @@ class DataLayer
     {
         $query = $this->basicQueryForListActiveActivity();
         $team = $this->listTeamIDS($user_id);
+        $query->where('attivita.data', '>=', $start_date);
         return $query->whereIn('attivita.persona_id', $team)
             ->where('data', '>=', $start_date)
             ->get();
@@ -184,6 +216,29 @@ class DataLayer
                 ->get()->first();
         } else {
             return null;
+        }
+    }
+
+    public function listBillingStates()
+    {
+        return StatoFatturazione::all();
+    }
+
+    public function listManagerBillingStates()
+    {
+        return StatoFatturazione::all()->reject(function ($val) {
+            return $val->id == 4;
+        });
+    }
+
+    public function changeActivityBillingState($user_id, $activity_id, $billing_state)
+    {
+        $activity = Attivita::find($activity_id);
+        $user = Persona::find($user_id);
+        $user_roles = $user->ruoli()->get()->pluck('id')->toArray();
+        if ($this->havePermissionOnActivity($user_id, $activity) || in_array($user_roles, 1)) {
+            $activity->stato_fatturazione_id = $billing_state;
+            $activity->save();
         }
     }
 
@@ -321,34 +376,6 @@ class DataLayer
         Attivita::whereIn('persona_id', $team)
             ->whereIn('id', $ids)
             ->update(['stato_attivita_id' => $state]);
-    }
-
-    public function storeToken($email, $token)
-    {
-        return Persona::where('email', $email)
-            ->update([
-                'token' => md5($token),
-                'istante_creazione_token' => Carbon::now()->toDateTimeString()
-            ]);
-    }
-
-    public function validToken($email, $token)
-    {
-        $user = Persona::where('email', $email)->get()->first();
-        $before = new Carbon($user->istante_creazione_token);
-        $now = Carbon::now();
-        if ($user->token == md5($token) && $before->diffInSeconds($now) < 240) {
-            Log::debug('Token valido');
-            return true;
-        }
-        Log::debug('Token non valido');
-        return false;
-    }
-
-    public function resetPassword($email, $password)
-    {
-        $user_id = Persona::where('email', $email)->get()->first()->id;
-        $this->changePassword($user_id, $password);
     }
 
 }

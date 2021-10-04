@@ -21,10 +21,12 @@ class CreateAttivitaTable extends Migration
             $table->time('ora_inizio')->nullable();
             $table->time('ora_fine')->nullable();
             $table->time('durata')->nullable();
+            $table->time('durata_fatturabile')->nullable();
             $table->string('luogo')->nullable();
             $table->string('descrizione_attivita');
             $table->text('note_interne')->nullable();
             $table->foreignId('stato_attivita_id')->constrained('stato_attivita');
+            $table->foreignId('stato_fatturazione_id')->default(1)->constrained('stato_fatturazione');
             $table->unsignedTinyInteger('rapportino_attivita');
             $table->timestamps();
         });

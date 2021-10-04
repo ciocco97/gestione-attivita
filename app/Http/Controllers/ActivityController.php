@@ -27,12 +27,16 @@ class ActivityController extends Controller
 
         $dl = new DataLayer();
 
-        $costumers = $dl->listActiveCostumerByUserID();
         $orders = $dl->listActiveOrder();
         $states = $dl->listActivityState();
-        $team = null;
         if ($manager) {
             $team = $dl->listTeam($_SESSION['user_id']);
+            $costumers = $dl->listActiveCostumer();
+            $billing_states = $dl->listBillingStates();
+        } else {
+            $costumers = $dl->listActiveCostumerByUserID();
+            $team = null;
+            $billing_states = null;
         }
 
 
@@ -42,6 +46,7 @@ class ActivityController extends Controller
             ->with('costumers', $costumers)
             ->with('orders', $orders)
             ->with('states', $states)
+            ->with('billing_states', $billing_states)
             ->with('team', $team);
     }
 
@@ -171,13 +176,14 @@ class ActivityController extends Controller
         $user_id = $_SESSION['user_id'];
 
         $dl = new DataLayer();
-        $costumers = $orders = $states = $activity = $order = $costumer = $state = null;
+        $costumers = $orders = $states = $billing_states = $activity = $order = $costumer = $state = $billing_state = null;
         $tech_name = $username;
         if ($activity_id != -1) {
             $activity = $dl->getActivityByActivityAndUserID($activity_id, $user_id);
             $order = $activity->commessa()->get()->first();
             $costumer = $order->cliente()->get()->first();
             $tech_name = Persona::find($activity->persona_id)->nome;
+            $billing_state = $activity->statoFatturazione()->get()->first();
 
             $state = $activity->statoAttivita()->get()->first();
         }
@@ -187,6 +193,7 @@ class ActivityController extends Controller
             $orders = $dl->listActiveOrder();
             if ($manager) {
                 $states = $dl->listActivityState();
+                $billing_states = $dl->listManagerBillingStates();
             } else {
                 $states = $dl->listActivityStateForTech();
             }
@@ -197,9 +204,10 @@ class ActivityController extends Controller
             ->with('method', $method)
             ->with('tech_name', $tech_name)
             ->with('SHOW', self::SHOW)->with('EDIT', self::EDIT)->with('DELETE', self::DELETE)->with('ADD', self::ADD)
-            ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)
-            ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)
-            ->with('previous_url', $_SESSION['previous_url']);
+            ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)->with('current_billing_state', $billing_state)
+            ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)->with('billing_states', $billing_states)
+            ->with('previous_url', $_SESSION['previous_url'])
+            ->with('manager', $manager);
 
     }
 

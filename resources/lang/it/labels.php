@@ -4,7 +4,7 @@ return [
     'email' => 'Indirizzo email',
     'remember' => 'Ricordati di me',
     'commercial_tab' => 'Commerciale',
-    'admin_tab' => 'Amministrativo',
+    'administrative_tab' => 'Amministrativo',
     'manager_tab' => 'Manager',
     'tech_tab' => 'Tecnico',
     'filter' => 'Filtra',
@@ -22,7 +22,7 @@ return [
     'to' => 'alle',
     'duration' => 'Durata',
     'report' => 'Rapportino',
-    'show' => 'Visualizza',
+    'show' => 'Vedi',
     'edit' => 'Modifica',
     'delete' => 'Elimina',
     'activity' => 'attività',
@@ -60,5 +60,6 @@ return [
     'yours' => 'il tuo',
     'go_on' => 'Vai avanti',
     'start_time' => 'Ora di inizio',
-    'back_to_login' => 'Torna alla pagina di login'
+    'back_to_login' => 'Torna alla pagina di login',
+    'billing_state' => 'Fatturazione'
 ];

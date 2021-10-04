@@ -11,7 +11,7 @@ class Commessa extends Model
 
     protected $table = 'commessa';
     protected $fillable = ['descrizione_commessa', 'cliente_id', 'stato_commessa_id',
-        'persona_id', 'rapportino_commessa'];
+        'persona_id', 'stato_fatturazione_dafault_id', 'rapportino_commessa'];
     public $timestamps = false;
 
     // Connections
@@ -36,7 +36,10 @@ class Commessa extends Model
         return $this->belongsTo(Persona::class);
     }
 
-    // State
+//    public function statoFatturazioneDefault()
+//    {
+//        return $this->hasOne(StatoFatturazione::class);
+//    }
 
 //    public function isOpened()
 //    {

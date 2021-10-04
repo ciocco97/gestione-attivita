@@ -12,6 +12,7 @@
 
     <!-- My scripts -->
     <script src="{{ url('/') }}/js/my_javascript/myScript.js"></script>
+    <script src="{{ url('/') }}/js/my_javascript/administrativeScript.js"></script>
 
     <title>@yield('title')</title>
 

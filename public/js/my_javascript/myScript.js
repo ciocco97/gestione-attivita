@@ -121,7 +121,38 @@ function table_setup(manager = false) {
         send_activity_report($(this));
     });
 
+    $("[id^=billing_state_select_]").on("change", function () {
+        change_billing_state($(this));
+    }).each(function () {
+        let select = $(this);
+        let myRegexp = /billing_state_select_(.*)/;
+        let match = myRegexp.exec(select.attr("id"));
+        let activity_id = match[1];
+        if (select.val() == 4) {
+            select.attr("disabled", true);
+            $("a.btn[id$=" + activity_id + "][id!=show_" + activity_id + "]").addClass('disabled')
+                .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
+            $("td[id$=" + activity_id + "] input.form-check").attr('disabled', true);
+        }
+    });
+
     filter_setup();
+}
+
+function change_billing_state(clicked_element) {
+    let myRegexp = /billing_state_select_(.*)/;
+    let match = myRegexp.exec(clicked_element.attr("id"));
+    let activity_id = match[1];
+    let billing_state = clicked_element.val();
+    $("[id=wait_change_billing_" + activity_id + "]").show();
+    $.ajax({
+        url: '/ajax/activity/change/billing_state',
+        type: 'GET',
+        data: {activity_id: activity_id, billing_state: billing_state},
+        success: function () {
+            $("[id=wait_change_billing_" + activity_id + "]").hide();
+        }
+    });
 }
 
 function attach_table_tools(tbody_id, search_field_id, select_num_rows_id, save_current_page_element_id) {
