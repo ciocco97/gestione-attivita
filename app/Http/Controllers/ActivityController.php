@@ -33,12 +33,14 @@ class ActivityController extends Controller
             $team = $dl->listTeam($_SESSION['user_id']);
             $costumers = $dl->listActiveCostumer();
             $billing_states = $dl->listBillingStates();
+            $this->addBillableDuration($activities);
         } else {
             $costumers = $dl->listActiveCostumerByUserID();
             $team = null;
             $billing_states = null;
         }
 
+        $this->changeActivityDateFormat($activities);
 
         return view('activity.technician')
             ->with('activities', $activities)
@@ -57,11 +59,6 @@ class ActivityController extends Controller
         }
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         Log::debug('Home');
@@ -70,10 +67,20 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $activities = $dl->listActiveActivityForActivityTableByUserID($_SESSION['user_id'], $start_date);
 
-        $this->changeActivityDateFormat($activities);
-
         return $this->indexActivityView($activities);
 
+    }
+
+    private function addBillableDuration($activities)
+    {
+        foreach ($activities as $activity) {
+            $billable_duration = $activity->durata_fatturabile;
+            if ($billable_duration == null) {
+                $billable_duration = super_time_parser::parse($activity->durata);
+                $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
+                $activity->durata_fatturabile = $billable_duration->format("H:i");
+            }
+        }
     }
 
     public function managerIndex()
@@ -83,8 +90,6 @@ class ActivityController extends Controller
 
         $dl = new DataLayer();
         $activities = $dl->listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
-
-        $this->changeActivityDateFormat($activities);
 
         return $this->indexActivityView($activities, true);
     }
@@ -155,8 +160,6 @@ class ActivityController extends Controller
         }
         $activities = $dl->filterActiveActivityForActivityTableByUserID(
             $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
-
-        $this->changeActivityDateFormat($activities);
 
         return $this->indexActivityView($activities, $team_member_id != null);
     }

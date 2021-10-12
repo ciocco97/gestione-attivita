@@ -81,6 +81,7 @@ function activity_checked(check) {
 }
 
 function table_setup(manager = false) {
+
     // Modifico possibili azioni e colori per ogni attività
     $("tbody tr td[id^=state]").each(function () {
         let id = $(this).parent().children().first().text(); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
@@ -121,6 +122,10 @@ function table_setup(manager = false) {
         send_activity_report($(this));
     });
 
+    $("[id^=billable_duration_input_]").on("change", function () {
+        change_billable_duration($(this));
+    });
+
     $("[id^=billing_state_select_]").on("change", function () {
         change_billing_state($(this));
     }).each(function () {
@@ -132,12 +137,24 @@ function table_setup(manager = false) {
             select.attr("disabled", true);
             $("a.btn[id$=" + activity_id + "][id!=show_" + activity_id + "]").addClass('disabled')
                 .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
-            $("td[id$=" + activity_id + "] input.form-check").attr('disabled', true);
+            $("td[id$=" + activity_id + "] input").attr('disabled', true);
         }
     });
 
+    $("[data-bs-toggle=tooltip]").tooltip();
+
     filter_setup();
 }
+
+// function getIDSuffix(element, id_prefix) {
+//     let myRegexp = new RegExp(id_prefix + "(.*)");
+//     let match = myRegexp.exec(element.attr("id"));
+//     return match[1];
+// }
+//
+// function changeActivityAjax(element, id_prefix) {
+//     let activity_id = getIDSuffix(element, id_prefix);
+// }
 
 function change_billing_state(clicked_element) {
     let myRegexp = /billing_state_select_(.*)/;
@@ -151,6 +168,22 @@ function change_billing_state(clicked_element) {
         data: {activity_id: activity_id, billing_state: billing_state},
         success: function () {
             $("[id=wait_change_billing_" + activity_id + "]").hide();
+        }
+    });
+}
+
+function change_billable_duration(changed_element) {
+    let myRegexp = /billable_duration_input_(.*)/;
+    let match = myRegexp.exec(changed_element.attr("id"));
+    let activity_id = match[1];
+    let billable_duration = changed_element.val();
+    $("[id=wait_change_billable_duration_" + activity_id + "]").show();
+    $.ajax({
+        url: '/ajax/activity/change/change_billable_duration',
+        type: 'GET',
+        data: {activity_id: activity_id, billable_duration: billable_duration},
+        success: function () {
+            $("[id=wait_change_billable_duration_" + activity_id + "]").hide();
         }
     });
 }
@@ -471,7 +504,7 @@ function nav_script() {
                     $("#manager_nav_tab").hide();
                 }
                 if (!data.includes(1)) {
-                    $("#admin_nav_tab").hide();
+                    $("#administrative_nav_tab").hide();
                 }
                 if (!data.includes(2)) {
                     $("#commercial_nav_tab").hide();

@@ -102,7 +102,8 @@ class DataLayer
                                     attivita.persona_id,
                                     persona.nome,
                                     attivita.stato_fatturazione_id,
-                                    stato_fatturazione.descrizione_stato_fatturazione')
+                                    stato_fatturazione.descrizione_stato_fatturazione,
+                                    attivita.durata_fatturabile')
             ->where('stato_commessa.id', '=', 1)
             ->orderBy('data', 'desc')
             ->orderBy('ora_inizio', 'desc');
@@ -114,6 +115,48 @@ class DataLayer
             ->where('attivita.persona_id', '=', $user_id)
             ->where('attivita.data', '>=', $start_date)
             ->get();
+    }
+
+    private function basicQueryForListApprovedActivity()
+    {
+        return DB::table('attivita')
+            ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
+            ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
+            ->join('stato_attivita', 'attivita.stato_attivita_id', '=', 'stato_attivita.id')
+            ->join('persona', 'attivita.persona_id', '=', 'persona.id')
+            ->join('stato_fatturazione', 'attivita.stato_fatturazione_id', '=', 'stato_fatturazione.id')
+            ->selectRaw('attivita.id,
+                                    attivita.descrizione_attivita,
+                                    attivita.data,
+                                    attivita.ora_inizio,
+                                    attivita.durata,
+                                    attivita.durata_fatturabile,
+                                    cliente.id AS cliente_id,
+                                    cliente.nome AS nome_cliente,
+                                    attivita.persona_id,
+                                    persona.nome,
+                                    attivita.stato_fatturazione_id,
+                                    stato_fatturazione.descrizione_stato_fatturazione')
+            ->orderBy('data', 'desc')
+            ->orderBy('ora_inizio', 'desc');
+    }
+
+    public function listApprovedActivity($start_date)
+    {
+        $approved_activities_query = $this->basicQueryForListApprovedActivity()
+            ->where('attivita.data', '>=', $start_date);
+        $not_bill_activities_num_query = DB::table('attivita')
+            ->select(DB::raw('cliente.id AS cliente_id, count(*) AS attivita_num'))
+            ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
+            ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
+            ->join('stato_fatturazione', 'attivita.stato_fatturazione_id', '=', 'stato_fatturazione.id')
+            ->where('attivita.data', '>=', $start_date)
+            ->where('attivita.stato_fatturazione_id', '=', '4')
+            ->groupBy('cliente.id');
+        return array(
+            $approved_activities_query->get(),
+            $not_bill_activities_num_query->get()
+        );
     }
 
     // Ritorna lista di sottoposti + manager
@@ -238,6 +281,17 @@ class DataLayer
         $user_roles = $user->ruoli()->get()->pluck('id')->toArray();
         if ($this->havePermissionOnActivity($user_id, $activity) || in_array($user_roles, 1)) {
             $activity->stato_fatturazione_id = $billing_state;
+            $activity->save();
+        }
+    }
+
+    public function changeActivityBillableDuration($user_id, $activity_id, $billable_duration)
+    {
+        $activity = Attivita::find($activity_id);
+        $user = Persona::find($user_id);
+        $user_roles = $user->ruoli()->get()->pluck('id')->toArray();
+        if ($this->havePermissionOnActivity($user_id, $activity) || in_array($user_roles, 1)) {
+            $activity->durata_fatturabile = $billable_duration;
             $activity->save();
         }
     }

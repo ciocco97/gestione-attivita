@@ -36,7 +36,6 @@ class AttivitaFactory extends Factory
             'ora_inizio' => $start_time,
             'ora_fine' => $end_time,
             'durata' => $duration,
-            'durata_fatturabile' => $duration,
             'luogo' => $this->faker->city,
             'descrizione_attivita' => $this->faker->sentence(rand(2, 5)),
             'note_interne' => $this->faker->sentence(rand(0, 10)),

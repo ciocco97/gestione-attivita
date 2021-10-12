@@ -30,14 +30,16 @@ class AjaxController extends Controller
 
     // Dato un utente, ritorna se l'utente loggato è manager, amministratore e/o commerciale
     // Se nessun utente è loggato, ritorna {stato: false}
-    public function userRoles(Request $request) {
+    public function userRoles(Request $request)
+    {
         $user_id = $_SESSION['user_id'];
         $dl = new DataLayer();
         $roles = $dl->listUserRoles($user_id)->pluck('id');
         return response()->json($roles);
     }
 
-    public function massChangeActivities(Request $request) {
+    public function massChangeActivities(Request $request)
+    {
         $user_id = $_SESSION['user_id'];
         $ids = $request->input('ids');
         $state = $request->input('state');
@@ -54,6 +56,17 @@ class AjaxController extends Controller
         Log::debug('ajaxChangeActivityBillingState', ['id' => $activity_id, 'state' => $billing_state]);
         $dl = new DataLayer();
         $dl->changeActivityBillingState($user_id, $activity_id, $billing_state);
+    }
+
+    public function ajaxChangeActivityBillableDuration(Request $request)
+    {
+        $user_id = $_SESSION['user_id'];
+        $activity_id = $request->input('activity_id');
+        $billable_duration = $request->input('billable_duration');
+        Log::debug('ajaxChangeActivityBillingState', ['id' => $activity_id, 'state' => $billable_duration]);
+        $dl = new DataLayer();
+        $dl->changeActivityBillableDuration($user_id, $activity_id, $billable_duration);
+
     }
 
 }

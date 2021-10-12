@@ -61,5 +61,6 @@ return [
     'go_on' => 'Vai avanti',
     'start_time' => 'Ora di inizio',
     'back_to_login' => 'Torna alla pagina di login',
-    'billing_state' => 'Fatturazione'
+    'billing_state' => 'Fatturazione',
+    'billable_duration' => 'fatturabile'
 ];

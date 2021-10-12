@@ -5,7 +5,7 @@
 @endsection
 
 @section('body')
-    <div class="container-md"> <!-- Corpo della pagina -->
+    <div class="container-fluid px-lg-5"> <!-- Corpo della pagina -->
         <div class="row mt-0 mt-md-1 mt-lg-0"> <!-- Azioni -->
             @yield('actions')
         </div>

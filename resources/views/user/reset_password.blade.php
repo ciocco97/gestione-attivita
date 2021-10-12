@@ -33,7 +33,7 @@
                 <div class="card p-4 pb-1">
                     <form id="change_password_form" action="{{ route('user.reset.password') }}" method="post">
                         @csrf
-                        <ul>
+                        <ul class="ps-0">
                             <div class="mb-3">
                                 <label for="#email" class="form-label">
                                     @lang('labels.type') @lang('labels.yours') @lang('labels.email')
@@ -118,7 +118,7 @@
                             @endif
 
                             @if(!isset($success))
-                            <div class="d-flex justify-content-between mx-5 mt-4">
+                            <div class="d-flex justify-content-between mx-2 mx-md-3 mt-4">
                                 <a class="btn btn-secondary justify-content-start" href="{{ route('user.login') }}">
                                     <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')
                                 </a>

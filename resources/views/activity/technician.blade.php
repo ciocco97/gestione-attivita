@@ -186,13 +186,17 @@
                     @if ($team != null) {{-- Manager --}}
                     <th scope="col">@lang('labels.tech_tab')</th>
                     @endif
-                    <th scope="col">@lang('labels.description')</th>
                     <th scope="col">@lang('labels.date')</th>
+                    <th scope="col">@lang('labels.from')</th>
+                    <th scope="col">@lang('labels.description')</th>
                     <th scope="col">@lang('labels.costumer')</th>
                     <th scope="col">@lang('labels.order')</th>
                     {{--        <th scope="col">@lang('labels.from')</th>--}}
                     {{--        <th scope="col">@lang('labels.to')</th>--}}
                     <th scope="col">@lang('labels.duration')</th>
+                    @if ($team != null) {{-- Manager --}}
+                    <th scope="col">@lang('labels.billable_duration')</th>
+                    @endif
                     <th scope="col">@lang('labels.state')</th>
                     @if($team != null) {{-- Manager --}}
                     <th scope="col">@lang('labels.billing_state')</th>
@@ -219,38 +223,59 @@
                         @if($team != null) {{-- Manager --}}
                         <td id="technician_{{ $activity->id }}">{{ $activity->nome }}</td>
                         @endif
-                        <td class="fw-bold" id="desc_{{ $activity->id }}"
-                            style="min-width: 230px">{{ $activity->descrizione_attivita }}</td>
                         <td id="date_{{ $activity->id }}" class="text-nowrap">{{ $activity->data }}</td>
+                        <td id="startTime_{{ $activity->id }}">{{ substr($activity->ora_inizio, 0, 5) }}</td>
+                        <td class="fw-bold" id="desc_{{ $activity->id }}" {{-- style="min-width: 230px" --}}>
+                            {{ $activity->descrizione_attivita }}
+                        </td>
                         <td id="costumer_{{ $activity->id }}">{{ $activity->nome_cliente }}</td>
                         <td id="order_{{ $activity->id }}">{{ $activity->descrizione_commessa }}</td>
-                        {{--            <td id="startTime_{{ $activity->id }}">{{ substr($activity->ora_inizio, 0, 5) }}</td>--}}
                         {{--            <td id="endTime_{{ $activity->id }}">{{ substr($activity->ora_fine, 0, 5) }}</td>--}}
                         <td id="duration_{{ $activity->id }}">{{ substr($activity->durata, 0, 5) }}</td>
-                        <td id="state_{{ $activity->id }}">{{ $activity->descrizione_stato_attivita }}</td>
-                        @if($team != null) {{-- Manager --}}
-                        <td id="billing_state_{{ $activity->id }}">
-                            <select class="form-select" id="billing_state_select_{{ $activity->id }}" style="min-width: 155px;">
-                                @foreach($billing_states as $billing_state)
-                                    @if($billing_state->id == $activity->stato_fatturazione_id)
-                                        <option value="{{ $billing_state->id }}"
-                                                selected>{{ $billing_state->descrizione_stato_fatturazione }}</option>
-                                    @else
-                                        @if($billing_state->id != 4)
-                                            <option value="{{ $billing_state->id }}">{{ $billing_state->descrizione_stato_fatturazione }}</option>
-                                        @endif
-                                    @endif
-                                @endforeach
-                            </select>
-                            <div id="wait_change_billing_{{ $activity->id }}" class="spinner-border spinner-border-sm text-success"
-                                 role="status"
-                                 style="display: none;">
-                                <span class="visually-hidden">Loading...</span>
+                        @if ($team != null) {{-- Manager --}}
+                        <td id="billable_duration_{{ $activity->id }}">
+                            <div class="d-flex justify-content-center">
+                                <input id="billable_duration_input_{{ $activity->id }}" class="form-control" type="time"
+                                       value="{{ $activity->durata_fatturabile }}"
+                                       style="max-width: 100px">
+                                <div id="wait_change_billable_duration_{{ $activity->id }}"
+                                     class="spinner-border spinner-border-sm text-success"
+                                     role="status"
+                                     style="display: none;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
                             </div>
                         </td>
                         @endif
+                        <td id="state_{{ $activity->id }}">{{ $activity->descrizione_stato_attivita }}</td>
+                        @if($team != null) {{-- Manager --}}
+                        <td id="billing_state_{{ $activity->id }}">
+                            <div class="d-flex align-content-center">
+                                <select class="form-select" id="billing_state_select_{{ $activity->id }}"
+                                        style="width: auto;">
+                                    @foreach($billing_states as $billing_state)
+                                        @if($billing_state->id == $activity->stato_fatturazione_id)
+                                            <option value="{{ $billing_state->id }}"
+                                                    selected>{{ $billing_state->descrizione_stato_fatturazione }}</option>
+                                        @else
+                                            @if($billing_state->id != 4)
+                                                <option
+                                                    value="{{ $billing_state->id }}">{{ $billing_state->descrizione_stato_fatturazione }}</option>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <div id="wait_change_billing_{{ $activity->id }}"
+                                     class="spinner-border spinner-border-sm text-success"
+                                     role="status"
+                                     style="display: none;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </td>
+                    @endif
 
-                        <!-- Bottone rapportino -->
+                    <!-- Bottone rapportino -->
                         <td>
                             @if($activity->rapportino_cliente && $activity->rapportino_commessa)
                                 <button id="report_{{ $activity->id }}" class="btn pt-0">
@@ -295,8 +320,8 @@
                                 <i class="bi bi-trash text-danger"></i>
                             </a>
                         </td>
-                        @endforeach
                     </tr>
+                @endforeach
 
                 </tbody>
 

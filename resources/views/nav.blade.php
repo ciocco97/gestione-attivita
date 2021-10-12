@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light mb-1 mb-md-0"> <!-- Intestazione -->
-    <div class="container">
+    <div class="container-fluid px-lg-5">
         <a class="order-lg-0 navbar-brand d-none d-sm-inline" href="{{ route('user.login') }}"><i class="bi bi-house-door me-2"></i>@lang('labels.main_title')</a>
         <a class="order-lg-0 navbar-brand d-sm-none" href="{{ route('user.login') }}"><i class="bi bi-house-door"></i></a>
         <div class="order-lg-2 dropdown">
