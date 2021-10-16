@@ -113,7 +113,7 @@ function activity_checked(check, administrative) {
         })
         current_row.removeClass("table-active");
         if (checked_activity_ids.length === 0) {
-            $("#activities_change_4").fadeOut("fast");
+            $("#activities_change_1").fadeOut("fast");
             $("#activities_change_btn").fadeOut("fast");
         }
     }
