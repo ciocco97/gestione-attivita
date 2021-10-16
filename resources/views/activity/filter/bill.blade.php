@@ -1,0 +1,22 @@
+<div class="row mb-1"> <!-- Riga selezione stato fatturazione -->
+    <label class="col-md-4 col-form-label ps-md-3 ps-lg-5" for="#master_billing_state_filter">
+        @lang('labels.billing_state')
+    </label>
+    <div class="col-md-8">
+        <div class="d-flex">
+            <select class="form-select" id="master_billing_state_filter" name="billing-state">
+                <option value="" selected
+                        hidden>@lang('labels.select') @lang('labels.billing_state')</option>
+                <option value="10">@lang('labels.billed')</option>
+                <option value="11">@lang('labels.not_billed')</option>
+                @foreach($billing_states as $state)
+                    <option
+                        value="{{ $state->id }}">{{ $state->descrizione_stato_fatturazione }}</option>
+                @endforeach
+            </select>
+            <button type="button" class="btn" onclick='$("#master_billing_state_filter").val("");'>
+                <i class="bi bi-x-square"></i>
+            </button>
+        </div>
+    </div>
+</div>

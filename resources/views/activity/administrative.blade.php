@@ -12,7 +12,7 @@
             <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
                 <i class="bi bi-funnel me-2"></i>@lang('labels.filter') @lang('labels.activity')
             </button>
-            <button id="activities_change_1" data-state="1" class="btn btn-outline-success border-end-0 pe-1"
+            <button id="activities_change_2" data-state="2" class="btn btn-outline-success border-end-0 pe-1"
                     style="display: none;">
                 <i class="bi bi-pencil me-2"></i>@lang('labels.set') @lang('labels.billed')
             </button>
@@ -23,7 +23,7 @@
             <ul class="dropdown-menu">
                 <li><h6 class="dropdown-header">@lang('labels.other_state')</h6></li>
                 <li>
-                    <button id="activities_change_0" class="dropdown-item" data-state="0">
+                    <button id="activities_change_1" class="dropdown-item" data-state="1">
                         @lang('labels.set') @lang('labels.not_billed')
                     </button>
                 </li>
@@ -38,101 +38,14 @@
         @csrf
         <div class="row">
             <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
-
-                <div class="row mb-1"> <!-- Riga selezione periodo -->
-                    <label class="col-md-4 col-form-label pt-0 pt-md-2" for="#period">@lang('labels.period')</label>
-                    <div class="col-md-8 col-lg-5">
-                        <div class="d-flex">
-                            <select value="" class="form-select" id="master_period_filter" name="period">
-                                <option value="" hidden>@lang('labels.select') @lang('labels.period')</option>
-                                <option value="1">@lang('labels.last_week')</option>
-                                <option value="2">@lang('labels.last_two_weeks')</option>
-                                <option value="3">@lang('labels.current_month')</option>
-                                <option value="4" selected>@lang('labels.last_month')</option>
-                                <option value="5">@lang('labels.all')</option>
-                            </select>
-                            <button type="button" class="btn"
-                                    onclick='$("#master_period_filter").val(""); $("#master_period_filter").change()'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-1"> <!-- Riga inserimento data -->
-                    <label class="col-md-4 col-form-label pt-0 pt-md-2"
-                           for="#master_date_filter">@lang('labels.date')</label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <input type="date" class="form-control" id="master_date_filter" name="date">
-                            <button type="button" class="btn"
-                                    onclick='$("#master_date_filter").val(""); $("#master_date_filter").change()'>
-                                <i class="bi bi-x-square"></i></button>
-                        </div>
-                    </div>
-                </div>
+                @include('activity.filter.period')
+                @include('activity.filter.date')
             </div>
 
             <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
-
-                <div class="row mb-1"> <!-- Riga selezione cliente -->
-                    <label class="col-md-4 col-form-label ps-md-3 ps-lg-5" for="#master_costumer_filter">
-                        @lang('labels.costumer')
-                    </label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <select class="form-select" id="master_costumer_filter" name="costumer">
-                                <option value="" selected hidden>
-                                    @lang('labels.select') @lang('labels.costumer')
-                                </option>
-                                @foreach($costumers as $costumer)
-                                    <option value="{{ $costumer->id }}">{{ $costumer->nome }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn" onclick='$("#master_costumer_filter").val("");'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-1"> <!-- Riga selezione stato fatturazione -->
-                    <label class="col-md-4 col-form-label ps-md-3 ps-lg-5" for="#master_billing_state_filter">
-                        @lang('labels.billing_state')
-                    </label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <select class="form-select" id="master_billing_state_filter" name="billing-state">
-                                <option value="" selected
-                                        hidden>@lang('labels.select') @lang('labels.billing_state')</option>
-                                @foreach($billing_states as $state)
-                                    <option
-                                        value="{{ $state->id }}">{{ $state->descrizione_stato_fatturazione }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn" onclick='$("#master_billing_state_filter").val("");'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row"> <!-- Riga selezione utente -->
-                    <label class="col-md-4 col-form-label ps-md-3 ps-lg-5" for="#master_user_filter">
-                        @lang('labels.tech_tab')
-                    </label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <select class="form-select" id="master_user_filter" name="user">
-                                <option value="" selected
-                                        hidden>@lang('labels.select') @lang('labels.tech_tab')</option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->nome }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn" onclick='$("#master_user_filter").val("");'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                @include('activity.filter.costumer')
+                @include('activity.filter.bill')
+                @include('activity.filter.user')
             </div>
 
             <div> <!-- Riga per il submit della form dei filtri -->
@@ -198,7 +111,7 @@
 
                         <td id="billable_duration_{{ $activity->id }}">
                             <div class="d-flex justify-content-center">
-                                {{ substr($activity->ora_inizio, 0, 5) }}
+                                {{ substr($activity->durata_fatturabile, 0, 5) }}
                             </div>
                         </td>
 

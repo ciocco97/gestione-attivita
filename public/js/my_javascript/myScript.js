@@ -102,7 +102,7 @@ function activity_checked(check, administrative) {
         if (checked_activity_ids.length === 1) {
             $("#activities_change_btn").fadeIn("fast");
             if (administrative) {
-                $("#activities_change_1").fadeIn("fast");
+                $("#activities_change_2").fadeIn("fast");
             } else {
                 $("#activities_change_4").fadeIn("fast");
             }
@@ -113,7 +113,7 @@ function activity_checked(check, administrative) {
         })
         current_row.removeClass("table-active");
         if (checked_activity_ids.length === 0) {
-            $("#activities_change_1").fadeOut("fast");
+            $("#activities_change_2").fadeOut("fast");
             $("#activities_change_btn").fadeOut("fast");
         }
     }
@@ -122,12 +122,12 @@ function activity_checked(check, administrative) {
 function disable_row(id, administrative) {
     $("a.btn[id$=" + id + "][id!=show_" + id + "]")
         .addClass('disabled')
-        // .children().removeClass('text-danger text-warning text-primary');
+        .children().removeClass('text-danger text-warning');
     if (!administrative) {
         $("input[id$=" + id + "]").attr("disabled", true);
     }
     $("select[id$=" + id + "]").attr("disabled", true);
-    $("button[id$=" + id + "]").attr("disabled", true);
+    // $("button[id$=" + id + "]").attr("disabled", true);
 }
 
 function table_setup(page) {
@@ -197,7 +197,7 @@ function table_setup(page) {
 
     $("[id^=activity_row_]").each(function () {
         let row = $(this);
-        if (row.attr("data-bill") == 1) {
+        if (row.attr("data-bill") == 2) {
             disable_row(getIDSuffix($(this), "activity_row_"), administrative);
             row.css("background-color", GREEN_COLOR);
         }

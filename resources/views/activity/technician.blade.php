@@ -12,12 +12,12 @@
             <button class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
                 <i class="bi bi-funnel me-2"></i>@lang('labels.filter') @lang('labels.activity')
             </button>
-            @if($team == null)
+            @if($users == null)
                 <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">
                     <i class="bi bi-journal-plus me-2"></i>@lang('labels.add') @lang('labels.activity')
                 </a>
             @endif
-            @if($team != null) {{-- Manager --}}
+            @if($users != null) {{-- Manager --}}
             <button id="activities_change_4" data-state="4" class="btn btn-outline-success border-end-0 pe-1"
                     style="display: none;">
                 <i class="bi bi-pencil me-2"></i>@lang('labels.approve')
@@ -25,13 +25,13 @@
             @endif
             <button id="activities_change_btn" class="btn btn-outline-success rounded-end border-start-0 px-1"
                     data-bs-toggle="dropdown" style="display: none;">
-                @if($team == null) {{-- Technician --}}
+                @if($users == null) {{-- Technician --}}
                 @lang('labels.change') @lang('labels.state')
                 @endif
                 <i class="bi bi-three-dots-vertical"></i>
             </button>
             <ul class="dropdown-menu">
-                @if($team != null)
+                @if($users != null)
                     <li><h6 class="dropdown-header">@lang('labels.other_states')</h6></li>
                 @else
                     <li><h6 class="dropdown-header">@lang('labels.states')</h6></li>
@@ -59,99 +59,16 @@
         <div class="row">
             <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
 
-                <div class="row mb-1"> <!-- Riga selezione periodo -->
-                    <label class="col-md-4 col-form-label pt-0 pt-md-2" for="#period">@lang('labels.period')</label>
-                    <div class="col-md-8 col-lg-5">
-                        <div class="d-flex">
-                            <select value="" class="form-select" id="master_period_filter" name="period">
-                                <option value="" hidden>@lang('labels.select') @lang('labels.period')</option>
-                                <option value="1" selected>@lang('labels.last_week')</option>
-                                <option value="2">@lang('labels.last_two_weeks')</option>
-                                <option value="3">@lang('labels.current_month')</option>
-                                <option value="4">@lang('labels.last_month')</option>
-                                <option value="5">@lang('labels.all')</option>
-                            </select>
-                            <button type="button" class="btn"
-                                    onclick='$("#master_period_filter").val(""); $("#master_period_filter").change()'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-1"> <!-- Riga inserimento data -->
-                    <label class="col-md-4 col-form-label pt-0 pt-md-2"
-                           for="#master_date_filter">@lang('labels.date')</label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <input type="date" class="form-control" id="master_date_filter" name="date">
-                            <button type="button" class="btn"
-                                    onclick='$("#master_date_filter").val(""); $("#master_date_filter").change()'>
-                                <i class="bi bi-x-square"></i></button>
-                        </div>
-                    </div>
-                </div>
+                @include('activity.filter.period')
+                @include('activity.filter.date')
             </div>
 
             <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
 
-                <div class="row mb-1"> <!-- Riga selezione cliente -->
-                    <label class="col-md-4 col-form-label ps-md-3 ps-lg-5" for="#master_costumer_filter">
-                        @lang('labels.costumer')
-                    </label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <select class="form-select" id="master_costumer_filter" name="costumer">
-                                <option value="" selected hidden>
-                                    @lang('labels.select') @lang('labels.costumer')
-                                </option>
-                                @foreach($costumers as $costumer)
-                                    <option value="{{ $costumer->id }}">{{ $costumer->nome }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn" onclick='$("#master_costumer_filter").val("");'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-1"> <!-- Riga selezione stato -->
-                    <label class="col-md-4 col-form-label ps-md-3 ps-lg-5" for="#master_state_filter">
-                        @lang('labels.state')
-                    </label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <select class="form-select" id="master_state_filter" name="state">
-                                <option value="" selected hidden>@lang('labels.select') @lang('labels.state')</option>
-                                @foreach($states as $state)
-                                    <option value="{{ $state->id }}">{{ $state->descrizione_stato_attivita }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn" onclick='$("#master_state_filter").val("");'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                @if($team != null) {{-- Manager --}}
-                <div class="row"> <!-- Riga selezione utente -->
-                    <label class="col-md-4 col-form-label ps-md-3 ps-lg-5" for="#master_user_filter">
-                        @lang('labels.tech_tab')
-                    </label>
-                    <div class="col-md-8">
-                        <div class="d-flex">
-                            <select class="form-select" id="master_user_filter" name="user">
-                                <option value="" selected
-                                        hidden>@lang('labels.select') @lang('labels.tech_tab')</option>
-                                @foreach($team as $user)
-                                    <option value="{{ $user->id }}">{{ $user->nome }}</option>
-                                @endforeach
-                            </select>
-                            <button type="button" class="btn" onclick='$("#master_user_filter").val("");'>
-                                <i class="bi bi-x-square"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                @include('activity.filter.costumer')
+                @include('activity.filter.state')
+                @if($users != null) {{-- Manager --}}
+                @include('activity.filter.user')
                 @endif
             </div>
 
@@ -183,7 +100,7 @@
                 <thead>
                 <tr>
                     <th scope="col"></th>
-                    @if ($team != null) {{-- Manager --}}
+                    @if ($users != null) {{-- Manager --}}
                     <th scope="col">@lang('labels.tech_tab')</th>
                     @endif
                     <th scope="col">@lang('labels.date')</th>
@@ -194,11 +111,11 @@
                     {{--        <th scope="col">@lang('labels.from')</th>--}}
                     {{--        <th scope="col">@lang('labels.to')</th>--}}
                     <th scope="col">@lang('labels.duration')</th>
-                    @if ($team != null) {{-- Manager --}}
+                    @if ($users != null) {{-- Manager --}}
                     <th scope="col">@lang('labels.billable_duration')</th>
                     @endif
                     <th scope="col">@lang('labels.state')</th>
-                    @if($team != null) {{-- Manager --}}
+                    @if($users != null) {{-- Manager --}}
                     <th scope="col">@lang('labels.billing_state')</th>
                     @endif
                     <th scope="col">@lang('labels.report')</th>
@@ -219,7 +136,7 @@
                                 <input id="check_select_{{ $activity->id }}" class="form-check" type="checkbox">
                             </div>
                         </td>
-                        @if($team != null) {{-- Manager --}}
+                        @if($users != null) {{-- Manager --}}
                         <td id="technician_{{ $activity->id }}">{{ $activity->nome }}</td>
                         @endif
                         <td id="date_{{ $activity->id }}" class="text-nowrap">{{ $activity->data }}</td>
@@ -233,7 +150,7 @@
                         <td id="order_{{ $activity->id }}">{{ $activity->descrizione_commessa }}</td>
                         {{--            <td id="endTime_{{ $activity->id }}">{{ substr($activity->ora_fine, 0, 5) }}</td>--}}
                         <td id="duration_{{ $activity->id }}">{{ substr($activity->durata, 0, 5) }}</td>
-                        @if ($team != null) {{-- Manager --}}
+                        @if ($users != null) {{-- Manager --}}
                         <td id="billable_duration_{{ $activity->id }}">
                             <div class="d-flex justify-content-center">
                                 <input id="billable_duration_input_{{ $activity->id }}" class="form-control" type="time"
@@ -250,7 +167,7 @@
                         @endif
                         <td id="state_{{ $activity->id }}"
                             data-state-id="{{ $activity->stato_attivita_id }}">{{ $activity->descrizione_stato_attivita }}</td>
-                        @if($team != null) {{-- Manager --}}
+                        @if($users != null) {{-- Manager --}}
                         <td id="billing_state_{{ $activity->id }}">
                             <div class="d-flex align-content-center">
                                 <select class="form-select" id="billing_state_select_{{ $activity->id }}"
@@ -326,7 +243,7 @@
                 </tbody>
 
                 <script>
-                    @if($team != null)  {{-- Manager --}}
+                    @if($users != null)  {{-- Manager --}}
                     manager_script();
                     @else
                     technician_script();

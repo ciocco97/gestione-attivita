@@ -62,7 +62,7 @@ class ActivityController extends Controller
             ->with('orders', $orders)
             ->with('states', $states)
             ->with('billing_states', $billing_states)
-            ->with('team', $team);
+            ->with('users', $team);
     }
 
     private function indexActivityViewForAdministrative($activities)
@@ -79,6 +79,7 @@ class ActivityController extends Controller
 
         $this->changeActivityDateFormat($activities);
         $this->changeActivityDescriptionLenght($activities);
+        $this->addBillableDuration($activities);
 
         return view('activity.administrative')
             ->with('username', $username)
@@ -121,7 +122,7 @@ class ActivityController extends Controller
         Log::debug('Administrative index');
         $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
 
-        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
+        $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
 
         $dl = new DataLayer();
         $activities = $dl->listAdministrativeActivities($start_date);
@@ -218,10 +219,17 @@ class ActivityController extends Controller
                 $team_member_ids = array($team_member_id);
             }
         }
+
+        $billed = null;
+        if ($billing_state != null) {
+            $billed = $billing_state == 10?2:$billed;
+            $billed = $billing_state == 11?1:$billed;
+        }
+
         if ($_SESSION['current_page'] == self::PAGES['ADMINISTRATIVE']) {
             Log::debug('Administrative filter');
             $activities = $dl->filterAdministrativeActivities(
-                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_state);
+                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_state, $billed);
 
             return $this->indexActivityViewForAdministrative($activities);
 

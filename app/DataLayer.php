@@ -224,14 +224,16 @@ class DataLayer
         return $this->addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $state, $date)->get();
     }
 
-    public function filterAdministrativeActivities($start_date, $end_date, $costumer, $state, $date, $user_selected_id, $billed)
+    public function filterAdministrativeActivities($start_date, $end_date, $costumer, $state, $date, $user_selected_id, $billing_state, $billed)
     {
         $basic_query = $this->basicQueryForListApprovedActivity();
         if ($user_selected_id != null) {
             $basic_query->where('attivita.persona_id', $user_selected_id);
         }
         if ($billed != null) {
-            $basic_query->where('attivita.stato_fatturazione_id', $billed);
+            $basic_query->where('attivita.fatturata', $billed);
+        } else if ($billing_state != null) {
+            $basic_query->where('attivita.stato_fatturazione_id', $billing_state);
         }
         return $this->addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $state, $date)->get();
     }
