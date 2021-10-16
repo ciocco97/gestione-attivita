@@ -76,6 +76,7 @@
                 <thead>
                 <tr>
                     <th scope="col"></th>
+                    <th scope="col">@lang('labels.billing_state')</th>
                     <th scope="col">@lang('labels.tech_tab')</th>
                     <th scope="col">@lang('labels.date')</th>
                     <th scope="col">@lang('labels.from')</th>
@@ -83,7 +84,6 @@
                     <th scope="col">@lang('labels.costumer')</th>
                     <th scope="col">@lang('labels.order')</th>
                     <th scope="col">@lang('labels.billable_duration')</th>
-                    <th scope="col">@lang('labels.billing_state')</th>
                     <th scope="col">@lang('labels.show')</th>
 
                 </tr>
@@ -93,10 +93,14 @@
                 @foreach($activities as $activity)
 
                     <tr id="activity_row_{{ $activity->id }}" data-bill="{{ $activity->fatturata }}">
+
                         <td id="select_{{ $activity->id }}">
                             <div class="d-flex justify-content-center">
                                 <input id="check_select_{{ $activity->id }}" class="form-check" type="checkbox">
                             </div>
+                        </td>
+                        <td id="billing_state_{{ $activity->id }}">
+                            {{ $activity->descrizione_stato_fatturazione }}
                         </td>
                         <td id="technician_{{ $activity->id }}">{{ $activity->nome }}</td>
                         <td id="date_{{ $activity->id }}" class="text-nowrap">{{ $activity->data }}</td>
@@ -113,10 +117,6 @@
                             <div class="d-flex justify-content-center">
                                 {{ substr($activity->durata_fatturabile, 0, 5) }}
                             </div>
-                        </td>
-
-                        <td id="billing_state_{{ $activity->id }}">
-                            {{ $activity->descrizione_stato_fatturazione }}
                         </td>
 
                         <!--Bottone visualizza-->

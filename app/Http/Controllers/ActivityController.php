@@ -62,7 +62,8 @@ class ActivityController extends Controller
             ->with('orders', $orders)
             ->with('states', $states)
             ->with('billing_states', $billing_states)
-            ->with('users', $team);
+            ->with('users', $team)
+            ->with('pages', self::PAGES);
     }
 
     private function indexActivityViewForAdministrative($activities)
@@ -87,7 +88,8 @@ class ActivityController extends Controller
             ->with('costumers', $costumers)
             ->with('orders', $orders)
             ->with('billing_states', $billing_states)
-            ->with('users', $users);
+            ->with('users', $users)
+            ->with('pages', self::PAGES);
     }
 
     public function index()
