@@ -42,13 +42,16 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/activity/{id}/destroy', [ActivityController::class, 'destroy'])->name('activity.destroy');
         Route::get('/activity/{id}/confirm', [ActivityController::class, 'confirmDestroy'])->name('activity.destroy.confirm');
         Route::post('/activity/index/filter', [ActivityController::class, 'filterPost'])->name('activity.filter');
-        Route::get('/activity/filter/{period}/{costumer}/{state}/{date}/{user}', [ActivityController::class, 'filter'])->name('activity.filter.get');
+        Route::get('/activity/filter/{period}/{costumer}/{state}/{date}/{user}/{billing_state}', [ActivityController::class, 'filter'])->name('activity.filter.get');
         Route::get('/ajax/user/roles', [AjaxController::class, 'userRoles']);
         Route::get('/ajax/activity/mass/change', [AjaxController::class, 'massChangeActivities']);
         Route::get('/ajax/activity/send/report', [ActivityMailController::class, 'ajaxSendActivityReport']);
         Route::get('/ajax/activity/change/billing_state', [AjaxController::class, 'ajaxChangeActivityBillingState']);
         Route::get('/ajax/activity/change/change_billable_duration', [AjaxController::class, 'ajaxChangeActivityBillableDuration']);
+        Route::get('/ajax/activity/mass/billing_state/change', [AjaxController::class, 'ajaxMassChangeActivityBillingState']);
+
         Route::get('/activity/manager/index', [ActivityController::class, 'managerIndex'])->name('manager.index');
+        Route::get('/activity/administrative/index', [ActivityController::class, 'administrativeIndex'])->name('administrative.index');
         Route::resource('costumer', CostumerController::class);
     });
 });

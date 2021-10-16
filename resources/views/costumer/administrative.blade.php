@@ -17,7 +17,7 @@
 @section('main')
     <div id="costumers">
         @foreach($costumers_nums_activities as $costumer_num_activity)
-            <div class="card mb-2">
+            <div class="card mb-2 border-info">
                 <div class="card-body">
                     <h5 class="card-title">{{ $costumer_num_activity[0]->nome }}</h5>
 

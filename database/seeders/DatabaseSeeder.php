@@ -56,31 +56,31 @@ class DatabaseSeeder extends Seeder
         $stati_attivita = StatoAttivita::all();
         $stati_fatturazione = StatoFatturazione::all();
         $persone = Persona::all();
+        $clienti = Cliente::all();
 
         foreach ($stati_attivita as $sa) {
             foreach ($stati_fatturazione as $sf) {
-                foreach ($stati_commessa as $sc) {
                     foreach ($persone as $p) {
-                        Cliente::factory()->count(1)
-                            ->has(
-                                Commessa::factory()
-                                    ->count(2)
-                                    ->state([
-                                        'persona_id' => $p->id,
-                                        'stato_commessa_id' => $sc->id
-                                    ])
-                                    ->has(
-                                        Attivita::factory()
-                                            ->count(3)
-                                            ->state([
-                                                'persona_id' => $p->id,
-                                                'stato_attivita_id' => $sa->id,
-                                                'stato_fatturazione_id' => $sf->id
-                                        ]),
-                                        'attivita'),
-                                'commesse')
+                        foreach ($clienti as $c) {
+                            Commessa::factory()
+                                ->count(1)
+                                ->state([
+                                    'cliente_id' => $c->id,
+                                    'persona_id' => $p->id,
+                                    'stato_commessa_id' => 1
+                                ])
+                                ->has(
+                                    Attivita::factory()
+                                        ->count(1)->state([
+                                            'persona_id' => $p->id,
+                                            'stato_attivita_id' => $sa->id,
+                                            'stato_fatturazione_id' => $sf->id
+                                        ])
+
+                                )
                             ->create();
-                    }
+
+                        }
                 }
             }
         }

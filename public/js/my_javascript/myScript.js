@@ -1,3 +1,10 @@
+TECHNICIAN = 0;
+MANAGER = 1;
+ADMINISTRATIVE = 2;
+COMMERCIAL = 3;
+ADMINISTRATOR = 4;
+GREEN_COLOR = "#c7edc9";
+
 function technician_script() {
     $('document').ready(function () {
         // Evidenzio il tab technician nella navbar
@@ -5,7 +12,7 @@ function technician_script() {
 
         table_setup();
 
-        change_state_setup();
+        change_state_setup(TECHNICIAN);
         $("#activities_change_btn").removeClass("px-1");
 
     });
@@ -16,21 +23,49 @@ function manager_script() {
         // Evidenzio il tab technician nella navbar
         $("#manager_nav_tab").children().addClass("active");
 
-        table_setup(true);
+        table_setup(MANAGER);
 
-        change_state_setup();
+        change_state_setup(MANAGER);
 
     });
 
 }
 
-function change_state_setup() {
+function administrative_activity_script() {
+    $('document').ready(function () {
+        // Evidenzio il tab technician nella navbar
+        $("#administrative_nav_tab").children().addClass("active");
+
+        table_setup(ADMINISTRATIVE);
+
+        change_state_setup(ADMINISTRATIVE);
+
+    });
+}
+
+function change_state_setup(page) {
     checked_activity_ids = [];
-    $("input:checkbox").on("change", function () {
-        activity_checked($(this));
+    $("input:checkbox[id^=check_select_]").on("change", function () {
+        activity_checked($(this), page == ADMINISTRATIVE);
     });
     $("[id^=activities_change_]").not("[id=activities_change_btn]").on("click", function () {
-        activities_approve_confirmation($(this));
+        if (page == ADMINISTRATIVE) {
+            activities_change_billing_state($(this));
+        } else {
+            activities_approve_confirmation($(this));
+        }
+    });
+}
+
+function activities_change_billing_state(button) {
+    let state = button.attr("data-state");
+    $.ajax({
+        url: '/ajax/activity/mass/billing_state/change',
+        type: 'GET',
+        data: {ids: checked_activity_ids, state: state},
+        success: function (data) {
+            location.reload();
+        }
     });
 }
 
@@ -58,15 +93,19 @@ function activities_change_state(state) {
     });
 }
 
-function activity_checked(check) {
-    let current_row = check.parent().parent().parent();
-    let activity_id = current_row.children().first().text();
+function activity_checked(check, administrative) {
+    let activity_id = getIDSuffix(check, "check_select_");
+    let current_row = $("[id^=activity_row_" + activity_id + "]");
     if (check.prop("checked")) {
         checked_activity_ids.push(activity_id);
         current_row.addClass("table-active");
         if (checked_activity_ids.length === 1) {
-            $("#activities_change_4").fadeIn("fast");
             $("#activities_change_btn").fadeIn("fast");
+            if (administrative) {
+                $("#activities_change_1").fadeIn("fast");
+            } else {
+                $("#activities_change_4").fadeIn("fast");
+            }
         }
     } else {
         checked_activity_ids = checked_activity_ids.filter(function (id) {
@@ -80,36 +119,87 @@ function activity_checked(check) {
     }
 }
 
-function table_setup(manager = false) {
+function disable_row(id, administrative) {
+    $("a.btn[id$=" + id + "][id!=show_" + id + "]")
+        .addClass('disabled')
+        // .children().removeClass('text-danger text-warning text-primary');
+    if (!administrative) {
+        $("input[id$=" + id + "]").attr("disabled", true);
+    }
+    $("select[id$=" + id + "]").attr("disabled", true);
+    $("button[id$=" + id + "]").attr("disabled", true);
+}
 
-    // Modifico possibili azioni e colori per ogni attività
-    $("tbody tr td[id^=state]").each(function () {
-        let id = $(this).parent().children().first().text(); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
-        let state_value = $(this).text();
-        let description_td = $("#desc_" + id);
-        switch (state_value) {
-            case "completata":
-                description_td.addClass('text-primary', 1000); // Coloro di grigio la descrizione dell'attività
-                $(this).addClass('text-primary'); // Coloro di blu lo stato dell'attività
-                break
-            case "aperta":
-                // Non faccio nulla
-                break
-            case "annullata":
-                $("#report_" + id).addClass('disabled') // Disabilito l'invio del rapportino
-                    .children().removeClass('text-primary text-success text-danger'); // Scoloro il relativo bottone
-                description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
-                $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
-                break
-            case "approvata":
-                if (!manager) {
-                    $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
+function table_setup(page) {
+    let technician = page == TECHNICIAN;
+    let manager = page == MANAGER;
+    let administrative = page == ADMINISTRATIVE;
+
+    if (!administrative) {
+        // Modifico possibili azioni e colori per ogni attività
+        $("tbody tr td[id^=state]").each(function () {
+            let id = getIDSuffix($(this), "state_"); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
+            let state_id = $(this).attr("data-state-id");
+            let description_td = $("#desc_" + id);
+            switch (state_id) {
+                case "1":
+                    description_td.addClass('text-primary', 1000); // Coloro di grigio la descrizione dell'attività
+                    $(this).addClass('text-primary'); // Coloro di blu lo stato dell'attività
+                    break
+                case "2":
+                    // Non faccio nulla
+                    break
+                case "3":
+                    $("#report_" + id).addClass('disabled') // Disabilito l'invio del rapportino
+                        .children().removeClass('text-primary text-success text-danger'); // Scoloro il relativo bottone
+                    description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
+                    $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
+                    break
+                case "4":
+                    if (!manager) {
+                        $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
+                            .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
+                        $("td[id$=" + id + "] input.form-check").attr('disabled', true);
+                    }
+                    description_td.addClass('text-success', 1000); // Coloro di verde la descrizione dell'attività
+                    $(this).addClass('text-success'); // Coloro di verde lo stato dell'attività
+                    break
+            }
+        });
+
+        $("[id^=report_]").on("click", function () {
+            send_activity_report($(this));
+        });
+
+        if (manager) {
+            $("[id^=billable_duration_input_]").on("change", function () {
+                change_billable_duration($(this));
+            });
+        }
+
+        $("[id^=billing_state_select_]").on("change", function () {
+            change_billing_state($(this), administrative);
+        }).each(function () {
+            let select = $(this);
+            let activity_id = getIDSuffix(select, "billing_state_select_");
+            if (select.val() == 4) {
+                if (administrative) {
+                    $('#activity_row_' + activity_id).css("background-color", GREEN_COLOR);
+                } else {
+                    select.attr("disabled", true);
+                    $("a.btn[id$=" + activity_id + "][id!=show_" + activity_id + "]").addClass('disabled')
                         .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
-                    $("td[id$=" + id + "] input.form-check").attr('disabled', true);
+                    $("td[id$=" + activity_id + "] input").attr('disabled', true);
                 }
-                description_td.addClass('text-success', 1000); // Coloro di verde la descrizione dell'attività
-                $(this).addClass('text-success'); // Coloro di verde lo stato dell'attività
-                break
+            }
+        });
+    }
+
+    $("[id^=activity_row_]").each(function () {
+        let row = $(this);
+        if (row.attr("data-bill") == 1) {
+            disable_row(getIDSuffix($(this), "activity_row_"), administrative);
+            row.css("background-color", GREEN_COLOR);
         }
     });
 
@@ -118,48 +208,14 @@ function table_setup(manager = false) {
         "#master_num_rows",
         "#pagination_selector_1");
 
-    $("[id^=report_]").on("click", function () {
-        send_activity_report($(this));
-    });
-
-    $("[id^=billable_duration_input_]").on("change", function () {
-        change_billable_duration($(this));
-    });
-
-    $("[id^=billing_state_select_]").on("change", function () {
-        change_billing_state($(this));
-    }).each(function () {
-        let select = $(this);
-        let myRegexp = /billing_state_select_(.*)/;
-        let match = myRegexp.exec(select.attr("id"));
-        let activity_id = match[1];
-        if (select.val() == 4) {
-            select.attr("disabled", true);
-            $("a.btn[id$=" + activity_id + "][id!=show_" + activity_id + "]").addClass('disabled')
-                .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
-            $("td[id$=" + activity_id + "] input").attr('disabled', true);
-        }
-    });
-
     $("[data-bs-toggle=tooltip]").tooltip();
 
     filter_setup();
+
 }
 
-// function getIDSuffix(element, id_prefix) {
-//     let myRegexp = new RegExp(id_prefix + "(.*)");
-//     let match = myRegexp.exec(element.attr("id"));
-//     return match[1];
-// }
-//
-// function changeActivityAjax(element, id_prefix) {
-//     let activity_id = getIDSuffix(element, id_prefix);
-// }
-
-function change_billing_state(clicked_element) {
-    let myRegexp = /billing_state_select_(.*)/;
-    let match = myRegexp.exec(clicked_element.attr("id"));
-    let activity_id = match[1];
+function change_billing_state(clicked_element, administrative) {
+    let activity_id = getIDSuffix(clicked_element, "billing_state_select_");
     let billing_state = clicked_element.val();
     $("[id=wait_change_billing_" + activity_id + "]").show();
     $.ajax({
@@ -168,14 +224,30 @@ function change_billing_state(clicked_element) {
         data: {activity_id: activity_id, billing_state: billing_state},
         success: function () {
             $("[id=wait_change_billing_" + activity_id + "]").hide();
+            if (administrative) {
+                if (billing_state == 4) {
+                    $("#activity_row_" + activity_id).css('background-color', GREEN_COLOR);
+                } else {
+                    $("#activity_row_" + activity_id).css('background-color', 'white');
+                }
+            }
         }
     });
 }
 
+function getIDSuffix(element, id_prefix) {
+    let myRegexp = new RegExp(id_prefix + "(.*)");
+    let match = myRegexp.exec(element.attr("id"));
+    return match[1];
+}
+
+//
+// function changeActivityAjax(element, id_prefix) {
+//     let activity_id = getIDSuffix(element, id_prefix);
+// }
+
 function change_billable_duration(changed_element) {
-    let myRegexp = /billable_duration_input_(.*)/;
-    let match = myRegexp.exec(changed_element.attr("id"));
-    let activity_id = match[1];
+    let activity_id = getIDSuffix(changed_element, "billable_duration_input_");
     let billable_duration = changed_element.val();
     $("[id=wait_change_billable_duration_" + activity_id + "]").show();
     $.ajax({
@@ -328,7 +400,7 @@ function change_pag(method, clicked_element, save_current_page_element_id, tbody
 }
 
 function send_activity_report(button) {
-    let activity_id = button.parent().parent().children().first().text();
+    let activity_id = getIDSuffix(button, "report_");
     $("[id=wait_" + activity_id + "]").show();
     $.ajax({
         url: '/ajax/activity/send/report',
@@ -425,7 +497,7 @@ function show_activity_script() {
 
 function filter_orders_when_costumer_selected() {
     console.log("{function: costumer_selected_activity}");
-    var costumer = $("#costumer").val();
+    let costumer = $("#costumer").val();
     console.log("{costumer_id: " + costumer + "}");
     $.ajax({
         url: '/ajax/orders',

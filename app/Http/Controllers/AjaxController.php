@@ -34,7 +34,7 @@ class AjaxController extends Controller
     {
         $user_id = $_SESSION['user_id'];
         $dl = new DataLayer();
-        $roles = $dl->listUserRoles($user_id)->pluck('id');
+        $roles = $dl->listUserRoles($user_id);
         return response()->json($roles);
     }
 
@@ -45,7 +45,7 @@ class AjaxController extends Controller
         $state = $request->input('state');
         Log::debug('massChange', ['ids' => $ids, 'state' => $state]);
         $dl = new DataLayer();
-        $dl->stateUpdateByIDS($user_id, $ids, $state);
+        $dl->stateUpdateByActivityIDS($user_id, $ids, $state);
     }
 
     public function ajaxChangeActivityBillingState(Request $request)
@@ -56,6 +56,16 @@ class AjaxController extends Controller
         Log::debug('ajaxChangeActivityBillingState', ['id' => $activity_id, 'state' => $billing_state]);
         $dl = new DataLayer();
         $dl->changeActivityBillingState($user_id, $activity_id, $billing_state);
+    }
+
+    public function ajaxMassChangeActivityBillingState(Request $request)
+    {
+        $user_id = $_SESSION['user_id'];
+        $ids = $request->input('ids');
+        $state = $request->input('state');
+        Log::debug('ajaxMassChangeActivityBillingState', ['ids' => $ids, 'state' => $state]);
+        $dl = new DataLayer();
+        $dl->billingStateUpdateByActivityIDS($user_id, $ids, $state);
     }
 
     public function ajaxChangeActivityBillableDuration(Request $request)

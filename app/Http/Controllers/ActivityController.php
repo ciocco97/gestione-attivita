@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataLayer;
 use App\Http\Utils;
 use App\Models\Persona;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -13,12 +14,22 @@ use Carbon\Carbon as super_time_parser;
 class ActivityController extends Controller
 {
 
-    const SHOW = 0;
-    const EDIT = 1;
-    const DELETE = 2;
-    const ADD = 3;
+    const ACTIVITY_METHODS = array(
+        'SHOW' => 0,
+        'EDIT' => 1,
+        'DELETE' => 2,
+        'ADD' => 3
+    );
+    const PAGES = array(
+        'TECHNICIAN' => 0,
+        'MANAGER' => 1,
+        'ADMINISTRATIVE' => 2,
+        'COMMERCIAL' => 3,
+        'ADMINISTRATOR' => 4
+    );
 
-    private function indexActivityView($activities, $manager = false)
+
+    private function indexActivityViewForManager_and_Tech($activities)
     {
         $_SESSION['previous_url'] = url()->current();
 
@@ -29,18 +40,20 @@ class ActivityController extends Controller
 
         $orders = $dl->listActiveOrder();
         $states = $dl->listActivityState();
-        if ($manager) {
+
+        if ($_SESSION['current_page'] == self::PAGES['MANAGER']) {
             $team = $dl->listTeam($_SESSION['user_id']);
             $costumers = $dl->listActiveCostumer();
             $billing_states = $dl->listBillingStates();
             $this->addBillableDuration($activities);
         } else {
-            $costumers = $dl->listActiveCostumerByUserID();
+            $costumers = $dl->listActiveCostumerForCurrentUser();
             $team = null;
             $billing_states = null;
         }
 
         $this->changeActivityDateFormat($activities);
+        $this->changeActivityDescriptionLenght($activities);
 
         return view('activity.technician')
             ->with('activities', $activities)
@@ -52,72 +65,116 @@ class ActivityController extends Controller
             ->with('team', $team);
     }
 
-    private function changeActivityDateFormat($activities)
+    private function indexActivityViewForAdministrative($activities)
     {
-        foreach ($activities as $activity) {
-            $activity->data = super_time_parser::parse($activity->data)->format('d-m-Y');
-        }
+        $_SESSION['previous_url'] = url()->current();
+
+        $dl = new DataLayer();
+
+        $username = $_SESSION['username'];
+        $costumers = $dl->listActiveCostumer();
+        $orders = $dl->listActiveOrder();
+        $users = $dl->listUsers();
+        $billing_states = $dl->listBillingStates();
+
+        $this->changeActivityDateFormat($activities);
+        $this->changeActivityDescriptionLenght($activities);
+
+        return view('activity.administrative')
+            ->with('username', $username)
+            ->with('activities', $activities)
+            ->with('costumers', $costumers)
+            ->with('orders', $orders)
+            ->with('billing_states', $billing_states)
+            ->with('users', $users);
     }
 
     public function index()
     {
         Log::debug('Home');
+        $_SESSION['current_page'] = self::PAGES['TECHNICIAN'];
+
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
 
         $dl = new DataLayer();
-        $activities = $dl->listActiveActivityForActivityTableByUserID($_SESSION['user_id'], $start_date);
+        $activities = $dl->listActiveActivityByUserID($_SESSION['user_id'], $start_date);
 
-        return $this->indexActivityView($activities);
+        return $this->indexActivityViewForManager_and_Tech($activities);
 
-    }
-
-    private function addBillableDuration($activities)
-    {
-        foreach ($activities as $activity) {
-            $billable_duration = $activity->durata_fatturabile;
-            if ($billable_duration == null) {
-                $billable_duration = super_time_parser::parse($activity->durata);
-                $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
-                $activity->durata_fatturabile = $billable_duration->format("H:i");
-            }
-        }
     }
 
     public function managerIndex()
     {
         Log::debug('Manager index');
+        $_SESSION['current_page'] = self::PAGES['MANAGER'];
+
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
 
         $dl = new DataLayer();
         $activities = $dl->listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
 
-        return $this->indexActivityView($activities, true);
+        return $this->indexActivityViewForManager_and_Tech($activities);
+    }
+
+    public function administrativeIndex()
+    {
+        Log::debug('Administrative index');
+        $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
+
+        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
+
+        $dl = new DataLayer();
+        $activities = $dl->listAdministrativeActivities($start_date);
+
+        return $this->indexActivityViewForAdministrative($activities);
+    }
+
+    private function getActivities($user_id, $page, $filter)
+    {
+        $dl = new DataLayer();
+        $roles = $dl->listUserRoles($user_id);
+
+        $activities = null;
+        switch ($page) {
+            case self::PAGES['TECHNICIAN']:
+                $activities = $dl->listActivityTechnician($user_id, $filter);
+                break;
+            case self::PAGES['MANAGER']:
+                break;
+            case self::PAGES['ADMINISTRATIVE']:
+                break;
+        }
+        return $activities;
     }
 
     public function filterPost(Request $request)
     {
         $period = $request->get('period');
-        $period = $period == null ? -1 : $period;
         $costumer = $request->get('costumer');
         $state = $request->get('state');
         $date = $request->get('date');
         $team_member_id = $request->get('user');
+        $billing_state = $request->get('billing-state');
+
+        $period = $period == null ? -1 : $period;
         $costumer = $costumer == null ? -1 : $costumer;
         $state = $state == null ? -1 : $state;
         $date = $date == null ? -1 : $date;
         $team_member_id = $team_member_id == null ? -1 : $team_member_id;
+        $billing_state = $billing_state == null ? -1 : $billing_state;
 
         Log::debug('filterPost', [
             'period' => $period,
             'costumer' => $costumer,
             'state' => $state,
             'date' => $date,
-            'user' => $team_member_id]);
+            'user' => $team_member_id,
+            'billed' => $billing_state]);
         return redirect()->route('activity.filter.get',
-            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id]);
+            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id, 'billing_state' => $billing_state]);
     }
 
-    public function filter($period, $costumer, $state, $date, $team_member_id)
+    public function filter($period, $costumer, $state, $date, $team_member_id, $billing_state)
     {
         $user_id = $_SESSION['user_id'];
 
@@ -126,6 +183,7 @@ class ActivityController extends Controller
         $state = $state == -1 ? null : $state;
         $date = $date == -1 ? null : $date;
         $team_member_id = $team_member_id == -1 ? null : $team_member_id;
+        $billing_state = $billing_state == -1 ? null : $billing_state;
 
         $end_date = null;
         if ($period == 1) { // current week
@@ -146,7 +204,9 @@ class ActivityController extends Controller
             'end_date' => $end_date,
             'costumer' => $costumer,
             'state' => $state,
-            'date' => $date
+            'date' => $date,
+            'user' => $team_member_id,
+            'billing_state' => $billing_state
         ]);
 
         $dl = new DataLayer();
@@ -158,11 +218,21 @@ class ActivityController extends Controller
                 $team_member_ids = array($team_member_id);
             }
         }
-        $activities = $dl->filterActiveActivityForActivityTableByUserID(
-            $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
+        if ($_SESSION['current_page'] == self::PAGES['ADMINISTRATIVE']) {
+            Log::debug('Administrative filter');
+            $activities = $dl->filterAdministrativeActivities(
+                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_state);
 
-        return $this->indexActivityView($activities, $team_member_id != null);
+            return $this->indexActivityViewForAdministrative($activities);
+
+        } else {
+            $activities = $dl->filterActiveActivityByUserID(
+                $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
+
+            return $this->indexActivityViewForManager_and_Tech($activities);
+        }
     }
+
 
     /**
      * sedActivityView (Show, Edit e Destroy) rende parametrica l'invocazione della vista di modifica delle attività
@@ -191,7 +261,7 @@ class ActivityController extends Controller
             $state = $activity->statoAttivita()->get()->first();
         }
 
-        if ($method == self::ADD || $method == self::EDIT) {
+        if ($method == self::ACTIVITY_METHODS['ADD'] || $method == self::ACTIVITY_METHODS['EDIT']) {
             $costumers = $dl->listActiveCostumer();
             $orders = $dl->listActiveOrder();
             if ($manager) {
@@ -206,7 +276,10 @@ class ActivityController extends Controller
             ->with('username', $username)
             ->with('method', $method)
             ->with('tech_name', $tech_name)
-            ->with('SHOW', self::SHOW)->with('EDIT', self::EDIT)->with('DELETE', self::DELETE)->with('ADD', self::ADD)
+            ->with('SHOW', self::ACTIVITY_METHODS['SHOW'])
+            ->with('EDIT', self::ACTIVITY_METHODS['EDIT'])
+            ->with('DELETE', self::ACTIVITY_METHODS['DELETE'])
+            ->with('ADD', self::ACTIVITY_METHODS['ADD'])
             ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)->with('current_billing_state', $billing_state)
             ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)->with('billing_states', $billing_states)
             ->with('previous_url', $_SESSION['previous_url'])
@@ -223,7 +296,7 @@ class ActivityController extends Controller
     public function show(int $id)
     {
         Log::debug('Show_activity', ['id' => $id]);
-        return $this->sedActivityView(self::SHOW, $id);
+        return $this->sedActivityView(self::ACTIVITY_METHODS['SHOW'], $id);
     }
 
     /**
@@ -234,7 +307,7 @@ class ActivityController extends Controller
     public function create()
     {
         Log::debug('Create_activity');
-        return $this->sedActivityView(self::ADD);
+        return $this->sedActivityView(self::ACTIVITY_METHODS['ADD']);
     }
 
     /**
@@ -272,7 +345,7 @@ class ActivityController extends Controller
     public function edit($id)
     {
         Log::debug('Edit_activity', ['id' => $id]);
-        return $this->sedActivityView(self::EDIT, $id);
+        return $this->sedActivityView(self::ACTIVITY_METHODS['EDIT'], $id);
     }
 
     /**
@@ -321,7 +394,35 @@ class ActivityController extends Controller
     public function confirmDestroy($id)
     {
         Log::debug('ConfirmDestroy_activity', ['id' => $id]);
-        return $this->sedActivityView(self::DELETE, $id);
+        return $this->sedActivityView(self::ACTIVITY_METHODS['DELETE'], $id);
+    }
+
+
+    private function changeActivityDateFormat($activities)
+    {
+        foreach ($activities as $activity) {
+            $activity->data = super_time_parser::parse($activity->data)->format('d-m-Y');
+        }
+    }
+
+    private function changeActivityDescriptionLenght($activities)
+    {
+        foreach ($activities as $activity) {
+            $activity->desc_attivita = strlen($activity->descrizione_attivita) >= 30 ?
+                substr($activity->descrizione_attivita, 0, 15) . "..." : $activity->descrizione_attivita;
+        }
+    }
+
+    private function addBillableDuration($activities)
+    {
+        foreach ($activities as $activity) {
+            $billable_duration = $activity->durata_fatturabile;
+            if ($billable_duration == null) {
+                $billable_duration = super_time_parser::parse($activity->durata);
+                $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
+                $activity->durata_fatturabile = $billable_duration->format("H:i");
+            }
+        }
     }
 
 }

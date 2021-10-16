@@ -55,7 +55,7 @@
                 </li>
 
                 <li id="administrative_nav_tab" class="nav-item">
-                    <a class="nav-link" href="{{ route('costumer.index') }}">@lang('labels.administrative_tab')</a>
+                    <a class="nav-link" href="{{ route('administrative.index') }}">@lang('labels.administrative_tab')</a>
                 </li>
 
                 <li id="manager_nav_tab" class="nav-item">

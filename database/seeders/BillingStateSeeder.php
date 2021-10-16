@@ -28,10 +28,5 @@ class BillingStateSeeder extends Seeder
             'id' => 3,
             'descrizione_stato_fatturazione' => 'non fatturabile'
         ]);
-
-        StatoFatturazione::create([
-            'id' => 4,
-            'descrizione_stato_fatturazione' => 'fatturata'
-        ]);
     }
 }

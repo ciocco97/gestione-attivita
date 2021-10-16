@@ -21,6 +21,11 @@ use mysql_xdevapi\Statement;
 
 class DataLayer
 {
+    public function listUsers()
+    {
+        return Persona::all();
+    }
+
     public function validUser($email, $password, $user_id = -1)
     {
         if ($email != null) {
@@ -76,7 +81,7 @@ class DataLayer
         $this->changePassword($user_id, $password);
     }
 
-    private function basicQueryForListActiveActivity(): \Illuminate\Database\Query\Builder
+    private function basicActivityQuery(): \Illuminate\Database\Query\Builder
     {
         return DB::table('attivita')
             ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
@@ -86,32 +91,39 @@ class DataLayer
             ->join('persona', 'attivita.persona_id', '=', 'persona.id')
             ->join('stato_fatturazione', 'attivita.stato_fatturazione_id', '=', 'stato_fatturazione.id')
             ->selectRaw('attivita.id,
+                                    attivita.stato_attivita_id,
                                     attivita.descrizione_attivita,
                                     attivita.data,
-                                    cliente.nome AS nome_cliente,
-                                    commessa.descrizione_commessa,
                                     attivita.ora_inizio,
                                     attivita.ora_fine,
                                     attivita.durata,
-                                    stato_attivita.descrizione_stato_attivita,
                                     attivita.rapportino_attivita,
+                                    attivita.persona_id,
+                                    attivita.stato_fatturazione_id,
+                                    attivita.durata_fatturabile,
+                                    attivita.fatturata,
+                                    cliente.nome AS nome_cliente,
                                     cliente.rapportino_cliente,
+                                    commessa.descrizione_commessa,
                                     commessa.rapportino_commessa,
                                     stato_commessa.id AS stato_commessa_id,
                                     stato_commessa.descrizione_stato_commessa,
-                                    attivita.persona_id,
-                                    persona.nome,
-                                    attivita.stato_fatturazione_id,
+                                    stato_attivita.descrizione_stato_attivita,
                                     stato_fatturazione.descrizione_stato_fatturazione,
-                                    attivita.durata_fatturabile')
-            ->where('stato_commessa.id', '=', 1)
+                                    persona.nome')
             ->orderBy('data', 'desc')
             ->orderBy('ora_inizio', 'desc');
     }
 
-    public function listActiveActivityForActivityTableByUserID(int $user_id, $start_date): \Illuminate\Support\Collection
+    private function basicActiveActivityQuery(): \Illuminate\Database\Query\Builder
     {
-        return $this->basicQueryForListActiveActivity()
+        return $this->basicActivityQuery()
+            ->where('stato_commessa.id', '=', 1);
+    }
+
+    public function listActiveActivityByUserID(int $user_id, $start_date): \Illuminate\Support\Collection
+    {
+        return $this->basicActiveActivityQuery()
             ->where('attivita.persona_id', '=', $user_id)
             ->where('attivita.data', '>=', $start_date)
             ->get();
@@ -131,12 +143,15 @@ class DataLayer
                                     attivita.ora_inizio,
                                     attivita.durata,
                                     attivita.durata_fatturabile,
+                                    attivita.persona_id,
+                                    attivita.stato_fatturazione_id,
+                                    attivita.fatturata,
                                     cliente.id AS cliente_id,
                                     cliente.nome AS nome_cliente,
-                                    attivita.persona_id,
+                                    commessa.descrizione_commessa,
                                     persona.nome,
-                                    attivita.stato_fatturazione_id,
                                     stato_fatturazione.descrizione_stato_fatturazione')
+            ->where('attivita.stato_attivita_id', 4)
             ->orderBy('data', 'desc')
             ->orderBy('ora_inizio', 'desc');
     }
@@ -182,12 +197,12 @@ class DataLayer
             $manager_role->descrizione_ruolo = 'manager';
             $roles->push($manager_role);
         }
-        return $roles;
+        return $roles->pluck('id');
     }
 
     public function listActiveActivityForManagerTableByUserID(int $user_id, $start_date)
     {
-        $query = $this->basicQueryForListActiveActivity();
+        $query = $this->basicActiveActivityQuery();
         $team = $this->listTeamIDS($user_id);
         $query->where('attivita.data', '>=', $start_date);
         return $query->whereIn('attivita.persona_id', $team)
@@ -195,9 +210,9 @@ class DataLayer
             ->get();
     }
 
-    public function filterActiveActivityForActivityTableByUserID(int $user_id, $start_date, $end_date, $costumer, $state, $date, $team_selected_ids)
+    public function filterActiveActivityByUserID(int $user_id, $start_date, $end_date, $costumer, $state, $date, $team_selected_ids)
     {
-        $basic_query = $this->basicQueryForListActiveActivity();
+        $basic_query = $this->basicActiveActivityQuery();
         $team_ids = $this->listTeamIDS($user_id);
 
         if ($team_selected_ids != null && count(array_intersect($team_selected_ids, $team_ids)) == count($team_selected_ids)) {
@@ -206,37 +221,81 @@ class DataLayer
             $basic_query->where('attivita.persona_id', '=', $user_id);
         }
 
+        return $this->addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $state, $date)->get();
+    }
+
+    public function filterAdministrativeActivities($start_date, $end_date, $costumer, $state, $date, $user_selected_id, $billed)
+    {
+        $basic_query = $this->basicQueryForListApprovedActivity();
+        if ($user_selected_id != null) {
+            $basic_query->where('attivita.persona_id', $user_selected_id);
+        }
+        if ($billed != null) {
+            $basic_query->where('attivita.stato_fatturazione_id', $billed);
+        }
+        return $this->addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $state, $date)->get();
+    }
+
+    public function addFilterToQuery($query, $start_date, $end_date, $costumer, $state, $date)
+    {
+
         if ($date != null) {
-            $basic_query->where('attivita.data', '=', $date);
+            $query->where('attivita.data', '=', $date);
         } else if ($start_date != null) {
-            $basic_query->where('attivita.data', '>=', $start_date);
+            $query->where('attivita.data', '>=', $start_date);
             if ($end_date != null) {
-                $basic_query->where('attivita.data', '<=', $end_date);
+                $query->where('attivita.data', '<=', $end_date);
             }
         }
         if ($costumer != null) {
-            $basic_query->where('cliente.id', '=', $costumer);
+            $query->where('cliente.id', '=', $costumer);
         }
         if ($state != null) {
-            $basic_query->where('stato_attivita.id', '=', $state);
+            $query->where('stato_attivita.id', '=', $state);
         }
-        return $basic_query->get();
+        return $query;
     }
 
-    public function havePermissionOnActivity($user_id, $activity)
+    public function listAdministrativeActivities($start_date)
+    {
+        return $this->basicQueryForListApprovedActivity()
+            ->where('attivita.data', '>=', $start_date)->get();
+    }
+
+    public function haveUpdatePermissionOnActivity($user_id, $activity)
+    {
+        return $this->haveTechnicianPermissionOnActivity($user_id, $activity)
+            || $this->haveManagerPermissionOnActivity($user_id, $activity);
+    }
+
+    public function haveShowPermissionOnActivity($user_id, $activity)
+    {
+        return $this->haveTechnicianPermissionOnActivity($user_id, $activity)
+            || $this->haveManagerPermissionOnActivity($user_id, $activity)
+            || $this->haveAdministrativePermissionOnActivity($user_id);
+    }
+
+    public function haveTechnicianPermissionOnActivity($user_id, $activity)
     {
         $activity_user_id = $activity->persona_id;
-        if ($activity_user_id == $user_id || in_array($activity_user_id, $this->listTeamIDS($user_id))) {
-            return true;
-        } else {
-            return false;
-        }
+        return $activity_user_id == $user_id;
+    }
+
+    public function haveManagerPermissionOnActivity($user_id, $activity)
+    {
+        $activity_user_id = $activity->persona_id;
+        return in_array($activity_user_id, $this->listTeamIDS($user_id));
+    }
+
+    public function haveAdministrativePermissionOnActivity($user_id)
+    {
+        return in_array(1, $this->listUserRoles($user_id)->toArray());
     }
 
     public function getActivityByActivityAndUserID(int $activity_id, int $user_id)
     {
         $activity = Attivita::find($activity_id);
-        if ($this->havePermissionOnActivity($user_id, $activity)) {
+        if ($this->haveShowPermissionOnActivity($user_id, $activity)) {
             return $activity;
         } else {
             return null;
@@ -246,7 +305,8 @@ class DataLayer
     public function getActivityForActivityReport(int $activity_id, int $user_id)
     {
         $activity = Attivita::find($activity_id);
-        if ($this->havePermissionOnActivity($user_id, $activity)) {
+        if ($this->haveTechnicianPermissionOnActivity($user_id, $activity)
+            || $this->haveManagerPermissionOnActivity($user_id, $activity)) {
             return DB::table('attivita')
                 ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
                 ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
@@ -278,10 +338,24 @@ class DataLayer
     {
         $activity = Attivita::find($activity_id);
         $user = Persona::find($user_id);
-        $user_roles = $user->ruoli()->get()->pluck('id')->toArray();
-        if ($this->havePermissionOnActivity($user_id, $activity) || in_array($user_roles, 1)) {
+        $access = false;
+        $administrative_permission = $this->haveAdministrativePermissionOnActivity($user_id);
+        if ($billing_state == 4) {
+            $access = $administrative_permission;
+        } else {
+            $access = $administrative_permission || $this->haveManagerPermissionOnActivity();
+        }
+        if ($access) {
             $activity->stato_fatturazione_id = $billing_state;
             $activity->save();
+        }
+    }
+
+    public function billingStateUpdateByActivityIDS($user_id, $ids, $state)
+    {
+        if ($this->haveAdministrativePermissionOnActivity($user_id)) {
+            Attivita::whereIn('id', $ids)
+                ->update(['fatturata' => $state]);
         }
     }
 
@@ -290,7 +364,7 @@ class DataLayer
         $activity = Attivita::find($activity_id);
         $user = Persona::find($user_id);
         $user_roles = $user->ruoli()->get()->pluck('id')->toArray();
-        if ($this->havePermissionOnActivity($user_id, $activity) || in_array($user_roles, 1)) {
+        if ($this->haveManagerPermissionOnActivity($user_id, $activity)) {
             $activity->durata_fatturabile = $billable_duration;
             $activity->save();
         }
@@ -316,7 +390,7 @@ class DataLayer
     public function updateActivity($user_id, $activity_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
     {
         $activity = Attivita::find($activity_id);
-        if ($this->havePermissionOnActivity($user_id, $activity)) {
+        if ($this->haveUpdatePermissionOnActivity($user_id, $activity)) {
             $activity->update([
                 'commessa_id' => $order_id,
                 'data' => $date,
@@ -334,7 +408,7 @@ class DataLayer
     public function updateActivityReport($activity_id, $user_id, bool $sent)
     {
         $activity = Attivita::find($activity_id);
-        if ($this->havePermissionOnActivity($user_id, $activity)) {
+        if ($this->haveUpdatePermissionOnActivity($user_id, $activity)) {
             $val = $sent ? 1 : 0;
             $activity->update([
                 'rapportino_attivita' => $val
@@ -345,7 +419,7 @@ class DataLayer
     public function destroyActivity($id, $user_id)
     {
         $activity = Attivita::find($id);
-        if ($this->havePermissionOnActivity($user_id, $activity)) {
+        if ($this->haveUpdatePermissionOnActivity($user_id, $activity)) {
             Attivita::destroy($id);
         }
     }
@@ -373,10 +447,11 @@ class DataLayer
             ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
             ->where('stato_commessa.id', '=', 1)
             ->distinct()
+            ->orderBy('cliente.nome')
             ->get();
     }
 
-    public function listActiveCostumerByUserID()
+    public function listActiveCostumerForCurrentUser()
     {
         return DB::table('cliente')
             ->select('cliente.id', 'cliente.nome')
@@ -394,6 +469,7 @@ class DataLayer
                     });
             })
             ->distinct()
+            ->orderBy('cliente.nome')
             ->get();
     }
 
@@ -423,7 +499,7 @@ class DataLayer
             ->first()->commesse()->where('cliente_id', $costumer_id)->get();
     }
 
-    public function stateUpdateByIDS($user_id, $ids, $state)
+    public function stateUpdateByActivityIDS($user_id, $ids, $state)
     {
         $team = $this->listTeamIDS($user_id);
         array_push($team, $user_id);
