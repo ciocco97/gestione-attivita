@@ -453,6 +453,10 @@ function filter_setup() {
         if (user) {
             $("#master_user_filter option[value=" + user + "]").prop("selected", true);
         }
+        let billing_state = localStorage["master_billing_state_filter"];
+        if (billing_state) {
+            $("#master_billing_state_filter option[value=" + billing_state + "]").prop("selected", true);
+        }
         let date = localStorage["master_date_filter"];
         if (date) {
             if (date !== "") {
@@ -473,6 +477,7 @@ function save_filters() {
     localStorage["master_state_filter"] = $("#master_state_filter").val();
     localStorage["master_date_filter"] = $("#master_date_filter").val();
     localStorage["master_user_filter"] = $("#master_user_filter").val();
+    localStorage["master_billing_state_filter"] = $("#master_billing_state_filter").val();
     $("#master_filter_form").submit();
 }
 
@@ -482,6 +487,7 @@ function filter_reset() {
     localStorage.removeItem("master_state_filter");
     localStorage.removeItem("master_date_filter");
     localStorage.removeItem("master_user_filter");
+    localStorage.removeItem("master_billing_state_filter");
 }
 
 function show_activity_script() {
