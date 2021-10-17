@@ -10,9 +10,7 @@
                     <option value="{{ $state->id }}">{{ $state->descrizione_stato_attivita }}</option>
                 @endforeach
             </select>
-            <button type="button" class="btn" onclick='$("#master_state_filter").val("");'>
-                <i class="bi bi-x-square"></i>
-            </button>
+            @include('button.reset', ['btn_target_id' => '#master_state_filter'])
         </div>
     </div>
 </div>

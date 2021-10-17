@@ -12,9 +12,7 @@
                     <option value="{{ $costumer->id }}">{{ $costumer->nome }}</option>
                 @endforeach
             </select>
-            <button type="button" class="btn" onclick='$("#master_costumer_filter").val("");'>
-                <i class="bi bi-x-square"></i>
-            </button>
+            @include('button.reset', ['btn_target_id' => '#master_costumer_filter'])
         </div>
     </div>
 </div>

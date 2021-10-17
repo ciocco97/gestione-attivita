@@ -13,7 +13,7 @@ class Attivita extends Model
 
     protected $fillable = ['persona_id', 'commessa_id', 'data', 'ora_inizio',
         'ora_fine', 'durata', 'durata_fatturabile', 'luogo', 'descrizione_attivita', 'note_interne',
-        'stato_attivita_id', 'rapportino_attivita'];
+        'stato_attivita_id', 'rapportino_attivita', 'stato_fatturazione_id', 'fatturata'];
 
     // Connections
 

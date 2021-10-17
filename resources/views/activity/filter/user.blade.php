@@ -11,9 +11,7 @@
                     <option value="{{ $user->id }}">{{ $user->nome }}</option>
                 @endforeach
             </select>
-            <button type="button" class="btn" onclick='$("#master_user_filter").val("");'>
-                <i class="bi bi-x-square"></i>
-            </button>
+            @include('button.reset', ['btn_target_id' => '#master_user_filter'])
         </div>
     </div>
 </div>

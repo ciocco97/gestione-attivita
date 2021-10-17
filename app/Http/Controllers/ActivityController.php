@@ -29,27 +29,38 @@ class ActivityController extends Controller
     );
 
 
-    private function indexActivityViewForManager_and_Tech($activities)
+    private function indexActivityView($activities)
     {
         $_SESSION['previous_url'] = url()->current();
-
+        $current_page = $_SESSION['current_page'];
         Log::debug('indexActivityView');
         $username = $_SESSION['username'];
 
         $dl = new DataLayer();
 
-        $orders = $dl->listActiveOrder();
-        $states = $dl->listActivityState();
+        $costumers = null;
+        $states = null;
+        $users = null;
+        $billing_states = null;
 
-        if ($_SESSION['current_page'] == self::PAGES['MANAGER']) {
-            $team = $dl->listTeam($_SESSION['user_id']);
-            $costumers = $dl->listActiveCostumer();
-            $billing_states = $dl->listBillingStates();
-            $this->addBillableDuration($activities);
-        } else {
-            $costumers = $dl->listActiveCostumerForCurrentUser();
-            $team = null;
-            $billing_states = null;
+        switch ($current_page) {
+            case self::PAGES['TECHNICIAN']:
+                $costumers = $dl->listActiveCostumerForCurrentUser();
+                $states = $dl->listActivityState();
+                break;
+            case self::PAGES['MANAGER']:
+                $costumers = $dl->listActiveCostumer();
+                $states = $dl->listActivityState();
+                $users = $dl->listTeam($_SESSION['user_id']);
+                $billing_states = $dl->listBillingStates();
+                $this->addBillableDuration($activities);
+                break;
+            case self::PAGES['ADMINISTRATIVE']:
+                $costumers = $dl->listCostumer();
+                $users = $dl->listUsers();
+                $billing_states = $dl->listBillingStates();
+                $this->addBillableDuration($activities);
+                break;
         }
 
         $this->changeActivityDateFormat($activities);
@@ -59,18 +70,21 @@ class ActivityController extends Controller
             ->with('activities', $activities)
             ->with('username', $username)
             ->with('costumers', $costumers)
-            ->with('orders', $orders)
             ->with('states', $states)
             ->with('billing_states', $billing_states)
-            ->with('users', $team)
+            ->with('users', $users)
+            ->with('current_page', $_SESSION['current_page'])
             ->with('pages', self::PAGES);
     }
 
     private function indexActivityViewForAdministrative($activities)
     {
+        $dl = new DataLayer();
+        if (!$dl->haveAdministrativePermissionOnActivity($_SESSION['user_id'])) {
+            return Redirect::to(route('activity.index'));
+        }
         $_SESSION['previous_url'] = url()->current();
 
-        $dl = new DataLayer();
 
         $username = $_SESSION['username'];
         $costumers = $dl->listActiveCostumer();
@@ -89,47 +103,45 @@ class ActivityController extends Controller
             ->with('orders', $orders)
             ->with('billing_states', $billing_states)
             ->with('users', $users)
+            ->with('current_page', $_SESSION['current_page'])
             ->with('pages', self::PAGES);
     }
 
     public function index()
     {
         Log::debug('Home');
-        $_SESSION['current_page'] = self::PAGES['TECHNICIAN'];
-
-        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
 
         $dl = new DataLayer();
+        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
         $activities = $dl->listActiveActivityByUserID($_SESSION['user_id'], $start_date);
 
-        return $this->indexActivityViewForManager_and_Tech($activities);
+        $_SESSION['current_page'] = self::PAGES['TECHNICIAN'];
+        return $this->indexActivityView($activities);
 
     }
 
     public function managerIndex()
     {
         Log::debug('Manager index');
-        $_SESSION['current_page'] = self::PAGES['MANAGER'];
-
-        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
 
         $dl = new DataLayer();
+        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
         $activities = $dl->listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
 
-        return $this->indexActivityViewForManager_and_Tech($activities);
+        $_SESSION['current_page'] = self::PAGES['MANAGER'];
+        return $this->indexActivityView($activities);
     }
 
     public function administrativeIndex()
     {
         Log::debug('Administrative index');
-        $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
-
-        $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
 
         $dl = new DataLayer();
+        $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
         $activities = $dl->listAdministrativeActivities($start_date);
 
-        return $this->indexActivityViewForAdministrative($activities);
+        $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
+        return $this->indexActivityView($activities);
     }
 
     private function getActivities($user_id, $page, $filter)
@@ -224,8 +236,8 @@ class ActivityController extends Controller
 
         $billed = null;
         if ($billing_state != null) {
-            $billed = $billing_state == 10?2:$billed;
-            $billed = $billing_state == 11?1:$billed;
+            $billed = $billing_state == 10 ? 2 : $billed;
+            $billed = $billing_state == 11 ? 1 : $billed;
         }
 
         if ($_SESSION['current_page'] == self::PAGES['ADMINISTRATIVE']) {
@@ -233,14 +245,13 @@ class ActivityController extends Controller
             $activities = $dl->filterAdministrativeActivities(
                 $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_state, $billed);
 
-            return $this->indexActivityViewForAdministrative($activities);
-
         } else {
+            Log::debug('Tech filter');
             $activities = $dl->filterActiveActivityByUserID(
                 $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
 
-            return $this->indexActivityViewForManager_and_Tech($activities);
         }
+        return $this->indexActivityView($activities);
     }
 
 

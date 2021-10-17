@@ -13,10 +13,7 @@
                 <option value="4">@lang('labels.last_month')</option>
                 <option value="5">@lang('labels.all')</option>
             </select>
-            <button type="button" class="btn"
-                    onclick='$("#master_period_filter").val(""); $("#master_period_filter").change()'>
-                <i class="bi bi-x-square"></i>
-            </button>
+            @include('button.reset', ['btn_target_id' => '#master_period_filter', 'change' => '#master_period_filter'])
         </div>
     </div>
 </div>

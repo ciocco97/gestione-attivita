@@ -101,11 +101,7 @@ function activity_checked(check, administrative) {
         current_row.addClass("table-active");
         if (checked_activity_ids.length === 1) {
             $("#activities_change_btn").fadeIn("fast");
-            if (administrative) {
-                $("#activities_change_2").fadeIn("fast");
-            } else {
-                $("#activities_change_4").fadeIn("fast");
-            }
+            $("#activities_change_main").fadeIn("fast");
         }
     } else {
         checked_activity_ids = checked_activity_ids.filter(function (id) {
@@ -113,7 +109,7 @@ function activity_checked(check, administrative) {
         })
         current_row.removeClass("table-active");
         if (checked_activity_ids.length === 0) {
-            $("#activities_change_2").fadeOut("fast");
+            $("#activities_change_main").fadeOut("fast");
             $("#activities_change_btn").fadeOut("fast");
         }
     }
