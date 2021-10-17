@@ -506,7 +506,7 @@ function filter_orders_when_costumer_selected() {
         type: 'GET',
         data: {costumer_id: costumer},
         success: function (data) {
-            var order_select = $('#order');
+            let order_select = $('#order');
             order_select.find('option').remove().end();
             $.each(data, function () {
                 order_select.append($("<option />").val(this.id).text(this.descrizione_commessa));

@@ -35,6 +35,7 @@ class ActivityController extends Controller
         $current_page = $_SESSION['current_page'];
         Log::debug('indexActivityView');
         $username = $_SESSION['username'];
+        $user_id = $_SESSION['user_id'];
 
         $dl = new DataLayer();
 
@@ -66,41 +67,13 @@ class ActivityController extends Controller
         $this->changeActivityDateFormat($activities);
         $this->changeActivityDescriptionLenght($activities);
 
+        $user_roles = $dl->listUserRoles($user_id)->toArray();
         return view('activity.technician')
             ->with('activities', $activities)
             ->with('username', $username)
+            ->with('user_roles', $user_roles)
             ->with('costumers', $costumers)
             ->with('states', $states)
-            ->with('billing_states', $billing_states)
-            ->with('users', $users)
-            ->with('current_page', $_SESSION['current_page'])
-            ->with('pages', self::PAGES);
-    }
-
-    private function indexActivityViewForAdministrative($activities)
-    {
-        $dl = new DataLayer();
-        if (!$dl->haveAdministrativePermissionOnActivity($_SESSION['user_id'])) {
-            return Redirect::to(route('activity.index'));
-        }
-        $_SESSION['previous_url'] = url()->current();
-
-
-        $username = $_SESSION['username'];
-        $costumers = $dl->listActiveCostumer();
-        $orders = $dl->listActiveOrder();
-        $users = $dl->listUsers();
-        $billing_states = $dl->listBillingStates();
-
-        $this->changeActivityDateFormat($activities);
-        $this->changeActivityDescriptionLenght($activities);
-        $this->addBillableDuration($activities);
-
-        return view('activity.administrative')
-            ->with('username', $username)
-            ->with('activities', $activities)
-            ->with('costumers', $costumers)
-            ->with('orders', $orders)
             ->with('billing_states', $billing_states)
             ->with('users', $users)
             ->with('current_page', $_SESSION['current_page'])
@@ -142,24 +115,6 @@ class ActivityController extends Controller
 
         $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
         return $this->indexActivityView($activities);
-    }
-
-    private function getActivities($user_id, $page, $filter)
-    {
-        $dl = new DataLayer();
-        $roles = $dl->listUserRoles($user_id);
-
-        $activities = null;
-        switch ($page) {
-            case self::PAGES['TECHNICIAN']:
-                $activities = $dl->listActivityTechnician($user_id, $filter);
-                break;
-            case self::PAGES['MANAGER']:
-                break;
-            case self::PAGES['ADMINISTRATIVE']:
-                break;
-        }
-        return $activities;
     }
 
     public function filterPost(Request $request)

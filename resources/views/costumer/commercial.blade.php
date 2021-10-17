@@ -145,7 +145,7 @@
     </div>
 
     <script>
-        administrative_script();
+        commercial_script();
     </script>
 
 @endsection

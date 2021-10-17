@@ -139,9 +139,13 @@ class AuthController extends Controller
     public function choosePassword()
     {
         $username = $_SESSION['username'];
+        $user_id = $_SESSION['user_id'];
+        $dl = new DataLayer();
+        $user_roles = $dl->listUserRoles($user_id)->toArray();
         return view('user.change_password')
             ->with('username', $username)
-            ->with('previous_url', $_SESSION['previous_url']);
+            ->with('previous_url', $_SESSION['previous_url'])
+            ->with('user_roles', $user_roles);
     }
 
     public function changePassword(Request $request)

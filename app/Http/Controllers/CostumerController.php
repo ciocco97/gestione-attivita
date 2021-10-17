@@ -14,6 +14,7 @@ class CostumerController extends Controller
     {
         $_SESSION['previous_url'] = url()->current();
         $username = $_SESSION['username'];
+        $user_id = $_SESSION['user_id'];
 
         $dl = new DataLayer();
         $costumers = $dl->listActiveCostumer();
@@ -43,8 +44,10 @@ class CostumerController extends Controller
         }
         $billing_states = $dl->listBillingStates();
 
-        return view('costumer.administrative')
+        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        return view('costumer.commercial')
             ->with('username', $username)
+            ->with('user_roles', $user_roles)
             ->with('billing_states', $billing_states)
             ->with('costumers_nums_activities', $infos);
     }

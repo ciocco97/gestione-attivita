@@ -1,10 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-light mb-1 mb-md-0"> <!-- Intestazione -->
     <div class="container-fluid px-lg-5">
-        <a class="order-lg-0 navbar-brand d-none d-sm-inline" href="{{ route('user.login') }}"><i class="bi bi-house-door me-2"></i>@lang('labels.main_title')</a>
-        <a class="order-lg-0 navbar-brand d-sm-none" href="{{ route('user.login') }}"><i class="bi bi-house-door"></i></a>
+        <a class="order-lg-0 navbar-brand d-none d-sm-inline" href="{{ route('user.login') }}"><i
+                class="bi bi-house-door me-2"></i>@lang('labels.main_title')</a>
+        <a class="order-lg-0 navbar-brand d-sm-none" href="{{ route('user.login') }}"><i
+                class="bi bi-house-door"></i></a>
         <div class="order-lg-2 dropdown">
             <span class="d-none d-lg-inline">
-                <a class="inline text-decoration-none text-dark me-2" href="{{ route('lang.change', ['lang' => 'it']) }}">
+                <a class="inline text-decoration-none text-dark me-2"
+                   href="{{ route('lang.change', ['lang' => 'it']) }}">
                     <i class="bi bi-flag me-2"></i>it
                 </a>
                 <a class="inline text-decoration-none text-dark" href="{{ route('lang.change', ['lang' => 'en']) }}">
@@ -50,17 +53,24 @@
 
         <div class="order-lg-1 collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav">
-                <li id="commercial_nav_tab" class="nav-item">
-                    <a class="nav-link" href="">@lang('labels.commercial_tab')</a>
-                </li>
+                @if(in_array(2, $user_roles))
+                    <li id="commercial_nav_tab" class="nav-item">
+                        <a class="nav-link" href="{{ route('costumer.index') }}">@lang('labels.commercial_tab')</a>
+                    </li>
+                @endif
 
-                <li id="administrative_nav_tab" class="nav-item">
-                    <a class="nav-link" href="{{ route('administrative.index') }}">@lang('labels.administrative_tab')</a>
-                </li>
+                @if(in_array(1, $user_roles))
+                    <li id="administrative_nav_tab" class="nav-item">
+                        <a class="nav-link"
+                           href="{{ route('administrative.index') }}">@lang('labels.administrative_tab')</a>
+                    </li>
+                @endif
 
-                <li id="manager_nav_tab" class="nav-item">
-                    <a class="nav-link" href="{{ route('manager.index') }}">@lang('labels.manager_tab')</a>
-                </li>
+                @if(in_array(3, $user_roles))
+                    <li id="manager_nav_tab" class="nav-item">
+                        <a class="nav-link" href="{{ route('manager.index') }}">@lang('labels.manager_tab')</a>
+                    </li>
+                @endif
 
                 <li id="technician_nav_tab" class="nav-item">
                     <a class="nav-link" href="{{ route('activity.index') }}">@lang('labels.tech_tab')</a>
@@ -75,5 +85,5 @@
 </nav>
 
 <script>
-    nav_script();
+    // nav_script();
 </script>
