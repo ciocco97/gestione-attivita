@@ -38,20 +38,20 @@
                     @endif
                         </h3>
 
-                    <div class="col-md-6 mb-2 mb-md-0"> <!-- Primi due campi -->
+                    <div class="row mb-md-2 mt-3"> <!-- Primi due campi -->
 
-                        <div class="col-md-12 mb-2 mb-md-0"> <!-- Primo campo -->
+                        <div class="col-md-6 mb-2 mb-md-0">
                             <label class="form-label" for="description">@lang('labels.description')</label>
                             @if($method != $ADD)
                                 @if($method == $EDIT)
-                                    <textarea class="form-control" id="description"
-                                              name="description" required>{{ $order->descrizione_commessa }}</textarea>
+                                    <input class="form-control" type="text" id="description" name="description"
+                                           value="{{ $order->descrizione_commessa }}">
                                 @else
-                                    <textarea class="form-control" id="description" name="description"
-                                              disabled>{{ $order->descrizione_commess }}</textarea>
+                                    <input class="form-control" type="text" id="description" name="description"
+                                           value="{{ $order->descrizione_commessa }}" disabled>
                                 @endif
                             @else
-                                <textarea class="form-control" id="description" name="description" required></textarea>
+                                <input class="form-control" type="text" id="description" name="description">
                             @endif
                         </div>
 
@@ -86,8 +86,8 @@
 
                     </div> <!-- Fine primi 2 campi -->
 
-                    <div class="row mb-md-2"> <!-- Ultimo -->
-                        <div class="col-md-12 mb-2 mb-md-0">
+                    <div class="row mb-md-2 mt-3"> <!-- Ultimi 2 -->
+                        <div class="col-md-6 mb-2 mb-md-0">
                             <label class="form-label" for="state">@lang('labels.state')</label>
                             @if($method != $ADD)
                                 @if($method == $EDIT)
@@ -95,16 +95,16 @@
                                         @foreach($states as $state)
                                             @if($state->id == $current_state->id)
                                                 <option value="{{ $state->id }}"
-                                                        selected>{{ $state->descrizione_stato_attivita }}</option>
+                                                        selected>{{ $state->descrizione_stato_commessa }}</option>
                                             @else
                                                 <option
-                                                    value="{{ $state->id }}">{{ $state->descrizione_stato_attivita }}</option>
+                                                    value="{{ $state->id }}">{{ $state->descrizione_stato_commessa }}</option>
                                             @endif
                                         @endforeach
                                     </select>
                                 @else
                                     <select class="form-select" id="state" name="state" disabled>
-                                        <option selected>{{ $current_state->descrizione_stato_attivita }}</option>
+                                        <option selected>{{ $current_state->descrizione_stato_commessa }}</option>
                                     </select>
                                 @endif
                             @else
@@ -112,10 +112,38 @@
                                     <option value="" disabled selected hidden>@lang('labels.select') @lang('labels.state')</option>
                                     @foreach($states as $state)
                                         <option
-                                            value="{{ $state->id }}">{{ $state->descrizione_stato_attivita }}</option>
+                                            value="{{ $state->id }}">{{ $state->descrizione_stato_commessa }}</option>
                                     @endforeach
                                 </select>
                             @endif
+                        </div>
+
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <label class="form-label" for="report_switch">@lang('labels.report')</label>
+                            <div class="form-check form-switch">
+                                @if($method != $ADD)
+                                    @if($method == $EDIT)
+                                        @if($order->rapportino_commessa)
+                                            <input class="form-check-input" type="checkbox" id="report_switch"
+                                                   name="report" checked>
+                                        @else
+                                            <input class="form-check-input" type="checkbox" id="report_switch"
+                                                   name="report">
+                                        @endif
+                                    @else
+                                        @if($order->rapportino_commessa)
+                                            <input class="form-check-input" type="checkbox" id="report_switch"
+                                                   name="report" checked disabled>
+                                        @else
+                                            <input class="form-check-input" type="checkbox" id="report_switch"
+                                                   name="report" disabled>
+                                        @endif
+                                    @endif
+                                @else
+                                    <input class="form-check-input" type="checkbox" id="report_switch"
+                                           name="report" checked>
+                                @endif
+                            </div>
                         </div>
                     </div> <!-- Fine ultimo -->
 

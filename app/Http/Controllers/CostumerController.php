@@ -83,7 +83,6 @@ class CostumerController extends Controller
     public function index()
     {
         Log::debug('Home');
-        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
 
         $costumers_infos = $this->getCostumersInfos();
 

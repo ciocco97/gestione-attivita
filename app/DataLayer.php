@@ -534,9 +534,22 @@ class DataLayer
         return Cliente::find($costumer_id);
     }
 
+    public function getOrderByID($order_id) {
+        return Commessa::find($order_id);
+    }
+
     public function listOrderInfos()
     {
         return DB::table('commessa')
+            ->select([
+                'commessa.id',
+                'commessa.descrizione_commessa',
+                'commessa.cliente_id',
+                'commessa.stato_commessa_id',
+                'commessa.persona_id',
+                'commessa.rapportino_commessa',
+                'stato_commessa.descrizione_stato_commessa'
+            ])
             ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
             ->orderBy('commessa.descrizione_commessa')
             ->get();

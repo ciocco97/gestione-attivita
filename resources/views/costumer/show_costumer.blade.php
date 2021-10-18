@@ -73,7 +73,7 @@
                     </div> <!-- Fine primi 2 campi -->
                     <div class="row mb-md-2"> <!-- Campo rapportino -->
                         <div class="col-md-6 mb-2 mb-md-0">
-                            <label class="form-label" for="costumer_report">@lang('labels.report')</label>
+                            <label class="form-label" for="report_switch">@lang('labels.report')</label>
                             <div class="form-check form-switch">
                                 @if($method != $ADD)
                                     @if($method == $EDIT)

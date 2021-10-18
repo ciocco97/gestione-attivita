@@ -10,6 +10,7 @@ use \App\Http\Middleware\Language;
 use \App\Http\Controllers\AjaxController;
 use \App\Http\Controllers\ActivityMailController;
 use \App\Http\Controllers\CostumerController;
+use \App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,10 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/costumer/{id}/confirm', [CostumerController::class, 'confirmDestroy'])->name('costumer.destroy.confirm');
         Route::post('/costumer/{id}/update', [CostumerController::class, 'update'])->name('costumer.update');
         Route::get('/costumer/{id}/destroy', [CostumerController::class, 'destroy'])->name('costumer.destroy');
+        Route::resource('order', OrderController::class);
+        Route::get('/order/{id}/confirm', [OrderController::class, 'confirmDestroy'])->name('order.destroy.confirm');
+        Route::post('/order/{id}/update', [OrderController::class, 'update'])->name('order.update');
+        Route::get('/order/{id}/destroy', [OrderController::class, 'destroy'])->name('order.destroy');
     });
 });
 

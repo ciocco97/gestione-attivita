@@ -5,6 +5,7 @@
         <th scope="col">@lang('labels.order')</th>
         <th scope="col">@lang('labels.state') @lang('labels.order')</th>
         <th scope="col">@lang('labels.report')</th>
+        <th scope="col">@lang('labels.edit')</th>
         <th scope="col">@lang('labels.delete')</th>
     </tr>
     </thead>
@@ -50,8 +51,14 @@
 
             </td>
             <td>
+                <a id="edit_{{ $costumer_order->id }}" class="btn pt-0"
+                   href="{{ route('order.edit', ['order' => $costumer_order->id]) }}">
+                    <i class="bi bi-pencil text-warning"></i>
+                </a>
+            </td>
+            <td>
                 <a id="delete_{{ $costumer_order->id }}" class="btn pt-0"
-                   href="{{ route('activity.destroy.confirm', ['id' => $costumer_order->id]) }}">
+                   href="{{ route('order.destroy.confirm', ['id' => $costumer_order->id]) }}">
                     <i class="bi bi-trash text-danger"></i>
                 </a>
             </td>
