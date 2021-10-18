@@ -58,7 +58,7 @@
                                     <a id="delete_{{ $costumer_orders_nums[0]->id }}"
                                        class="btn pt-0 disabled"
                                        href="">
-                                        <i class="bi bi-trash text-secondary"></i>
+                                        <i class="bi bi-trash"></i>
                                     </a>
                                 </td>
                             @else

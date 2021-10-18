@@ -3,6 +3,7 @@
     <thead>
     <tr>
         <th scope="col">@lang('labels.order')</th>
+        <th scope="col">@lang('labels.num') @lang('labels.activity')</th>
         <th scope="col">@lang('labels.state') @lang('labels.order')</th>
         <th scope="col">@lang('labels.report')</th>
         <th scope="col">@lang('labels.edit')</th>
@@ -15,6 +16,9 @@
         <tr id="order_{{ $costumer_order->id }}">
             <td>
                 {{ $costumer_order->descrizione_commessa }}
+            </td>
+            <td>
+                {{ $costumer_order->num_attivita }}
             </td>
             <td>
                 <div class="d-flex justify-content-center">
@@ -40,13 +44,15 @@
             </td>
             <td>
                 <div class="d-flex justify-content-center">
-                <div class="form-check form-switch">
-                    @if($costumer_order->rapportino_commessa)
-                        <input class="form-check-input" type="checkbox" id="report_switch_{{ $costumer_order->id }}" checked>
-                    @else
-                        <input class="form-check-input" type="checkbox" id="report_switch_{{ $costumer_order->id }}">
-                    @endif
-                </div>
+                    <div class="form-check form-switch">
+                        @if($costumer_order->rapportino_commessa)
+                            <input class="form-check-input" type="checkbox" id="report_switch_{{ $costumer_order->id }}"
+                                   checked>
+                        @else
+                            <input class="form-check-input" type="checkbox"
+                                   id="report_switch_{{ $costumer_order->id }}">
+                        @endif
+                    </div>
                 </div>
 
             </td>
@@ -57,10 +63,18 @@
                 </a>
             </td>
             <td>
-                <a id="delete_{{ $costumer_order->id }}" class="btn pt-0"
-                   href="{{ route('order.destroy.confirm', ['id' => $costumer_order->id]) }}">
-                    <i class="bi bi-trash text-danger"></i>
-                </a>
+                @if($costumer_order->num_attivita != 0)
+                    <a id="delete_{{ $costumer_order->id }}" class="btn pt-0 disabled"
+                       href="" disabled>
+                        <i class="bi bi-trash"></i>
+                    </a>
+                @else
+                    <a id="delete_{{ $costumer_order->id }}" class="btn pt-0"
+                       href="{{ route('order.destroy.confirm', ['id' => $costumer_order->id]) }}">
+                        <i class="bi bi-trash text-danger"></i>
+                    </a>
+                @endif
+
             </td>
         </tr>
     @endforeach

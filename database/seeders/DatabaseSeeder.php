@@ -39,30 +39,30 @@ class DatabaseSeeder extends Seeder
         $persone = Persona::all();
         $clienti = Cliente::all();
 
-        foreach ($stati_attivita as $sa) {
-            foreach ($stati_fatturazione as $sf) {
-                foreach ($persone as $p) {
-                    $c = Cliente::find(rand(1, $clienti->count()));
-                    Commessa::factory()
-                        ->count(1)
-                        ->state([
-                            'cliente_id' => $c->id,
-                            'persona_id' => $p->id,
-                            'stato_commessa_id' => 1
-                        ])
-                        ->has(
-                            Attivita::factory()
-                                ->count(1)->state([
-                                    'persona_id' => $p->id,
-                                    'stato_attivita_id' => $sa->id,
-                                    'stato_fatturazione_id' => $sf->id
-                                ])
-
-                        )
-                        ->create();
-                }
-            }
-        }
+//        foreach ($stati_attivita as $sa) {
+//            foreach ($stati_fatturazione as $sf) {
+//                foreach ($persone as $p) {
+//                    $c = Cliente::find(rand(1, $clienti->count()));
+//                    Commessa::factory()
+//                        ->count(1)
+//                        ->state([
+//                            'cliente_id' => $c->id,
+//                            'persona_id' => $p->id,
+//                            'stato_commessa_id' => 1
+//                        ])
+//                        ->has(
+//                            Attivita::factory()
+//                                ->count(1)->state([
+//                                    'persona_id' => $p->id,
+//                                    'stato_attivita_id' => $sa->id,
+//                                    'stato_fatturazione_id' => $sf->id
+//                                ])
+//
+//                        )
+//                        ->create();
+//                }
+//            }
+//        }
 
     }
 }

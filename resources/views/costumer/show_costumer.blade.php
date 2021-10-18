@@ -45,13 +45,13 @@
                             @if($method != $ADD)
                                 @if($method == $EDIT)
                                     <input class="form-control" type="text" id="name" name="name"
-                                           value="{{ $costumer->nome }}">
+                                           value="{{ $costumer->nome }}" placeholder="@lang('labels.type') @lang('labels.name')">
                                 @else
                                     <input class="form-control" type="text" id="name" name="name"
                                            value="{{ $costumer->nome }}" disabled>
                                 @endif
                             @else
-                                <input class="form-control" type="text" id="name" name="name">
+                                <input class="form-control" type="text" id="name" name="name" placeholder="@lang('labels.type') @lang('labels.name')">
                             @endif
                         </div>
 
@@ -60,13 +60,13 @@
                             @if($method != $ADD)
                                 @if($method == $EDIT)
                                     <input class="form-control" type="email" id="email" name="email"
-                                           value="{{ $costumer->email }}">
+                                           value="{{ $costumer->email }}" placeholder="@lang('labels.type') @lang('labels.email')">
                                 @else
                                     <input class="form-control" type="email" id="name" name="name"
                                            value="{{ $costumer->email }}" disabled>
                                 @endif
                             @else
-                                <input class="form-control" type="email" id="email" name="email">
+                                <input class="form-control" type="email" id="email" name="email" placeholder="@lang('labels.type') @lang('labels.email')">
                             @endif
                         </div>
 

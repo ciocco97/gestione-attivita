@@ -45,13 +45,13 @@
                             @if($method != $ADD)
                                 @if($method == $EDIT)
                                     <input class="form-control" type="text" id="description" name="description"
-                                           value="{{ $order->descrizione_commessa }}">
+                                           value="{{ $order->descrizione_commessa }}" placeholder="@lang('labels.type') @lang('labels.description')">
                                 @else
                                     <input class="form-control" type="text" id="description" name="description"
                                            value="{{ $order->descrizione_commessa }}" disabled>
                                 @endif
                             @else
-                                <input class="form-control" type="text" id="description" name="description">
+                                <input class="form-control" type="text" id="description" name="description" placeholder="@lang('labels.type') @lang('labels.description')">
                             @endif
                         </div>
 

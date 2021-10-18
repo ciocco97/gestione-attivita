@@ -125,6 +125,9 @@ class CostumerController extends Controller
             array_push($costumers_infos, $info);
         }
 
+//        dump($costumers_infos);
+//        exit();
+
         return $costumers_infos;
 
     }

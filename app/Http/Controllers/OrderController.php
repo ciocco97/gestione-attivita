@@ -137,7 +137,7 @@ class OrderController extends Controller
             'report' => $report
         ]);
         $dl = new DataLayer();
-        $dl->updateOrder($user_id, $description, $costumer, $state, $report);
+        $dl->updateOrder($user_id, $id, $description, $costumer, $state, $report);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -152,7 +152,7 @@ class OrderController extends Controller
     {
         Log::debug('Destroy_order', ['id' => $id]);
         $dl = new DataLayer();
-        $dl->destroyCostumer($id, $_SESSION['user_id']);
+        $dl->destroyOrder($id, $_SESSION['user_id']);
 
         return Redirect::to($_SESSION['previous_url']);
     }
