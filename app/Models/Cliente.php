@@ -10,7 +10,7 @@ class Cliente extends Model
     use HasFactory;
 
     protected $table = 'cliente';
-    protected $fillable = ['nome', 'rapportino_cliente'];
+    protected $fillable = ['nome', 'email', 'rapportino_cliente'];
     public $timestamps = false;
 
     public function commesse()

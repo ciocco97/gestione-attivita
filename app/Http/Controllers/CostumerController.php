@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DataLayer;
+use App\Models\Persona;
 use Carbon\Carbon as super_time_parser;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 
 class CostumerController extends Controller
 {
@@ -113,6 +115,9 @@ class CostumerController extends Controller
                 return $value->cliente_id == $costumer_id;
             })->pluck('attivita_num')->first();
 
+            if ($costumer_activities_num == null) {
+                $costumer_activities_num = 0;
+            }
             if ($costumer_billed_activities_num == null) {
                 $costumer_billed_activities_num = 0;
             }
@@ -125,6 +130,33 @@ class CostumerController extends Controller
 
     }
 
+    public function sedCostumerView($method, int $costumer_id = -1)
+    {
+        Log::debug('sedCostumerView');
+        $username = $_SESSION['username'];
+        $user_id = $_SESSION['user_id'];
+
+        $dl = new DataLayer();
+
+        $costumer = null;
+        if ($costumer_id != -1) {
+            $costumer = $dl->getCostumerByID($costumer_id);
+        }
+
+        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        return view('costumer.show_costumer')
+            ->with('method', $method)
+            ->with('username', $username)
+            ->with('user_roles', $user_roles)
+            ->with('costumer', $costumer)
+            ->with('SHOW', ActivityController::METHODS['SHOW'])
+            ->with('EDIT', ActivityController::METHODS['EDIT'])
+            ->with('DELETE', ActivityController::METHODS['DELETE'])
+            ->with('ADD', ActivityController::METHODS['ADD'])
+            ->with('previous_url', $_SESSION['previous_url']);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -132,7 +164,7 @@ class CostumerController extends Controller
      */
     public function create()
     {
-        //
+        return $this->sedCostumerView(ActivityController::METHODS['ADD']);
     }
 
     /**
@@ -143,7 +175,19 @@ class CostumerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user_id = $_SESSION['user_id'];
+        $name = $request->get('name');
+        $email = $request->get('email');
+        $report = $request->get('report') == "on" ? 1 : 0;
+        Log::debug('Store_costumer', [
+            'name' => $name,
+            'email' => $email,
+            'report' => $report
+        ]);
+        $dl = new DataLayer();
+        $dl->storeCostumer($user_id, $name, $email, $report);
+
+        return Redirect::to($_SESSION['previous_url']);
     }
 
     /**
@@ -154,7 +198,7 @@ class CostumerController extends Controller
      */
     public function show($id)
     {
-        //
+        return $this->sedCostumerView(ActivityController::METHODS['SHOW'], $id);
     }
 
     /**
@@ -165,7 +209,7 @@ class CostumerController extends Controller
      */
     public function edit($id)
     {
-        //
+        return $this->sedCostumerView(ActivityController::METHODS['EDIT'], $id);
     }
 
     /**
@@ -177,7 +221,16 @@ class CostumerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user_id = $_SESSION['user_id'];
+        $name = $request->get('name');
+        $email = $request->get('email');
+        $report = $request->get('report') == "on" ? 1 : 0;
+        Log::debug('Update_costumer', ['id' => $id]);
+
+        $dl = new DataLayer();
+        $dl->updateCostumer($user_id, $id, $name, $email, $report);
+
+        return Redirect::to($_SESSION['previous_url']);
     }
 
     /**
@@ -188,6 +241,16 @@ class CostumerController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Log::debug('Destroy_costumer', ['id' => $id]);
+        $dl = new DataLayer();
+        $dl->destroyCostumer($id, $_SESSION['user_id']);
+
+        return Redirect::to($_SESSION['previous_url']);
+    }
+
+    public function confirmDestroy($id)
+    {
+        Log::debug('ConfirmDestroy_costumer', ['id' => $id]);
+        return $this->sedCostumerView(ActivityController::METHODS['DELETE'], $id);
     }
 }

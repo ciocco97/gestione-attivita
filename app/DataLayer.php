@@ -306,6 +306,11 @@ class DataLayer
         return in_array(1, $this->listUserRoles($user_id)->toArray());
     }
 
+    public function haveCommercialPermission($user_id)
+    {
+        return in_array(2, $this->listUserRoles($user_id)->toArray());
+    }
+
     public function getActivityByActivityAndUserID(int $activity_id, int $user_id)
     {
         $activity = Attivita::find($activity_id);
@@ -401,6 +406,16 @@ class DataLayer
         ]);
     }
 
+    public function storeCostumer($user_id, $name, $email, $report) {
+        if ($this->haveCommercialPermission($user_id)) {
+            Cliente::create([
+                'nome' => $name,
+                'email' => $email,
+                'rapportino_cliente' => $report
+            ]);
+        }
+    }
+
     public function updateActivity($user_id, $activity_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
     {
         $activity = Attivita::find($activity_id);
@@ -415,6 +430,17 @@ class DataLayer
                 'descrizione_attivita' => $description,
                 'note_interne' => $internalNotes,
                 'stato_attivita_id' => $state
+            ]);
+        }
+    }
+
+    public function updateCostumer($user_id, $costumer_id, $name, $email, $report) {
+        $costumer = Cliente::find($costumer_id);
+        if ($this->haveCommercialPermission($user_id)) {
+            $costumer->update([
+                'nome' => $name,
+                'email' => $email,
+                'rapportino_cliente' => $report
             ]);
         }
     }
@@ -435,6 +461,13 @@ class DataLayer
         $activity = Attivita::find($id);
         if ($this->haveUpdatePermissionOnActivity($user_id, $activity)) {
             Attivita::destroy($id);
+        }
+    }
+
+    public function destroyCostumer($id, $user_id)
+    {
+        if ($this->haveCommercialPermission($user_id)) {
+            Cliente::destroy($id);
         }
     }
 
@@ -495,6 +528,10 @@ class DataLayer
     public function isCostumerActive(int $costumer_id)
     {
         return (Cliente::find($costumer_id)->commesse()->count() > 0);
+    }
+
+    public function getCostumerByID($costumer_id) {
+        return Cliente::find($costumer_id);
     }
 
     public function listOrderInfos()

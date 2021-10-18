@@ -53,6 +53,9 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/activity/manager/index', [ActivityController::class, 'managerIndex'])->name('manager.index');
         Route::get('/activity/administrative/index', [ActivityController::class, 'administrativeIndex'])->name('administrative.index');
         Route::resource('costumer', CostumerController::class);
+        Route::get('/costumer/{id}/confirm', [CostumerController::class, 'confirmDestroy'])->name('costumer.destroy.confirm');
+        Route::post('/costumer/{id}/update', [CostumerController::class, 'update'])->name('costumer.update');
+        Route::get('/costumer/{id}/destroy', [CostumerController::class, 'destroy'])->name('costumer.destroy');
     });
 });
 

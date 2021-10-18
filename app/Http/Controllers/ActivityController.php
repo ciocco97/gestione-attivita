@@ -14,7 +14,7 @@ use Carbon\Carbon as super_time_parser;
 class ActivityController extends Controller
 {
 
-    const ACTIVITY_METHODS = array(
+    const METHODS = array(
         'SHOW' => 0,
         'EDIT' => 1,
         'DELETE' => 2,
@@ -237,7 +237,7 @@ class ActivityController extends Controller
             $state = $activity->statoAttivita()->get()->first();
         }
 
-        if ($method == self::ACTIVITY_METHODS['ADD'] || $method == self::ACTIVITY_METHODS['EDIT']) {
+        if ($method == self::METHODS['ADD'] || $method == self::METHODS['EDIT']) {
             $costumers = $dl->listActiveCostumer();
             $orders = $dl->listActiveOrder();
             if ($manager) {
@@ -254,10 +254,10 @@ class ActivityController extends Controller
             ->with('user_roles', $user_roles)
             ->with('method', $method)
             ->with('tech_name', $tech_name)
-            ->with('SHOW', self::ACTIVITY_METHODS['SHOW'])
-            ->with('EDIT', self::ACTIVITY_METHODS['EDIT'])
-            ->with('DELETE', self::ACTIVITY_METHODS['DELETE'])
-            ->with('ADD', self::ACTIVITY_METHODS['ADD'])
+            ->with('SHOW', self::METHODS['SHOW'])
+            ->with('EDIT', self::METHODS['EDIT'])
+            ->with('DELETE', self::METHODS['DELETE'])
+            ->with('ADD', self::METHODS['ADD'])
             ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)->with('current_billing_state', $billing_state)
             ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)->with('billing_states', $billing_states)
             ->with('previous_url', $_SESSION['previous_url'])
@@ -274,7 +274,7 @@ class ActivityController extends Controller
     public function show(int $id)
     {
         Log::debug('Show_activity', ['id' => $id]);
-        return $this->sedActivityView(self::ACTIVITY_METHODS['SHOW'], $id);
+        return $this->sedActivityView(self::METHODS['SHOW'], $id);
     }
 
     /**
@@ -285,7 +285,7 @@ class ActivityController extends Controller
     public function create()
     {
         Log::debug('Create_activity');
-        return $this->sedActivityView(self::ACTIVITY_METHODS['ADD']);
+        return $this->sedActivityView(self::METHODS['ADD']);
     }
 
     /**
@@ -323,7 +323,7 @@ class ActivityController extends Controller
     public function edit($id)
     {
         Log::debug('Edit_activity', ['id' => $id]);
-        return $this->sedActivityView(self::ACTIVITY_METHODS['EDIT'], $id);
+        return $this->sedActivityView(self::METHODS['EDIT'], $id);
     }
 
     /**
@@ -372,7 +372,7 @@ class ActivityController extends Controller
     public function confirmDestroy($id)
     {
         Log::debug('ConfirmDestroy_activity', ['id' => $id]);
-        return $this->sedActivityView(self::ACTIVITY_METHODS['DELETE'], $id);
+        return $this->sedActivityView(self::METHODS['DELETE'], $id);
     }
 
 
