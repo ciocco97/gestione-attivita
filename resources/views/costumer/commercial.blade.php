@@ -48,7 +48,7 @@
                                         type="button" data-costumer-id="{{ $costumer_orders_nums[0]->id }}"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#collapse_{{ $costumer_orders_nums[0]->id }}">
-                                    @lang('labels.num_orders: '){{ count($costumer_orders_nums[1]) }}
+                                    @lang('labels.num_orders'): {{ count($costumer_orders_nums[1]) }}
                                 </button>
                             </h2>
                             <div id="collapse_{{ $costumer_orders_nums[0]->id }}" class="accordion-collapse collapse"
