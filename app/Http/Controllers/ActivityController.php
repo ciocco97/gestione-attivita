@@ -248,8 +248,10 @@ class ActivityController extends Controller
             }
         }
 
+        $user_roles = $dl->listUserRoles($user_id)->toArray();
         return view('activity.show')
             ->with('username', $username)
+            ->with('user_roles', $user_roles)
             ->with('method', $method)
             ->with('tech_name', $tech_name)
             ->with('SHOW', self::ACTIVITY_METHODS['SHOW'])
