@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\DataLayer;
 use Carbon\Carbon as super_time_parser;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class CostumerController extends Controller
 {
 
-    public function indexCostumerView($start_date)
+    public function indexCostumerViewOld($activities)
     {
         $_SESSION['previous_url'] = url()->current();
         $username = $_SESSION['username'];
@@ -18,7 +19,7 @@ class CostumerController extends Controller
 
         $dl = new DataLayer();
         $costumers = $dl->listActiveCostumer();
-        list($activities, $not_bill_a_nums) = $dl->listApprovedActivity($start_date);
+        list($activities, $not_bill_a_nums) = $dl->getCommercialInfos($start_date);
 
         $infos = array();
         foreach ($costumers as $costumer) {
@@ -52,6 +53,26 @@ class CostumerController extends Controller
             ->with('costumers_nums_activities', $infos);
     }
 
+    public function indexCostumerView($costumers_infos)
+    {
+        $_SESSION['previous_url'] = url()->current();
+        Log::debug('indexCostumerView');
+        $username = $_SESSION['username'];
+        $user_id = $_SESSION['user_id'];
+
+        $dl = new DataLayer();
+
+        $order_states = $dl->listOrderStates();
+        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        return view('costumer.commercial')
+            ->with('username', $username)
+            ->with('user_roles', $user_roles)
+            ->with('order_states', $order_states)
+            ->with('costumers_orders_nums', $costumers_infos)
+            ->with('pages', ActivityController::PAGES)
+            ->with('current_page', $_SESSION['current_page']);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -62,7 +83,46 @@ class CostumerController extends Controller
         Log::debug('Home');
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
 
-        return $this->indexCostumerView($start_date);
+        $costumers_infos = $this->getCostumersInfos();
+
+        $_SESSION['current_page'] = ActivityController::PAGES['COMMERCIAL'];
+        return $this->indexCostumerView($costumers_infos);
+    }
+
+    private function getCostumersInfos(): array
+    {
+        $dl = new DataLayer();
+
+        $costumers = $dl->listCostumer();
+        $numBilledActivities_perCostumer = $dl->getNumActivitiesPerCostumer(true);
+        $numActivities_perCostumer = $dl->getNumActivitiesPerCostumer();
+
+        $orders = $dl->listOrderInfos();
+
+        $costumers_infos = array();
+        foreach ($costumers as $costumer) {
+            $costumer_id = $costumer->id;
+            $costumer_orders = $orders->filter(function ($value) use (&$costumer_id) {
+                return $value->cliente_id == $costumer_id;
+            });
+            $costumer_billed_activities_num = $numBilledActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
+                return $value->cliente_id == $costumer_id;
+            })->pluck('attivita_num')->first();
+
+            $costumer_activities_num = $numActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
+                return $value->cliente_id == $costumer_id;
+            })->pluck('attivita_num')->first();
+
+            if ($costumer_billed_activities_num == null) {
+                $costumer_billed_activities_num = 0;
+            }
+
+            $info = array($costumer, $costumer_orders, $costumer_activities_num, $costumer_billed_activities_num);
+            array_push($costumers_infos, $info);
+        }
+
+        return $costumers_infos;
+
     }
 
     /**

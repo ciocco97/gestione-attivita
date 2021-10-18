@@ -21,7 +21,7 @@ class OrderStateSeeder extends Seeder
 
         StatoCommessa::create([
             'id' => 2,
-            'descrizione_stato_commessa' => 'annullata'
+            'descrizione_stato_commessa' => 'chiusa'
         ]);
     }
 }

@@ -68,7 +68,7 @@
                 data-state-id="{{ $activity->stato_attivita_id }}">{{ $activity->descrizione_stato_attivita }}</td>
             @if($current_page == $pages['MANAGER'])
                 <td id="billing_state_{{ $activity->id }}">
-                    <div class="d-flex align-content-center">
+                    <div class="d-flex justify-content-center">
                         <select class="form-select" id="billing_state_select_{{ $activity->id }}"
                                 style="width: auto;">
                             @foreach($billing_states as $billing_state)

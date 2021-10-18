@@ -54,13 +54,11 @@ class ActivityController extends Controller
                 $states = $dl->listActivityState();
                 $users = $dl->listTeam($_SESSION['user_id']);
                 $billing_states = $dl->listBillingStates();
-                $this->addBillableDuration($activities);
                 break;
             case self::PAGES['ADMINISTRATIVE']:
                 $costumers = $dl->listCostumer();
                 $users = $dl->listUsers();
                 $billing_states = $dl->listBillingStates();
-                $this->addBillableDuration($activities);
                 break;
         }
 
@@ -100,6 +98,7 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
         $activities = $dl->listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
+        $this->addBillableDuration($activities);
 
         $_SESSION['current_page'] = self::PAGES['MANAGER'];
         return $this->indexActivityView($activities);
@@ -112,6 +111,7 @@ class ActivityController extends Controller
         $dl = new DataLayer();
         $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
         $activities = $dl->listAdministrativeActivities($start_date);
+        $this->addBillableDuration($activities);
 
         $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
         return $this->indexActivityView($activities);

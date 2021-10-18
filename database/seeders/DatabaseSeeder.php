@@ -23,25 +23,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
-//        foreach (Attivita::all() as $i) {
-//            $i->delete();
-//        }
-//        foreach (Commessa::all() as $i) {
-//            $i->delete();
-//        }
-//        foreach (Cliente::all() as $i) {
-//            $i->delete();
-//        }
-//        foreach (Persona::all() as $i) {
-//            $i->delete();
-//        }
-//        foreach (StatoCommessa::all() as $i) {
-//            $i->delete();
-//        }
-//        foreach (StatoAttivita::all() as $i) {
-//            $i->delete();
-//        }
-
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
@@ -60,27 +41,25 @@ class DatabaseSeeder extends Seeder
 
         foreach ($stati_attivita as $sa) {
             foreach ($stati_fatturazione as $sf) {
-                    foreach ($persone as $p) {
-                        foreach ($clienti as $c) {
-                            Commessa::factory()
-                                ->count(1)
-                                ->state([
-                                    'cliente_id' => $c->id,
+                foreach ($persone as $p) {
+                    $c = Cliente::find(rand(1, $clienti->count()));
+                    Commessa::factory()
+                        ->count(1)
+                        ->state([
+                            'cliente_id' => $c->id,
+                            'persona_id' => $p->id,
+                            'stato_commessa_id' => 1
+                        ])
+                        ->has(
+                            Attivita::factory()
+                                ->count(1)->state([
                                     'persona_id' => $p->id,
-                                    'stato_commessa_id' => 1
+                                    'stato_attivita_id' => $sa->id,
+                                    'stato_fatturazione_id' => $sf->id
                                 ])
-                                ->has(
-                                    Attivita::factory()
-                                        ->count(1)->state([
-                                            'persona_id' => $p->id,
-                                            'stato_attivita_id' => $sa->id,
-                                            'stato_fatturazione_id' => $sf->id
-                                        ])
 
-                                )
-                            ->create();
-
-                        }
+                        )
+                        ->create();
                 }
             }
         }

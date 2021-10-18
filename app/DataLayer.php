@@ -156,7 +156,20 @@ class DataLayer
             ->orderBy('ora_inizio', 'desc');
     }
 
-    public function listApprovedActivity($start_date)
+    public function getNumActivitiesPerCostumer($billed = null)
+    {
+        $query = DB::table('attivita')
+            ->select(DB::raw('cliente.id AS cliente_id, count(*) AS attivita_num'))
+            ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
+            ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
+            ->groupBy('cliente.id');
+        if ($billed) {
+            $query->where('attivita.fatturata', '=', '2');
+        }
+        return $query->get();
+    }
+
+    public function getCommercialInfos_deprecated($start_date)
     {
         $approved_activities_query = $this->basicQueryForListApprovedActivity()
             ->where('attivita.data', '>=', $start_date);
@@ -165,8 +178,7 @@ class DataLayer
             ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
             ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
             ->join('stato_fatturazione', 'attivita.stato_fatturazione_id', '=', 'stato_fatturazione.id')
-            ->where('attivita.data', '>=', $start_date)
-            ->where('attivita.stato_fatturazione_id', '=', '4')
+            ->where('attivita.fatturata', '=', '2')
             ->groupBy('cliente.id');
         return array(
             $approved_activities_query->get(),
@@ -483,6 +495,20 @@ class DataLayer
     public function isCostumerActive(int $costumer_id)
     {
         return (Cliente::find($costumer_id)->commesse()->count() > 0);
+    }
+
+    public function listOrderInfos()
+    {
+        return DB::table('commessa')
+            ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
+            ->orderBy('commessa.descrizione_commessa')
+            ->get();
+    }
+
+    public function listOrderStates()
+    {
+        return DB::table('stato_commessa')
+            ->get();
     }
 
     public function listOrder()
