@@ -51,6 +51,7 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/ajax/activity/change/change_billable_duration', [AjaxController::class, 'ajaxChangeActivityBillableDuration']);
         Route::get('/ajax/activity/mass/billing_state/change', [AjaxController::class, 'ajaxMassChangeActivityBillingState']);
 
+
         Route::get('/activity/manager/index', [ActivityController::class, 'managerIndex'])->name('manager.index');
         Route::get('/activity/administrative/index', [ActivityController::class, 'administrativeIndex'])->name('administrative.index');
         Route::resource('costumer', CostumerController::class);
@@ -61,6 +62,7 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/order/{id}/confirm', [OrderController::class, 'confirmDestroy'])->name('order.destroy.confirm');
         Route::post('/order/{id}/update', [OrderController::class, 'update'])->name('order.update');
         Route::get('/order/{id}/destroy', [OrderController::class, 'destroy'])->name('order.destroy');
+        Route::get('/ajax/order/report/change', [AjaxController::class, 'ajaxOrderReportChange']);
     });
 });
 

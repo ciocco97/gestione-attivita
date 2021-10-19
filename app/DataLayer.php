@@ -362,7 +362,7 @@ class DataLayer
         if ($billing_state == 4) {
             $access = $administrative_permission;
         } else {
-            $access = $administrative_permission || $this->haveManagerPermissionOnActivity();
+            $access = $administrative_permission || $this->haveManagerPermissionOnActivity($user_id, $activity);
         }
         if ($access) {
             $activity->stato_fatturazione_id = $billing_state;
@@ -633,6 +633,15 @@ class DataLayer
         Attivita::whereIn('persona_id', $team)
             ->whereIn('id', $ids)
             ->update(['stato_attivita_id' => $state]);
+    }
+
+    public function changeOrderReport($user_id, $order_id, $checked)
+    {
+        if ($this->haveCommercialPermission($user_id)) {
+            $order = Commessa::find($order_id);
+            $order->rapportino_commessa = $checked;
+            $order->save();
+        }
     }
 
 }

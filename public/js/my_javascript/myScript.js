@@ -1,7 +1,7 @@
 TECHNICIAN = 0;
-MANAGER = 1;
-ADMINISTRATIVE = 2;
-COMMERCIAL = 3;
+MANAGER = 3;
+ADMINISTRATIVE = 1;
+COMMERCIAL = 2;
 ADMINISTRATOR = 4;
 GREEN_COLOR = "#c7edc9";
 
@@ -20,7 +20,7 @@ function technician_script() {
 
 function manager_script() {
     $('document').ready(function () {
-        // Evidenzio il tab technician nella navbar
+        // Evidenzio il tab manager nella navbar
         $("#manager_nav_tab").children().addClass("active");
 
         table_setup(MANAGER);
@@ -33,7 +33,7 @@ function manager_script() {
 
 function administrative_activity_script() {
     $('document').ready(function () {
-        // Evidenzio il tab technician nella navbar
+        // Evidenzio il tab administrative nella navbar
         $("#administrative_nav_tab").children().addClass("active");
 
         table_setup(ADMINISTRATIVE);

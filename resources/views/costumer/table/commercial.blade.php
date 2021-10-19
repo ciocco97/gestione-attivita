@@ -53,6 +53,12 @@
                                    id="report_switch_{{ $costumer_order->id }}">
                         @endif
                     </div>
+                    <div id="wait_change_report_{{ $costumer_order->id }}"
+                         class="spinner-border spinner-border-sm text-success"
+                         role="status"
+                         style="display: none;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
 
             </td>

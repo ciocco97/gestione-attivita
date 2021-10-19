@@ -37,4 +37,6 @@ class Attivita extends Model
         return $this->belongsTo(StatoFatturazione::class);
     }
 
+
+
 }

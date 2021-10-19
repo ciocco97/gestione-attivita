@@ -1,15 +1,26 @@
 
 function commercial_script() {
     $('document').ready(function () {
-        // Evidenzio il tab technician nella navbar
+        // Evidenzio il tab commercial nella navbar
         $("#commercial_nav_tab").children().addClass("active");
 
-        $("[id^=show_collapse_]").on("click", function () {
-            show_collapse_order($(this).attr("data-order-id"));
+        // Abilito azioni switch
+        $("[id^=report_switch_]").on("change", function () {
+            order_change_report($(this));
         })
     });
 }
 
-function show_collapse_order(order_id) {
-
+function order_change_report(report_switch) {
+    let checked = report_switch.is(":checked") ? 1 : 0;
+    let order_id = getIDSuffix(report_switch, "report_switch_");
+    $("[id=wait_change_report_" + order_id + "]").show();
+    $.ajax({
+        url: '/ajax/order/report/change',
+        type: 'GET',
+        data: {order_id: order_id, checked: checked},
+        success: function (data) {
+            $("[id=wait_change_report_" + order_id + "]").hide();
+        }
+    });
 }

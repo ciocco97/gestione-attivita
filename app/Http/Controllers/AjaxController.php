@@ -79,4 +79,15 @@ class AjaxController extends Controller
 
     }
 
+    public function ajaxOrderReportChange(Request $request)
+    {
+        $user_id = $_SESSION['user_id'];
+        $order_id = $request->input('order_id');
+        $checked = $request->input('checked');
+        Log::debug('ajaxOrderReportChange', ['id' => $order_id, 'checked' => $checked]);
+        $dl = new DataLayer();
+        $dl->changeOrderReport($user_id, $order_id, $checked);
+
+    }
+
 }
