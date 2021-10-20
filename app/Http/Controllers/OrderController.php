@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\DataLayer;
+use App\Models\Cliente;
+use App\Models\Commessa;
+use App\Models\Persona;
+use App\Models\StatoCommessa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -25,23 +29,19 @@ class OrderController extends Controller
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
-        $dl = new DataLayer();
-
         $order = null;
         $current_costumer = null;
         $current_state = null;
         if ($order_id != -1) {
-            $order = $dl->getOrderByID($order_id);
-            $current_costumer = $dl->getCostumerByOrderID($order->id);
+            $order = Commessa::getOrderByID($order_id);
+            $current_costumer = Cliente::getCostumerByOrderID($order->id);
             $current_state = $order->statoCommessa()->get()->first();
-//            dump($order->descrizione_commessa);
-//            exit();
         }
 
-        $costumers = $dl->listCostumer();
-        $states = $dl->listOrderStates();
+        $costumers = Cliente::listCostumer();
+        $states = StatoCommessa::listOrderStates();
 
-        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('costumer.show_order')
             ->with('method', $method)
             ->with('username', $username)
@@ -88,8 +88,7 @@ class OrderController extends Controller
             'state' => $state,
             'report' => $report
         ]);
-        $dl = new DataLayer();
-        $dl->storeOrder($user_id, $description, $costumer, $state, $report);
+        Commessa::storeOrder($user_id, $description, $costumer, $state, $report);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -136,8 +135,7 @@ class OrderController extends Controller
             'state' => $state,
             'report' => $report
         ]);
-        $dl = new DataLayer();
-        $dl->updateOrder($user_id, $id, $description, $costumer, $state, $report);
+        Commessa::updateOrder($user_id, $id, $description, $costumer, $state, $report);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -151,8 +149,8 @@ class OrderController extends Controller
     public function destroy($id)
     {
         Log::debug('Destroy_order', ['id' => $id]);
-        $dl = new DataLayer();
-        $dl->destroyOrder($id, $_SESSION['user_id']);
+
+        Commessa::destroyOrder($id, $_SESSION['user_id']);
 
         return Redirect::to($_SESSION['previous_url']);
     }

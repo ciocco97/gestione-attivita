@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\DataLayer;
 use App\Http\Utils;
+use App\Models\Attivita;
+use App\Models\Cliente;
+use App\Models\Commessa;
 use App\Models\Persona;
-use Dflydev\DotAccessData\Data;
+use App\Models\StatoAttivita;
+use App\Models\StatoFatturazione;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -37,8 +40,6 @@ class ActivityController extends Controller
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
-        $dl = new DataLayer();
-
         $costumers = null;
         $states = null;
         $users = null;
@@ -46,20 +47,20 @@ class ActivityController extends Controller
 
         switch ($current_page) {
             case self::PAGES['TECHNICIAN']:
-                $costumers = $dl->listActiveCostumerForCurrentUser();
-                $states = $dl->listActivityState();
+                $costumers = Cliente::listActiveCostumerForCurrentUser();
+                $states = StatoAttivita::listActivityState();
                 break;
             case self::PAGES['MANAGER']:
-                $costumers = $dl->listActiveCostumer();
-                $states = $dl->listActivityState();
-                $users = $dl->listTeam($_SESSION['user_id']);
-                $billing_states = $dl->listBillingStates();
+                $costumers = Cliente::listActiveCostumer();
+                $states = StatoAttivita::listActivityState();
+                $users = Persona::listTeam($user_id);
+                $billing_states = StatoFatturazione::listBillingStates();
                 $this->addBillableDuration($activities);
                 break;
             case self::PAGES['ADMINISTRATIVE']:
-                $costumers = $dl->listCostumer();
-                $users = $dl->listUsers();
-                $billing_states = $dl->listBillingStates();
+                $costumers = Cliente::listCostumer();
+                $users = Persona::listUsers();
+                $billing_states = StatoFatturazione::listBillingStates();
                 $this->addBillableDuration($activities);
                 break;
         }
@@ -67,7 +68,7 @@ class ActivityController extends Controller
         $this->changeActivityDateFormat($activities);
         $this->changeActivityDescriptionLenght($activities);
 
-        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('activity.technician')
             ->with('activities', $activities)
             ->with('username', $username)
@@ -84,9 +85,8 @@ class ActivityController extends Controller
     {
         Log::debug('Home');
 
-        $dl = new DataLayer();
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
-        $activities = $dl->listActiveActivityByUserID($_SESSION['user_id'], $start_date);
+        $activities = Attivita::listActiveActivityByUserID($_SESSION['user_id'], $start_date);
 
         $_SESSION['current_page'] = self::PAGES['TECHNICIAN'];
         return $this->indexActivityView($activities);
@@ -97,9 +97,8 @@ class ActivityController extends Controller
     {
         Log::debug('Manager index');
 
-        $dl = new DataLayer();
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
-        $activities = $dl->listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
+        $activities = Attivita::listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
 
         $_SESSION['current_page'] = self::PAGES['MANAGER'];
         return $this->indexActivityView($activities);
@@ -109,9 +108,8 @@ class ActivityController extends Controller
     {
         Log::debug('Administrative index');
 
-        $dl = new DataLayer();
         $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
-        $activities = $dl->listAdministrativeActivities($start_date);
+        $activities = Attivita::listAdministrativeActivities($start_date);
 
         $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
         return $this->indexActivityView($activities);
@@ -179,11 +177,10 @@ class ActivityController extends Controller
             'billing_state' => $billing_state
         ]);
 
-        $dl = new DataLayer();
         $team_member_ids = null;
         if ($team_member_id != null) {
             if ($team_member_id == -2) {
-                $team_member_ids = $dl->listTeamIDS($user_id);
+                $team_member_ids = Persona::listTeamIDS($user_id);
             } else {
                 $team_member_ids = array($team_member_id);
             }
@@ -197,24 +194,18 @@ class ActivityController extends Controller
 
         if ($_SESSION['current_page'] == self::PAGES['ADMINISTRATIVE']) {
             Log::debug('Administrative filter');
-            $activities = $dl->filterAdministrativeActivities(
+            $activities = Attivita::filterAdministrativeActivities(
                 $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_state, $billed);
 
         } else {
             Log::debug('Tech filter');
-            $activities = $dl->filterActiveActivityByUserID(
+            $activities = Attivita::filterActiveActivityByUserID(
                 $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
         }
         return $this->indexActivityView($activities);
     }
 
 
-    /**
-     * sedActivityView (Show, Edit e Destroy) rende parametrica l'invocazione della vista di modifica delle attività
-     * @param int $activity_id
-     * @param $method
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     */
     private function sedActivityView($method, int $activity_id = -1)
     {
         $manager = str_contains($_SESSION['previous_url'], 'manager');
@@ -223,11 +214,10 @@ class ActivityController extends Controller
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
-        $dl = new DataLayer();
         $costumers = $orders = $states = $billing_states = $activity = $order = $costumer = $state = $billing_state = null;
         $tech_name = $username;
         if ($activity_id != -1) {
-            $activity = $dl->getActivityByActivityAndUserID($activity_id, $user_id);
+            $activity = Attivita::getActivityByActivityAndUserID($activity_id, $user_id);
             $order = $activity->commessa()->get()->first();
             $costumer = $order->cliente()->get()->first();
             $tech_name = Persona::find($activity->persona_id)->nome;
@@ -237,17 +227,17 @@ class ActivityController extends Controller
         }
 
         if ($method == self::METHODS['ADD'] || $method == self::METHODS['EDIT']) {
-            $costumers = $dl->listActiveCostumer();
-            $orders = $dl->listActiveOrder();
+            $costumers = Cliente::listActiveCostumer();
+            $orders = Commessa::listActiveOrder();
             if ($manager) {
-                $states = $dl->listActivityState();
-                $billing_states = $dl->listManagerBillingStates();
+                $states = StatoAttivita::listActivityState();
+                $billing_states = StatoFatturazione::listBillingStates();
             } else {
-                $states = $dl->listActivityStateForTech();
+                $states = StatoAttivita::listActivityStateForTech();
             }
         }
 
-        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('activity.show')
             ->with('username', $username)
             ->with('user_roles', $user_roles)
@@ -307,8 +297,7 @@ class ActivityController extends Controller
         $internalNotes = $request->get('internalNotes');
         $state = $request->get('state');
 
-        $dl = new DataLayer();
-        $dl->storeActivity($user_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
+        Attivita::storeActivity($user_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -347,8 +336,7 @@ class ActivityController extends Controller
         $internalNotes = $request->get('internalNotes');
         $state = $request->get('state');
 
-        $dl = new DataLayer();
-        $dl->updateActivity($user_id, $activity_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
+        Attivita::updateActivity($user_id, $activity_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -362,8 +350,7 @@ class ActivityController extends Controller
     public function destroy($id)
     {
         Log::debug('Destroy_activity', ['id' => $id]);
-        $dl = new DataLayer();
-        $dl->destroyActivity($id, $_SESSION['user_id']);
+        Attivita::destroyActivity($id, $_SESSION['user_id']);
 
         return Redirect::to($_SESSION['previous_url']);
     }

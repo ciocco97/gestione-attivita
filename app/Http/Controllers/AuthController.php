@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\DataLayer;
 use App\Http\Utils;
 use App\Mail\ResetPasswordToken;
+use App\Models\Persona;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -104,8 +104,7 @@ class AuthController extends Controller
         }
 
         // Check credenziali nel DB
-        $dataLayer = new DataLayer();
-        $user = $dataLayer->validUser($email, md5($password));
+        $user = Persona::validUser($email, md5($password));
 
         if ($user) { // Credenziali corrette
             Log::debug('Login avvenuto correttamente', ['id' => $user->id]);
@@ -140,8 +139,8 @@ class AuthController extends Controller
     {
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
-        $dl = new DataLayer();
-        $user_roles = $dl->listUserRoles($user_id)->toArray();
+
+        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('user.change_password')
             ->with('username', $username)
             ->with('previous_url', $_SESSION['previous_url'])
@@ -155,11 +154,10 @@ class AuthController extends Controller
         $new_password = $request->get('newPassword');
 
         // Check credenziali nel DB
-        $dataLayer = new DataLayer();
-        $user = $dataLayer->validUser(null, md5($old_password), $user_id);
+        $user = Persona::validUser(null, md5($old_password), $user_id);
 
         if ($user) { // pwd can be changed
-            $dataLayer->changePassword($user_id, md5($new_password));
+            Persona::changePassword($user_id, md5($new_password));
             return redirect($_SESSION['previous_url']);
         }
         return redirect()->back();
@@ -168,7 +166,6 @@ class AuthController extends Controller
 
     public function resetPasswordProcedure(Request $request)
     {
-        $dl = new DataLayer();
 
         $email = $request->input('email');
         $inserted_token = $request->input('token');
@@ -190,14 +187,14 @@ class AuthController extends Controller
         } else if ($inserted_token == null) {
             Log::debug(2);
             $generated_token = Str::random(10);
-            $dl->storeToken($email, $generated_token);
+            Persona::storeToken($email, $generated_token);
             Mail::to($email)
                 ->queue(new ResetPasswordToken($generated_token));
             return view('user.reset_password')
                 ->with('email', $email);
         } else if ($new_password == null && $retipe_password == null){
             Log::debug(3);
-            if ($dl->validToken($email, $inserted_token)) {
+            if (Persona::validToken($email, $inserted_token)) {
                 return view('user.reset_password')
                     ->with('email', $email)
                     ->with('token', $inserted_token);
@@ -205,8 +202,8 @@ class AuthController extends Controller
         } else {
             Log::debug(4);
             if ($new_password == $retipe_password) {
-                if ($dl->validToken($email, $inserted_token)) {
-                    $dl->resetPassword($email, md5($new_password));
+                if (Persona::validToken($email, $inserted_token)) {
+                    Persona::resetPassword($email, md5($new_password));
                     $success = true;
                 }
             }

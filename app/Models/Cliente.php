@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Cliente extends Model
 {
@@ -22,4 +23,109 @@ class Cliente extends Model
     {
         return $this->hasManyThrough(Attivita::class, Commessa::class);
     }
+
+
+    public static function listCostumer(): \Illuminate\Support\Collection
+    {
+        return Cliente::all();
+    }
+
+    public static function listActiveCostumer(): \Illuminate\Support\Collection
+    {
+        return DB::table('cliente')
+            ->select('cliente.id', 'cliente.nome')
+            ->join('commessa', 'commessa.cliente_id', '=', 'cliente.id')
+            ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
+            ->where('stato_commessa.id', '=', 1)
+            ->distinct()
+            ->orderBy('cliente.nome')
+            ->get();
+    }
+
+    public static function listActiveCostumerForCurrentUser(): \Illuminate\Support\Collection
+    {
+        return DB::table('cliente')
+            ->select('cliente.id', 'cliente.nome')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('commessa')
+                    ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
+                    ->whereColumn('commessa.cliente_id', 'cliente.id')
+                    ->where('stato_commessa.id', '=', 1)
+                    ->whereExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('attivita')
+                            ->whereColumn('attivita.commessa_id', 'commessa.id')
+                            ->where('attivita.persona_id', '=', $_SESSION['user_id']);
+                    });
+            })
+            ->distinct()
+            ->orderBy('cliente.nome')
+            ->get();
+    }
+
+    public static function getCostumerByID($costumer_id)
+    {
+        return Cliente::find($costumer_id);
+    }
+
+    public static function getCostumerByOrderID($order_id)
+    {
+        return Commessa::find($order_id)->cliente()->get()->first();
+    }
+
+    public static function isCostumerActive(int $costumer_id): bool
+    {
+        return (Cliente::find($costumer_id)->commesse()->count() > 0);
+    }
+
+
+    public static function storeCostumer($user_id, $name, $email, $report)
+    {
+        if (Persona::haveCommercialPermission($user_id)) {
+            Cliente::create([
+                'nome' => $name,
+                'email' => $email,
+                'rapportino_cliente' => $report
+            ]);
+        }
+    }
+
+    public static function updateCostumer($user_id, $costumer_id, $name, $email, $report): bool
+    {
+        $costumer = Cliente::find($costumer_id);
+        if (Persona::haveCommercialPermission($user_id)) {
+            $costumer->update([
+                'nome' => $name,
+                'email' => $email,
+                'rapportino_cliente' => $report
+            ]);
+            return true;
+        }
+        return false;
+    }
+
+    public static function destroyCostumer($id, $user_id): bool
+    {
+        if (Persona::haveCommercialPermission($user_id)) {
+            Cliente::destroy($id);
+            return true;
+        }
+        return false;
+    }
+
+
+    public static function getNumActivitiesPerCostumer($billed = null): \Illuminate\Support\Collection
+    {
+        $query = DB::table('attivita')
+            ->select(DB::raw('cliente.id AS cliente_id, count(*) AS attivita_num'))
+            ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
+            ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
+            ->groupBy('cliente.id');
+        if ($billed) {
+            $query->where('attivita.fatturata', '=', '2');
+        }
+        return $query->get();
+    }
+
 }

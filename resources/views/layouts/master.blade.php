@@ -13,6 +13,7 @@
     <!-- My scripts -->
     <script src="{{ url('/') }}/js/my_javascript/myScript.js"></script>
     <script src="{{ url('/') }}/js/my_javascript/commercialScript.js"></script>
+    <script src="{{ url('/') }}/js/my_javascript/technician_manager_administrativeScript.js"></script>
 
     <title>@yield('title')</title>
 

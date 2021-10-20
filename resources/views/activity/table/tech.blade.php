@@ -55,7 +55,7 @@
                                type="time"
                                value="{{ $activity->durata_fatturabile }}"
                                style="max-width: 100px">
-                        <div id="wait_change_billable_duration_{{ $activity->id }}"
+                        <div id="wait_change_billable_duration_input_{{ $activity->id }}"
                              class="spinner-border spinner-border-sm text-success"
                              role="status"
                              style="display: none;">
@@ -81,7 +81,7 @@
                                 @endif
                             @endforeach
                         </select>
-                        <div id="wait_change_billing_{{ $activity->id }}"
+                        <div id="wait_change_billing_state_select_{{ $activity->id }}"
                              class="spinner-border spinner-border-sm text-success"
                              role="status"
                              style="display: none;">
@@ -94,20 +94,20 @@
         <!-- Bottone rapportino -->
             <td>
                 @if($activity->rapportino_cliente && $activity->rapportino_commessa)
-                    <button id="report_{{ $activity->id }}" class="btn pt-0">
+                    <button id="send_report_{{ $activity->id }}" class="btn pt-0">
                         @if($activity->rapportino_attivita)
                             <i class="bi bi-clipboard-check text-success"></i>
                         @else
                             <i class="bi bi-clipboard text-primary"></i>
                         @endif
                     </button>
-                    <div id="wait_{{ $activity->id }}" class="spinner-border spinner-border-sm text-success"
+                    <div id="wait_change_send_report_{{ $activity->id }}" class="spinner-border spinner-border-sm text-success"
                          role="status"
                          style="display: none;">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 @else
-                    <a id="report_{{ $activity->id }}" class="btn pt-0 disabled">
+                    <a id="send_report_{{ $activity->id }}" class="btn pt-0 disabled">
                         <i class="bi bi-clipboard-x text-danger"></i>
                     </a>
                 @endif

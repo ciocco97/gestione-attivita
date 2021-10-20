@@ -18,4 +18,16 @@ class StatoAttivita extends Model
     {
         return $this->hasMany(Attivita::class);
     }
+
+
+    public static function listActivityState()
+    {
+        return StatoAttivita::all();
+    }
+
+    public static function listActivityStateForTech()
+    {
+        return StatoAttivita::where('id', '!=', 4)->get();
+    }
+
 }

@@ -22,7 +22,7 @@
             </td>
             <td>
                 <div class="d-flex justify-content-center">
-                    <select class="form-select" id="order_State_select_{{ $costumer_order->id }}"
+                    <select class="form-select" id="order_state_select_{{ $costumer_order->id }}"
                             style="width: auto;">
                         @foreach($order_states as $order_state)
                             @if($order_state->id == $costumer_order->stato_commessa_id)
@@ -34,7 +34,7 @@
                             @endif
                         @endforeach
                     </select>
-                    <div id="wait_change_order_state_{{ $costumer_order->id }}"
+                    <div id="wait_change_order_state_select_{{ $costumer_order->id }}"
                          class="spinner-border spinner-border-sm text-success"
                          role="status"
                          style="display: none;">
@@ -53,7 +53,7 @@
                                    id="report_switch_{{ $costumer_order->id }}">
                         @endif
                     </div>
-                    <div id="wait_change_report_{{ $costumer_order->id }}"
+                    <div id="wait_change_report_switch_{{ $costumer_order->id }}"
                          class="spinner-border spinner-border-sm text-success"
                          role="status"
                          style="display: none;">

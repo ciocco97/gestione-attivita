@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Persona extends Model
 {
@@ -30,4 +32,118 @@ class Persona extends Model
     {
         return $this->belongsToMany(Ruolo::class, 'persona_ruolo');
     }
+
+
+
+    public static function listUsers()
+    {
+        return Persona::all();
+    }
+
+    public static function validUser($email, $password, $user_id = -1)
+    {
+        if ($email != null) {
+            $persona = Persona::where('email', $email)->where('password', $password)->get()->first();
+        } else {
+            $persona = Persona::find($user_id)->where('password', $password)->get()->first();
+        }
+        return $persona ?? false;
+    }
+
+    public static function storeToken($email, $token)
+    {
+        return Persona::where('email', $email)
+            ->update([
+                'token' => md5($token),
+                'istante_creazione_token' => Carbon::now()->toDateTimeString()
+            ]);
+    }
+
+    public static function validToken($email, $token): bool
+    {
+        $user = Persona::where('email', $email)->get()->first();
+        $before = new Carbon($user->istante_creazione_token);
+        $now = Carbon::now();
+        if ($user->token == md5($token) && $before->diffInSeconds($now) < 240) {
+            Log::debug('Token valido');
+            return true;
+        }
+        Log::debug('Token non valido');
+        return false;
+    }
+
+    public static function resetPassword($email, $password)
+    {
+        $user_id = Persona::where('email', $email)->get()->first()->id;
+        Persona::changePassword($user_id, $password);
+    }
+
+    public static function changePassword($user_id, $password_md5)
+    {
+        $user = Persona::find($user_id);
+        $user->password = $password_md5;
+        $user->save();
+    }
+
+
+    public static function haveUpdatePermissionOnActivity($user_id, $activity): bool
+    {
+        return Persona::haveTechnicianPermissionOnActivity($user_id, $activity)
+            || Persona::haveManagerPermissionOnActivity($user_id, $activity);
+    }
+
+    public static function haveShowPermissionOnActivity($user_id, $activity): bool
+    {
+        return Persona::haveTechnicianPermissionOnActivity($user_id, $activity)
+            || Persona::haveManagerPermissionOnActivity($user_id, $activity)
+            || Persona::haveAdministrativePermissionOnActivity($user_id);
+    }
+
+    public static function haveTechnicianPermissionOnActivity($user_id, $activity): bool
+    {
+        $activity_user_id = $activity->persona_id;
+        return $activity_user_id == $user_id;
+    }
+
+    public static function haveManagerPermissionOnActivity($user_id, $activity): bool
+    {
+        $activity_user_id = $activity->persona_id;
+        return in_array($activity_user_id, Persona::listTeamIDS($user_id));
+    }
+
+    public static function haveAdministrativePermissionOnActivity($user_id): bool
+    {
+        return in_array(1, Persona::listUserRoles($user_id)->toArray());
+    }
+
+    public static function haveCommercialPermission($user_id): bool
+    {
+        return in_array(2, Persona::listUserRoles($user_id)->toArray());
+    }
+
+
+    public static function listTeam(int $user_id)
+    {
+        $user = Persona::find($user_id);
+        return $user->sottoposti()->get();
+    }
+
+    public static function listTeamIDS(int $user_id)
+    {
+        return Persona::listTeam($user_id)->pluck('id')->toArray();
+    }
+
+    public static function listUserRoles(int $user_id)
+    {
+        $user = Persona::find($user_id);
+        $roles = $user->ruoli()->get();
+        $team = Persona::listTeam($user_id);
+        if ($team->count() > 0) {
+            $manager_role = Ruolo::find(3);
+            $roles->push($manager_role);
+        }
+        return $roles->pluck('id');
+    }
+
+
 }

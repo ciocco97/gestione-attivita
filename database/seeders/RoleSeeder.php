@@ -25,5 +25,10 @@ class RoleSeeder extends Seeder
             'descrizione_ruolo' => 'commerciale'
         ]);
 
+        $manager = Ruolo::create([
+            'id' => 3,
+            'descrizione_ruolo' => 'manager'
+        ]);
+
     }
 }

@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\DataLayer;
+use App\Models\Attivita;
+use App\Models\Cliente;
+use App\Models\Commessa;
 use App\Models\Persona;
+use App\Models\StatoCommessa;
 use Carbon\Carbon as super_time_parser;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
@@ -62,10 +66,8 @@ class CostumerController extends Controller
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
-        $dl = new DataLayer();
-
-        $order_states = $dl->listOrderStates();
-        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        $order_states = StatoCommessa::listOrderStates();
+        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('costumer.commercial')
             ->with('username', $username)
             ->with('user_roles', $user_roles)
@@ -92,13 +94,11 @@ class CostumerController extends Controller
 
     private function getCostumersInfos(): array
     {
-        $dl = new DataLayer();
+        $costumers = Cliente::listCostumer();
+        $numBilledActivities_perCostumer = Cliente::getNumActivitiesPerCostumer(true);
+        $numActivities_perCostumer = Cliente::getNumActivitiesPerCostumer();
 
-        $costumers = $dl->listCostumer();
-        $numBilledActivities_perCostumer = $dl->getNumActivitiesPerCostumer(true);
-        $numActivities_perCostumer = $dl->getNumActivitiesPerCostumer();
-
-        $orders = $dl->listOrderInfos();
+        $orders = Commessa::listOrderInfos();
 
         $costumers_infos = array();
         foreach ($costumers as $costumer) {
@@ -138,14 +138,12 @@ class CostumerController extends Controller
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
-        $dl = new DataLayer();
-
         $costumer = null;
         if ($costumer_id != -1) {
-            $costumer = $dl->getCostumerByID($costumer_id);
+            $costumer = Cliente::getCostumerByID($costumer_id);
         }
 
-        $user_roles = $dl->listUserRoles($user_id)->toArray();
+        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('costumer.show_costumer')
             ->with('method', $method)
             ->with('username', $username)
@@ -186,8 +184,7 @@ class CostumerController extends Controller
             'email' => $email,
             'report' => $report
         ]);
-        $dl = new DataLayer();
-        $dl->storeCostumer($user_id, $name, $email, $report);
+        Cliente::storeCostumer($user_id, $name, $email, $report);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -229,8 +226,7 @@ class CostumerController extends Controller
         $report = $request->get('report') == "on" ? 1 : 0;
         Log::debug('Update_costumer', ['id' => $id]);
 
-        $dl = new DataLayer();
-        $dl->updateCostumer($user_id, $id, $name, $email, $report);
+        Cliente::updateCostumer($user_id, $id, $name, $email, $report);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -244,8 +240,7 @@ class CostumerController extends Controller
     public function destroy($id)
     {
         Log::debug('Destroy_costumer', ['id' => $id]);
-        $dl = new DataLayer();
-        $dl->destroyCostumer($id, $_SESSION['user_id']);
+        Cliente::destroyCostumer($id, $_SESSION['user_id']);
 
         return Redirect::to($_SESSION['previous_url']);
     }

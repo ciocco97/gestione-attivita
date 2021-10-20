@@ -18,4 +18,11 @@ class StatoFatturazione extends Model
     {
         return $this->hasMany(Attivita::class);
     }
+
+
+    public static function listBillingStates()
+    {
+        return StatoFatturazione::all();
+    }
+
 }

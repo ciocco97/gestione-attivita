@@ -18,4 +18,10 @@ class StatoCommessa extends Model
     {
         return $this->hasMany(Commessa::class);
     }
+
+    public static function listOrderStates()
+    {
+        return StatoCommessa::all();
+    }
+
 }
