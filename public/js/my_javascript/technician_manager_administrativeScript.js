@@ -353,9 +353,9 @@ function activities_change(element, ajax_method) {
     let value = null;
     value = element.attr("data-state");
     switch (ajax_method) {
-        case AJAX_METHODS.activities_change_billed_index:
+        case AJAX_METHODS.activities_change_accounted_index:
             break
-        case AJAX_METHODS.activities_change_billed_index:
+        case AJAX_METHODS.activities_change_accounted_index:
             break
     }
 
@@ -382,7 +382,7 @@ function change_state_setup(page) {
 
     $("[id^=activities_change_]").not("[id=activities_change_btn]").on("click", function () {
         if (page == ADMINISTRATIVE) {
-            activities_change($(this), AJAX_METHODS['activities_change_billed_index']);
+            activities_change($(this), AJAX_METHODS['activities_change_accounted_index']);
         } else {
             activities_change($(this), AJAX_METHODS['activities_change_state_index']);
         }

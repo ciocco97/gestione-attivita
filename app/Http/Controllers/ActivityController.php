@@ -122,14 +122,14 @@ class ActivityController extends Controller
         $state = $request->get('state');
         $date = $request->get('date');
         $team_member_id = $request->get('user');
-        $billing_state = $request->get('billing-state');
+        $accounted_selector = $request->get('billing-state');
 
         $period = $period == null ? -1 : $period;
         $costumer = $costumer == null ? -1 : $costumer;
         $state = $state == null ? -1 : $state;
         $date = $date == null ? -1 : $date;
         $team_member_id = $team_member_id == null ? -1 : $team_member_id;
-        $billing_state = $billing_state == null ? -1 : $billing_state;
+        $accounted_selector = $accounted_selector == null ? -1 : $accounted_selector;
 
         Log::debug('filterPost', [
             'period' => $period,
@@ -137,12 +137,12 @@ class ActivityController extends Controller
             'state' => $state,
             'date' => $date,
             'user' => $team_member_id,
-            'billed' => $billing_state]);
+            'accounted' => $accounted_selector]);
         return redirect()->route('activity.filter.get',
-            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id, 'billing_state' => $billing_state]);
+            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id, 'billing_state' => $accounted_selector]);
     }
 
-    public function filter($period, $costumer, $state, $date, $team_member_id, $billing_state)
+    public function filter($period, $costumer, $state, $date, $team_member_id, $accounted_selector)
     {
         $user_id = $_SESSION['user_id'];
 
@@ -151,7 +151,7 @@ class ActivityController extends Controller
         $state = $state == -1 ? null : $state;
         $date = $date == -1 ? null : $date;
         $team_member_id = $team_member_id == -1 ? null : $team_member_id;
-        $billing_state = $billing_state == -1 ? null : $billing_state;
+        $accounted_selector = $accounted_selector == -1 ? null : $accounted_selector;
 
         $end_date = null;
         if ($period == 1) { // current week
@@ -174,7 +174,7 @@ class ActivityController extends Controller
             'state' => $state,
             'date' => $date,
             'user' => $team_member_id,
-            'billing_state' => $billing_state
+            'billing_state' => $accounted_selector
         ]);
 
         $team_member_ids = null;
@@ -186,16 +186,16 @@ class ActivityController extends Controller
             }
         }
 
-        $billed = null;
-        if ($billing_state != null) {
-            $billed = $billing_state == 10 ? 2 : $billed;
-            $billed = $billing_state == 11 ? 1 : $billed;
+        $accounted = null;
+        if ($accounted_selector != null) {
+            $accounted = $accounted_selector == 10 ? 2 : $accounted;
+            $accounted = $accounted_selector == 11 ? 1 : $accounted;
         }
 
         if ($_SESSION['current_page'] == self::PAGES['ADMINISTRATIVE']) {
             Log::debug('Administrative filter');
             $activities = Attivita::filterAdministrativeActivities(
-                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_state, $billed);
+                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $accounted_selector, $accounted);
 
         } else {
             Log::debug('Tech filter');

@@ -28,7 +28,7 @@ class CreateAttivitaTable extends Migration
             $table->foreignId('stato_attivita_id')->constrained('stato_attivita');
             $table->foreignId('stato_fatturazione_id')->default(1)->constrained('stato_fatturazione');
             $table->unsignedTinyInteger('rapportino_attivita');
-            $table->unsignedTinyInteger('fatturata')->default(0);
+            $table->unsignedTinyInteger('contabilizzata')->default(0);
             $table->timestamps();
         });
     }

@@ -95,7 +95,7 @@ class CostumerController extends Controller
     private function getCostumersInfos(): array
     {
         $costumers = Cliente::listCostumer();
-        $numBilledActivities_perCostumer = Cliente::getNumActivitiesPerCostumer(true);
+        $numAccountedActivities_perCostumer = Cliente::getNumActivitiesPerCostumer(true);
         $numActivities_perCostumer = Cliente::getNumActivitiesPerCostumer();
 
         $orders = Commessa::listOrderInfos();
@@ -106,7 +106,7 @@ class CostumerController extends Controller
             $costumer_orders = $orders->filter(function ($value) use (&$costumer_id) {
                 return $value->cliente_id == $costumer_id;
             });
-            $costumer_billed_activities_num = $numBilledActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
+            $costumer_accounted_activities_num = $numAccountedActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
                 return $value->cliente_id == $costumer_id;
             })->pluck('attivita_num')->first();
 
@@ -117,11 +117,11 @@ class CostumerController extends Controller
             if ($costumer_activities_num == null) {
                 $costumer_activities_num = 0;
             }
-            if ($costumer_billed_activities_num == null) {
-                $costumer_billed_activities_num = 0;
+            if ($costumer_accounted_activities_num == null) {
+                $costumer_accounted_activities_num = 0;
             }
 
-            $info = array($costumer, $costumer_orders, $costumer_activities_num, $costumer_billed_activities_num);
+            $info = array($costumer, $costumer_orders, $costumer_activities_num, $costumer_accounted_activities_num);
             array_push($costumers_infos, $info);
         }
 

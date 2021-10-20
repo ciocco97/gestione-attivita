@@ -15,7 +15,7 @@
         <li><h6 class="dropdown-header">@lang('labels.other_state')</h6></li>
         <li>
             <button id="activities_change_1" class="dropdown-item" data-state="1">
-                @lang('labels.set') @lang('labels.not_billed')
+                @lang('labels.set') @lang('labels.not') @lang('labels.accounted')
             </button>
         </li>
     @else

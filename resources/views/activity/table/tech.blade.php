@@ -29,7 +29,7 @@
 
     @foreach($activities as $activity)
 
-        <tr id="activity_row_{{ $activity->id }}" data-bill="{{ $activity->fatturata }}">
+        <tr id="activity_row_{{ $activity->id }}" data-bill="{{ $activity->contabilizzata }}">
             <td id="select_{{ $activity->id }}">
                 <div class="d-flex justify-content-center">
                     <input id="check_select_{{ $activity->id }}" class="form-check" type="checkbox">

@@ -27,7 +27,7 @@ class Cliente extends Model
 
     public static function listCostumer(): \Illuminate\Support\Collection
     {
-        return Cliente::all();
+        return Cliente::orderBy('nome')->get();
     }
 
     public static function listActiveCostumer(): \Illuminate\Support\Collection
@@ -115,15 +115,15 @@ class Cliente extends Model
     }
 
 
-    public static function getNumActivitiesPerCostumer($billed = null): \Illuminate\Support\Collection
+    public static function getNumActivitiesPerCostumer($accounted = null): \Illuminate\Support\Collection
     {
         $query = DB::table('attivita')
             ->select(DB::raw('cliente.id AS cliente_id, count(*) AS attivita_num'))
             ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
             ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
             ->groupBy('cliente.id');
-        if ($billed) {
-            $query->where('attivita.fatturata', '=', '2');
+        if ($accounted) {
+            $query->where('attivita.contabilizzata', '=', '2');
         }
         return $query->get();
     }

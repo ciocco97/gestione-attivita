@@ -17,7 +17,7 @@ class AjaxController extends Controller
         'activity_change_billable_duration_index' => 3,
         'activity_change_billing_state_index' => 4,
         'activity_send_report_index' => 5,
-        'activities_change_billed_index' => 6,
+        'activities_change_accounted_index' => 6,
         'activities_change_state_index' => 7
     ];
 
@@ -52,8 +52,8 @@ class AjaxController extends Controller
 
         $result = false;
         switch ($ajax_method) {
-            case self::AJAX_METHODS['activities_change_billed_index']:
-                $result = Attivita::billedUpdateByActivityIDS($user_id, $ids, $value);
+            case self::AJAX_METHODS['activities_change_accounted_index']:
+                $result = Attivita::accountedUpdateByActivityIDS($user_id, $ids, $value);
                 break;
             case self::AJAX_METHODS['activities_change_state_index']:
                 $result = Attivita::stateUpdateByActivityIDS($user_id, $ids, $value);

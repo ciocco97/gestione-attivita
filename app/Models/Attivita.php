@@ -16,7 +16,7 @@ class Attivita extends Model
 
     protected $fillable = ['persona_id', 'commessa_id', 'data', 'ora_inizio',
         'ora_fine', 'durata', 'durata_fatturabile', 'luogo', 'descrizione_attivita', 'note_interne',
-        'stato_attivita_id', 'rapportino_attivita', 'stato_fatturazione_id', 'fatturata'];
+        'stato_attivita_id', 'rapportino_attivita', 'stato_fatturazione_id', 'contabilizzata'];
 
     // Connections
 
@@ -120,7 +120,7 @@ class Attivita extends Model
                                     attivita.persona_id,
                                     attivita.stato_fatturazione_id,
                                     attivita.durata_fatturabile,
-                                    attivita.fatturata,
+                                    attivita.contabilizzata,
                                     cliente.nome AS nome_cliente,
                                     cliente.rapportino_cliente,
                                     commessa.descrizione_commessa,
@@ -237,7 +237,7 @@ class Attivita extends Model
                                     attivita.durata_fatturabile,
                                     attivita.persona_id,
                                     attivita.stato_fatturazione_id,
-                                    attivita.fatturata,
+                                    attivita.contabilizzata,
                                     cliente.id AS cliente_id,
                                     cliente.nome AS nome_cliente,
                                     commessa.descrizione_commessa,
@@ -254,14 +254,14 @@ class Attivita extends Model
             ->where('attivita.data', '>=', $start_date)->get();
     }
 
-    public static function filterAdministrativeActivities($start_date, $end_date, $costumer, $state, $date, $user_selected_id, $billing_state, $billed): \Illuminate\Support\Collection
+    public static function filterAdministrativeActivities($start_date, $end_date, $costumer, $state, $date, $user_selected_id, $billing_state, $accounted): \Illuminate\Support\Collection
     {
         $basic_query = Attivita::basicQueryForListApprovedActivity();
         if ($user_selected_id != null) {
             $basic_query->where('attivita.persona_id', $user_selected_id);
         }
-        if ($billed != null) {
-            $basic_query->where('attivita.fatturata', $billed);
+        if ($accounted != null) {
+            $basic_query->where('attivita.contabilizzata', $accounted);
         } else if ($billing_state != null) {
             $basic_query->where('attivita.stato_fatturazione_id', $billing_state);
         }
@@ -300,11 +300,11 @@ class Attivita extends Model
         return false;
     }
 
-    public static function billedUpdateByActivityIDS($user_id, $ids, $state): bool
+    public static function accountedUpdateByActivityIDS($user_id, $ids, $state): bool
     {
         if (Persona::haveAdministrativePermissionOnActivity($user_id)) {
             Attivita::whereIn('id', $ids)
-                ->update(['fatturata' => $state]);
+                ->update(['contabilizzata' => $state]);
             return true;
         }
         return false;

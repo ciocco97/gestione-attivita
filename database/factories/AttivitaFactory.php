@@ -40,7 +40,7 @@ class AttivitaFactory extends Factory
             'descrizione_attivita' => $this->faker->sentence(rand(2, 5)),
             'note_interne' => $this->faker->sentence(rand(0, 10)),
             'rapportino_attivita' => 0,
-            'fatturata' => 1
+            'contabilizzata' => 1
         ];
     }
 }

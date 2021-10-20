@@ -18,7 +18,7 @@
 
     @foreach($activities as $activity)
 
-        <tr id="activity_row_{{ $activity->id }}" data-bill="{{ $activity->fatturata }}">
+        <tr id="activity_row_{{ $activity->id }}" data-bill="{{ $activity->contabilizzata }}">
 
             <td id="select_{{ $activity->id }}">
                 <div class="d-flex justify-content-center">

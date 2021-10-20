@@ -11,7 +11,7 @@ AJAX_METHODS = {
     activity_change_billable_duration_index: 3,
     activity_change_billing_state_index: 4,
     activity_send_report_index: 5,
-    activities_change_billed_index: 6,
+    activities_change_accounted_index: 6,
     activities_change_state_index: 7
 };
 
