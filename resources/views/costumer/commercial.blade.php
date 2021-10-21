@@ -34,18 +34,24 @@
 
 @section('main')
     <div id="costumers" class="mt-3 row">
-        <div class="col">
-        @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
-            @if($num % 2 == 0)
-                @include('costumer.table.costumer')
-            @endif
-        @endforeach
+        <div class="col d-none d-md-block">
+            @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
+                @if($num % 2 == 0)
+                    @include('costumer.table.costumer')
+                @endif
+            @endforeach
         </div>
-        <div class="col">
+        <div class="col d-none d-md-block">
             @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
                 @if($num % 2 != 0)
                     @include('costumer.table.costumer')
                 @endif
+            @endforeach
+        </div>
+
+        <div class="col d-block d-md-none">
+            @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
+                @include('costumer.table.costumer')
             @endforeach
         </div>
     </div>
