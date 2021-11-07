@@ -12,7 +12,7 @@ class Persona extends Model
     use HasFactory;
 
     protected $table = 'persona';
-    protected $fillable = ['nome', 'cognome', 'email', 'password', 'token', 'istante_creazione_token'];
+    protected $fillable = ['nome', 'cognome', 'email', 'password', 'attivo', 'token', 'istante_creazione_token'];
     public $timestamps = false;
     protected $hidden = ['pivot', 'password'];
 
@@ -43,10 +43,11 @@ class Persona extends Model
     public static function validUser($email, $password, $user_id = -1)
     {
         if ($email != null) {
-            $persona = Persona::where('email', $email)->where('password', $password)->get()->first();
+            $persona = Persona::where('email', $email);
         } else {
-            $persona = Persona::find($user_id)->where('password', $password)->get()->first();
+            $persona = Persona::find($user_id);
         }
+        $persona = $persona->where('password', $password)->where('attivo', 1)->get()->first();
         return $persona ?? false;
     }
 
