@@ -21,8 +21,21 @@ class AjaxController extends Controller
         'activities_change_state_index' => 7
     ];
 
+    public function getSharedVariables(Request $request)
+    {
+        $to_return = array(
+            'ACTIVITY_STATES' => Shared::ACTIVITY_STATES,
+            'ACTIVITY_BILLING_STATES' => Shared::ACTIVITY_BILLING_STATES,
+            'ACTIVITY_ACCOUNTED_STATES' => Shared::ACTIVITY_ACCOUNTED_STATES,
+            'ROLES' => Shared::ROLES,
+            'PAGES' => Shared::PAGES,
+            'AJAX_METHODS' => self::AJAX_METHODS
+        );
+        return response()->json($to_return);
+    }
+
     // Dato un cliente, ritorna i relativi ordini aperti
-    public function orders(Request $request)
+    public function ordersByCostumer(Request $request)
     {
         $costumer_id = $request->input('costumer_id');
         Log::debug('Ajax_orders', ['costumer_id' => $costumer_id]);
@@ -31,11 +44,10 @@ class AjaxController extends Controller
     }
 
     // Dato un ordine, ritorna il relativo cliente
-    public function costumer(Request $request)
+    public function costumerByOrder(Request $request)
     {
         $order_id = $request->input('order_id');
         Log::debug('Ajax_costumer', ['order_id' => $order_id]);
-        $dl = new DataLayer();
         $costumer = Cliente::getCostumerByOrderID($order_id)->toArray();
         return response()->json($costumer);
     }

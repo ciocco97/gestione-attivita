@@ -51,10 +51,10 @@ class OrderController extends Controller
             ->with('costumers', $costumers)
             ->with('current_state', $current_state)
             ->with('states', $states)
-            ->with('SHOW', ActivityController::METHODS['SHOW'])
-            ->with('EDIT', ActivityController::METHODS['EDIT'])
-            ->with('DELETE', ActivityController::METHODS['DELETE'])
-            ->with('ADD', ActivityController::METHODS['ADD'])
+            ->with('SHOW', Shared::METHODS['SHOW'])
+            ->with('EDIT', Shared::METHODS['EDIT'])
+            ->with('DELETE', Shared::METHODS['DELETE'])
+            ->with('ADD', Shared::METHODS['ADD'])
             ->with('previous_url', $_SESSION['previous_url']);
 
     }
@@ -66,7 +66,7 @@ class OrderController extends Controller
      */
     public function create()
     {
-        return $this->sedOrderView(ActivityController::METHODS['ADD']);
+        return $this->sedOrderView(Shared::METHODS['ADD']);
     }
 
     /**
@@ -101,7 +101,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        return $this->sedOrderView(ActivityController::METHODS['SHOW'], $id);
+        return $this->sedOrderView(Shared::METHODS['SHOW'], $id);
     }
 
     /**
@@ -112,7 +112,7 @@ class OrderController extends Controller
      */
     public function edit($id)
     {
-        return $this->sedOrderView(ActivityController::METHODS['EDIT'], $id);
+        return $this->sedOrderView(Shared::METHODS['EDIT'], $id);
     }
 
     /**
@@ -158,6 +158,6 @@ class OrderController extends Controller
     public function confirmDestroy($id)
     {
         Log::debug('ConfirmDestroy_order', ['id' => $id]);
-        return $this->sedOrderView(ActivityController::METHODS['DELETE'], $id);
+        return $this->sedOrderView(Shared::METHODS['DELETE'], $id);
     }
 }

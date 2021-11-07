@@ -60,8 +60,10 @@ class UserSeeder extends Seeder
         DB::table('persona_ruolo')->insert([
             ['persona_id' => $paolo->id, 'ruolo_id' => 1],
             ['persona_id' => $paolo->id, 'ruolo_id' => 2],
+            ['persona_id' => $paolo->id, 'ruolo_id' => 4],
             ['persona_id' => $gianmarco->id, 'ruolo_id' => 1],
             ['persona_id' => $gianmarco->id, 'ruolo_id' => 2],
+            ['persona_id' => $gianmarco->id, 'ruolo_id' => 4],
             ['persona_id' => $alice->id, 'ruolo_id' => 1]
         ]);
 

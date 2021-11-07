@@ -11,20 +11,20 @@
         <div class="btn-group" role="group">
             @include('button.filter')
 
-            @if($current_page == $pages['TECHNICIAN'])
+            @if($current_page == $PAGES['TECHNICIAN'])
                 <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">
                     <i class="bi bi-journal-plus me-2"></i>@lang('labels.add') @lang('labels.activity')
                 </a>
             @endif
 
-            @if($current_page == $pages['MANAGER'])
-                @include('activity.button.activity_mass_change', ['value' => 4])
-            @elseif($current_page == $pages['ADMINISTRATIVE'])
-                @include('activity.button.activity_mass_change', ['value' => 2])
+            @if($current_page == $PAGES['MANAGER'])
+                @include('activity.button.activity_mass_change', ['value' => $ACTIVITY_STATES['APPROVED']])
+            @elseif($current_page == $PAGES['ADMINISTRATIVE'])
+                @include('activity.button.activity_mass_change', ['value' => $ACTIVITY_ACCOUNTED_STATES['ACCOUNTED']])
             @endif
             @include('activity.button.mass_change_extend')
 
-            @include('activity.modal_confirmation')
+            {{--@include('activity.modal_confirmation')--}}
         </div>
     </div>
 @endsection
@@ -40,12 +40,12 @@
 
             <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
                 @include('activity.filter.costumer')
-                @if($current_page == $pages['ADMINISTRATIVE'])
+                @if($current_page == $PAGES['ADMINISTRATIVE'])
                     @include('activity.filter.bill')
                 @else
                     @include('activity.filter.state')
                 @endif
-                @if($current_page == $pages['MANAGER'] || $current_page == $pages['ADMINISTRATIVE'])
+                @if($current_page == $PAGES['MANAGER'] || $current_page == $PAGES['ADMINISTRATIVE'])
                     @include('activity.filter.user')
                 @endif
             </div>
@@ -65,7 +65,7 @@
 
     <div class="row mt-2"> <!-- Master table -->
         <div class="table-responsive">
-            @if($current_page == $pages['ADMINISTRATIVE'])
+            @if($current_page == $PAGES['ADMINISTRATIVE'])
                 @include('activity.table.administrative')
             @else
                 @include('activity.table.tech')

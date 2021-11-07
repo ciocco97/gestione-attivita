@@ -1,8 +1,8 @@
-<table class="table table-bordered border-secondary text-center text-dark align-middle">
+<table class="table table-hover table-bordered border-secondary text-center text-dark align-middle">
     <thead>
     <tr>
         <th scope="col"></th>
-        @if ($current_page == $pages['MANAGER'])
+        @if ($current_page == $PAGES['MANAGER'])
             <th scope="col">@lang('labels.tech_tab')</th>
         @endif
         <th scope="col">@lang('labels.date')</th>
@@ -11,11 +11,11 @@
         <th scope="col">@lang('labels.costumer')</th>
         <th scope="col">@lang('labels.order')</th>
         <th scope="col">@lang('labels.duration')</th>
-        @if ($current_page == $pages['MANAGER'])
+        @if ($current_page == $PAGES['MANAGER'])
             <th scope="col">@lang('labels.billable_duration')</th>
         @endif
         <th scope="col">@lang('labels.state')</th>
-        @if($current_page == $pages['MANAGER'])
+        @if($current_page == $PAGES['MANAGER'])
             <th scope="col">@lang('labels.billing_state')</th>
         @endif
         <th scope="col">@lang('labels.report')</th>
@@ -29,13 +29,13 @@
 
     @foreach($activities as $activity)
 
-        <tr id="activity_row_{{ $activity->id }}" data-bill="{{ $activity->contabilizzata }}">
+        <tr id="activity_row_{{ $activity->id }}" data-accounted="{{ $activity->contabilizzata }}">
             <td id="select_{{ $activity->id }}">
                 <div class="d-flex justify-content-center">
                     <input id="check_select_{{ $activity->id }}" class="form-check" type="checkbox">
                 </div>
             </td>
-            @if($current_page == $pages['MANAGER'])
+            @if($current_page == $PAGES['MANAGER'])
                 <td id="technician_{{ $activity->id }}">{{ $activity->nome }}</td>
             @endif
             <td id="date_{{ $activity->id }}" class="text-nowrap">{{ $activity->data }}</td>
@@ -48,7 +48,7 @@
             <td id="costumer_{{ $activity->id }}">{{ $activity->nome_cliente }}</td>
             <td id="order_{{ $activity->id }}">{{ $activity->descrizione_commessa }}</td>
             <td id="duration_{{ $activity->id }}">{{ substr($activity->durata, 0, 5) }}</td>
-            @if ($current_page == $pages['MANAGER'])
+            @if ($current_page == $PAGES['MANAGER'])
                 <td id="billable_duration_{{ $activity->id }}">
                     <div class="d-flex justify-content-center">
                         <input id="billable_duration_input_{{ $activity->id }}" class="form-control"
@@ -66,7 +66,7 @@
             @endif
             <td id="state_{{ $activity->id }}"
                 data-state-id="{{ $activity->stato_attivita_id }}">{{ $activity->descrizione_stato_attivita }}</td>
-            @if($current_page == $pages['MANAGER'])
+            @if($current_page == $PAGES['MANAGER'])
                 <td id="billing_state_{{ $activity->id }}">
                     <div class="d-flex justify-content-center">
                         <select class="form-select" id="billing_state_select_{{ $activity->id }}"
@@ -137,7 +137,7 @@
     </tbody>
 
     <script>
-        @if($current_page == $pages['MANAGER'])
+        @if($current_page == $PAGES['MANAGER'])
         manager_script();
         @else
         technician_script();

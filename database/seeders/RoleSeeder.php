@@ -17,7 +17,7 @@ class RoleSeeder extends Seeder
     {
         $administrator = Ruolo::create([
             'id' => 1,
-            'descrizione_ruolo' => 'amministratore'
+            'descrizione_ruolo' => 'amministrativo'
         ]);
 
         $commercial = Ruolo::create([
@@ -28,6 +28,11 @@ class RoleSeeder extends Seeder
         $manager = Ruolo::create([
             'id' => 3,
             'descrizione_ruolo' => 'manager'
+        ]);
+
+        $amministratore = Ruolo::create([
+            'id' => 4,
+            'descrizione_ruolo' => 'amministratore'
         ]);
 
     }

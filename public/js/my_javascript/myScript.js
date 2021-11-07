@@ -1,21 +1,22 @@
-TECHNICIAN = 0;
-MANAGER = 3;
-ADMINISTRATIVE = 1;
-COMMERCIAL = 2;
-ADMINISTRATOR = 4;
 GREEN_COLOR = "#c7edc9";
-
-AJAX_METHODS = {
-    order_change_report_index: 1,
-    order_change_state_index: 2,
-    activity_change_billable_duration_index: 3,
-    activity_change_billing_state_index: 4,
-    activity_send_report_index: 5,
-    activities_change_accounted_index: 6,
-    activities_change_state_index: 7
-};
-
 waiter_prefix = "wait_change_";
+
+// AJAX_METHODS = {
+//     order_change_report_index: 1,
+//     order_change_state_index: 2,
+//     activity_change_billable_duration_index: 3,
+//     activity_change_billing_state_index: 4,
+//     activity_send_report_index: 5,
+//     activities_change_accounted_index: 6,
+//     activities_change_state_index: 7
+// };
+//
+// TECHNICIAN = 0;
+// MANAGER = 3;
+// ADMINISTRATIVE = 1;
+// COMMERCIAL = 2;
+// ADMINISTRATOR = 4;
+
 
 function disable_row(id, administrative) {
     $("a.btn[id$=" + id + "][id!=show_" + id + "]")
@@ -32,51 +33,6 @@ function getSuffix(element, id_prefix) {
     let myRegexp = new RegExp(id_prefix + "(.*)");
     let match = myRegexp.exec(element.attr("id"));
     return match[1];
-}
-
-
-function show_activity_script() {
-    $("document").ready(function () {
-        $("#costumer").change(function () {
-            filter_orders_when_costumer_selected();
-        });
-        $("#order").change(function () {
-            filter_costumers_when_order_selected();
-        });
-    });
-}
-
-function filter_orders_when_costumer_selected() {
-    console.log("{function: costumer_selected_activity}");
-    let costumer = $("#costumer").val();
-    console.log("{costumer_id: " + costumer + "}");
-    $.ajax({
-        url: '/ajax/orders',
-        type: 'GET',
-        data: {costumer_id: costumer},
-        success: function (data) {
-            let order_select = $('#order');
-            order_select.find('option').remove().end();
-            $.each(data, function () {
-                order_select.append($("<option />").val(this.id).text(this.descrizione_commessa));
-            });
-        }
-    });
-}
-
-function filter_costumers_when_order_selected() {
-    console.log("{function: order_selected_activity}");
-    var costumer = $('#costumer').val();
-    var order = $("#order").val();
-    console.log("{order_id: " + order + "}");
-    $.ajax({
-        url: '/ajax/costumer',
-        type: 'GET',
-        data: {order_id: order},
-        success: function (data) {
-            $("#costumer").val(data.id);
-        }
-    });
 }
 
 
@@ -115,7 +71,6 @@ function check_password_equality(p_new, p_retipe) {
     $("#retype_password_alert").toggle(!equal && p_retipe !== "");
     return equal;
 }
-
 
 
 function change_billable_duration(changed_element) {

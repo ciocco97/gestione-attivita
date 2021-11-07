@@ -73,7 +73,7 @@ class CostumerController extends Controller
             ->with('user_roles', $user_roles)
             ->with('order_states', $order_states)
             ->with('costumers_orders_nums', $costumers_infos)
-            ->with('pages', ActivityController::PAGES)
+            ->with('pages', Shared::PAGES)
             ->with('current_page', $_SESSION['current_page']);
     }
 
@@ -88,7 +88,7 @@ class CostumerController extends Controller
 
         $costumers_infos = $this->getCostumersInfos();
 
-        $_SESSION['current_page'] = ActivityController::PAGES['COMMERCIAL'];
+        $_SESSION['current_page'] = Shared::PAGES['COMMERCIAL'];
         return $this->indexCostumerView($costumers_infos);
     }
 
@@ -149,10 +149,10 @@ class CostumerController extends Controller
             ->with('username', $username)
             ->with('user_roles', $user_roles)
             ->with('costumer', $costumer)
-            ->with('SHOW', ActivityController::METHODS['SHOW'])
-            ->with('EDIT', ActivityController::METHODS['EDIT'])
-            ->with('DELETE', ActivityController::METHODS['DELETE'])
-            ->with('ADD', ActivityController::METHODS['ADD'])
+            ->with('SHOW', Shared::METHODS['SHOW'])
+            ->with('EDIT', Shared::METHODS['EDIT'])
+            ->with('DELETE', Shared::METHODS['DELETE'])
+            ->with('ADD', Shared::METHODS['ADD'])
             ->with('previous_url', $_SESSION['previous_url']);
 
     }
@@ -164,7 +164,7 @@ class CostumerController extends Controller
      */
     public function create()
     {
-        return $this->sedCostumerView(ActivityController::METHODS['ADD']);
+        return $this->sedCostumerView(Shared::METHODS['ADD']);
     }
 
     /**
@@ -197,7 +197,7 @@ class CostumerController extends Controller
      */
     public function show($id)
     {
-        return $this->sedCostumerView(ActivityController::METHODS['SHOW'], $id);
+        return $this->sedCostumerView(Shared::METHODS['SHOW'], $id);
     }
 
     /**
@@ -208,7 +208,7 @@ class CostumerController extends Controller
      */
     public function edit($id)
     {
-        return $this->sedCostumerView(ActivityController::METHODS['EDIT'], $id);
+        return $this->sedCostumerView(Shared::METHODS['EDIT'], $id);
     }
 
     /**
@@ -248,6 +248,6 @@ class CostumerController extends Controller
     public function confirmDestroy($id)
     {
         Log::debug('ConfirmDestroy_costumer', ['id' => $id]);
-        return $this->sedCostumerView(ActivityController::METHODS['DELETE'], $id);
+        return $this->sedCostumerView(Shared::METHODS['DELETE'], $id);
     }
 }

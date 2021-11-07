@@ -5,13 +5,13 @@
     <div class="col-md-8">
         <div class="d-flex">
             <select class="form-select" id="master_user_filter" name="user">
-                <option value="" selected
+                <option value="{{ $FILTER_TEAM['TEAM_MEMBER_NOT_SELECTED'] }}" selected
                         hidden>@lang('labels.select') @lang('labels.tech_tab')</option>
                 @foreach($users as $user)
                     <option value="{{ $user->id }}">{{ $user->nome }}</option>
                 @endforeach
             </select>
-            @include('button.reset', ['btn_target_id' => '#master_user_filter'])
+            @include('button.reset', ['btn_target_id' => '#master_user_filter', 'btn_reset_id' => $FILTER_TEAM['TEAM_MEMBER_NOT_SELECTED']])
         </div>
     </div>
 </div>

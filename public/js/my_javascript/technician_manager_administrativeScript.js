@@ -1,11 +1,12 @@
 function technician_script() {
     $('document').ready(function () {
+
         // Evidenzio il tab technician nella navbar
         $("#technician_nav_tab").children().addClass("active");
 
         table_setup();
 
-        change_state_setup(TECHNICIAN);
+        change_state_setup(GLOBAL.PAGES['TECHNICIAN']);
         $("#activities_change_btn").removeClass("px-1");
 
     });
@@ -13,12 +14,13 @@ function technician_script() {
 
 function manager_script() {
     $('document').ready(function () {
+
         // Evidenzio il tab manager nella navbar
         $("#manager_nav_tab").children().addClass("active");
 
-        table_setup(MANAGER);
+        table_setup(GLOBAL.PAGES['MANAGER']);
 
-        change_state_setup(MANAGER);
+        change_state_setup(GLOBAL.PAGES['MANAGER']);
 
     });
 
@@ -29,67 +31,80 @@ function administrative_activity_script() {
         // Evidenzio il tab administrative nella navbar
         $("#administrative_nav_tab").children().addClass("active");
 
-        table_setup(ADMINISTRATIVE);
+        table_setup(GLOBAL.PAGES['ADMINISTRATIVE']);
 
-        change_state_setup(ADMINISTRATIVE);
+        change_state_setup(GLOBAL.PAGES['ADMINISTRATIVE']);
 
+    });
+}
+
+function show_activity_script() {
+    $("document").ready(function () {
+        $("#costumer").change(function () {
+            filter_orders_when_costumer_selected();
+        });
+        $("#order").change(function () {
+            filter_costumers_when_order_selected();
+        });
     });
 }
 
 
 function table_setup(page) {
-    let technician = page == TECHNICIAN;
-    let manager = page == MANAGER;
-    let administrative = page == ADMINISTRATIVE;
+    let technician = page == GLOBAL.PAGES['TECHNICIAN'];
+    let manager = page == GLOBAL.PAGES['MANAGER'];
+    let administrative = page == GLOBAL.PAGES['ADMINISTRATIVE'];
 
     if (!administrative) {
         // Modifico possibili azioni e colori per ogni attività
         $("tbody tr td[id^=state]").each(function () {
             let id = getSuffix($(this), "state_"); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
-            let state_id = $(this).attr("data-state-id");
+            let state_id = parseInt($(this).attr("data-state-id"));
             let description_td = $("#desc_" + id);
             switch (state_id) {
-                case "1":
-                    description_td.addClass('text-primary', 1000); // Coloro di grigio la descrizione dell'attività
+                case GLOBAL.ACTIVITY_STATES['COMPLETE']:
+                    description_td.addClass('text-primary', 1000); // Coloro di blu la descrizione dell'attività
                     $(this).addClass('text-primary'); // Coloro di blu lo stato dell'attività
                     break
-                case "2":
+                case GLOBAL.ACTIVITY_STATES['OPEN']:
                     // Non faccio nulla
                     break
-                case "3":
-                    $("#report_" + id).addClass('disabled') // Disabilito l'invio del rapportino
+                case GLOBAL.ACTIVITY_STATES['CANCELLED']:
+                    $("#send_report_" + id).addClass('disabled') // Disabilito l'invio del rapportino
                         .children().removeClass('text-primary text-success text-danger'); // Scoloro il relativo bottone
                     description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
                     $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
                     break
-                case "4":
+                case GLOBAL.ACTIVITY_STATES['APPROVED']:
                     if (!manager) {
-                        $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
+                        $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=send_report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
                             .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
                         $("td[id$=" + id + "] input.form-check").attr('disabled', true);
                     }
                     description_td.addClass('text-success', 1000); // Coloro di verde la descrizione dell'attività
                     $(this).addClass('text-success'); // Coloro di verde lo stato dell'attività
                     break
+                default:
+                    console.log("Stato attività non corretto (Table setup)")
             }
         });
 
         $("[id^=send_report_]").on("click", function () {
-            activity_change($(this), "send_report_", AJAX_METHODS.activity_send_report_index);
+            activity_change($(this), "send_report_", GLOBAL.AJAX_METHODS['activity_send_report_index']);
         });
 
         $("[id^=billable_duration_input_]").on("change", function () {
-            activity_change($(this), "billable_duration_input_", AJAX_METHODS.activity_change_billable_duration_index);
+            activity_change($(this), "billable_duration_input_", GLOBAL.AJAX_METHODS['activity_change_billable_duration_index']);
         });
 
         $("[id^=billing_state_select_]").on("change", function () {
-            activity_change($(this), "billing_state_select_", AJAX_METHODS.activity_change_billing_state_index);
+            activity_change($(this), "billing_state_select_", GLOBAL.AJAX_METHODS['activity_change_billing_state_index']);
         })
     }
 
     $("[id^=activity_row_]").each(function () {
         let row = $(this);
-        if (row.attr("data-bill") == 2) {
+        if (row.attr("data-accounted") == GLOBAL.ACTIVITY_ACCOUNTED_STATES['ACCOUNTED']) {
             disable_row(getSuffix($(this), "activity_row_"), administrative);
             row.css("background-color", GREEN_COLOR);
         }
@@ -270,6 +285,8 @@ function filter_setup() {
                 $("#master_date_filter").prop('disabled', true)
             } // Se il periodo è settato disabilita il filtro sulla data
             $("#master_period_filter option[value=" + period + "]").prop("selected", true);
+        } else {
+            $("#master_period_filter").children().first().prop('selected', true)
         }
         let costumer = localStorage["master_costumer_filter"];
         if (costumer) {
@@ -325,11 +342,11 @@ function activity_change(element, id_prefix, ajax_method) {
     let activity_id = getSuffix(element, id_prefix);
     let value = element.val();
     switch (ajax_method) {
-        case AJAX_METHODS.activity_change_billing_state_index:
+        case GLOBAL.AJAX_METHODS['activity_change_billing_state_index']:
             break
-        case AJAX_METHODS.activity_change_billable_duration_index:
+        case GLOBAL.AJAX_METHODS['activity_change_billable_duration_index']:
             break
-        case AJAX_METHODS.activity_send_report_index:
+        case GLOBAL.AJAX_METHODS['activity_send_report_index']:
             break
     }
     $("[id=" + waiter_prefix + id_prefix + activity_id + "]").show();
@@ -340,7 +357,7 @@ function activity_change(element, id_prefix, ajax_method) {
         data: {activity_id: activity_id, value: value, ajax_method: ajax_method},
         success: function (data) {
             $("[id=" + waiter_prefix + id_prefix + activity_id + "]").hide();
-            if (ajax_method == AJAX_METHODS.activity_send_report_index && data) {
+            if (ajax_method == GLOBAL.AJAX_METHODS['activity_send_report_index'] && data) {
                 $("[id=" + id_prefix + activity_id + "]").html(
                     "<i class=\"bi bi-clipboard-check text-success\"></i>");
             }
@@ -350,12 +367,12 @@ function activity_change(element, id_prefix, ajax_method) {
 
 function activities_change(element, ajax_method) {
     let activity_ids = checked_activity_ids;
-    let value = null;
+    let value;
     value = element.attr("data-state");
     switch (ajax_method) {
-        case AJAX_METHODS.activities_change_accounted_index:
+        case GLOBAL.AJAX_METHODS['activities_change_accounted_index']:
             break
-        case AJAX_METHODS.activities_change_accounted_index:
+        case GLOBAL.AJAX_METHODS['activities_change_accounted_index']:
             break
     }
 
@@ -377,14 +394,14 @@ function activities_change(element, ajax_method) {
 function change_state_setup(page) {
     checked_activity_ids = [];
     $("input:checkbox[id^=check_select_]").on("change", function () {
-        activity_checked($(this), page == ADMINISTRATIVE);
+        activity_checked($(this), page == GLOBAL.PAGES['ADMINISTRATIVE']);
     });
 
     $("[id^=activities_change_]").not("[id=activities_change_btn]").on("click", function () {
-        if (page == ADMINISTRATIVE) {
-            activities_change($(this), AJAX_METHODS['activities_change_accounted_index']);
+        if (page == GLOBAL.PAGES['ADMINISTRATIVE']) {
+            activities_change($(this), GLOBAL.AJAX_METHODS['activities_change_accounted_index']);
         } else {
-            activities_change($(this), AJAX_METHODS['activities_change_state_index']);
+            activities_change($(this), GLOBAL.AJAX_METHODS['activities_change_state_index']);
         }
     });
 
@@ -410,4 +427,38 @@ function activity_checked(check) {
             $("#activities_change_btn").fadeOut("fast");
         }
     }
+}
+
+
+function filter_orders_when_costumer_selected() {
+    console.log("{function: costumer_selected_activity}");
+    let costumer = $("#costumer").val();
+    console.log("{costumer_id: " + costumer + "}");
+    $.ajax({
+        url: '/ajax/ordersByCostumer',
+        type: 'GET',
+        data: {costumer_id: costumer},
+        success: function (data) {
+            let order_select = $('#order');
+            order_select.find('option').remove().end();
+            $.each(data, function () {
+                order_select.append($("<option />").val(this.id).text(this.descrizione_commessa));
+            });
+        }
+    });
+}
+
+function filter_costumers_when_order_selected() {
+    console.log("{function: order_selected_activity}");
+    var costumer = $('#costumer').val();
+    var order = $("#order").val();
+    console.log("{order_id: " + order + "}");
+    $.ajax({
+        url: '/ajax/costumerByOrder',
+        type: 'GET',
+        data: {order_id: order},
+        success: function (data) {
+            $("#costumer").val(data.id);
+        }
+    });
 }

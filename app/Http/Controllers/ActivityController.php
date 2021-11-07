@@ -17,19 +17,6 @@ use Carbon\Carbon as super_time_parser;
 class ActivityController extends Controller
 {
 
-    const METHODS = array(
-        'SHOW' => 0,
-        'EDIT' => 1,
-        'DELETE' => 2,
-        'ADD' => 3
-    );
-    const PAGES = array(
-        'TECHNICIAN' => 0,
-        'MANAGER' => 1,
-        'ADMINISTRATIVE' => 2,
-        'COMMERCIAL' => 3,
-        'ADMINISTRATOR' => 4
-    );
 
 
     private function indexActivityView($activities)
@@ -37,7 +24,6 @@ class ActivityController extends Controller
         $_SESSION['previous_url'] = url()->current();
         $current_page = $_SESSION['current_page'];
         Log::debug('indexActivityView');
-        $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
 
         $costumers = null;
@@ -46,18 +32,18 @@ class ActivityController extends Controller
         $billing_states = null;
 
         switch ($current_page) {
-            case self::PAGES['TECHNICIAN']:
+            case Shared::PAGES['TECHNICIAN']:
                 $costumers = Cliente::listActiveCostumerForCurrentUser();
                 $states = StatoAttivita::listActivityState();
                 break;
-            case self::PAGES['MANAGER']:
+            case Shared::PAGES['MANAGER']:
                 $costumers = Cliente::listActiveCostumer();
                 $states = StatoAttivita::listActivityState();
                 $users = Persona::listTeam($user_id);
                 $billing_states = StatoFatturazione::listBillingStates();
                 $this->addBillableDuration($activities);
                 break;
-            case self::PAGES['ADMINISTRATIVE']:
+            case Shared::PAGES['ADMINISTRATIVE']:
                 $costumers = Cliente::listCostumer();
                 $users = Persona::listUsers();
                 $billing_states = StatoFatturazione::listBillingStates();
@@ -68,17 +54,13 @@ class ActivityController extends Controller
         $this->changeActivityDateFormat($activities);
         $this->changeActivityDescriptionLenght($activities);
 
-        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('activity.technician')
             ->with('activities', $activities)
-            ->with('username', $username)
-            ->with('user_roles', $user_roles)
             ->with('costumers', $costumers)
             ->with('states', $states)
             ->with('billing_states', $billing_states)
             ->with('users', $users)
-            ->with('current_page', $_SESSION['current_page'])
-            ->with('pages', self::PAGES);
+            ->with('current_page', $_SESSION['current_page']);
     }
 
     public function index()
@@ -88,7 +70,7 @@ class ActivityController extends Controller
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
         $activities = Attivita::listActiveActivityByUserID($_SESSION['user_id'], $start_date);
 
-        $_SESSION['current_page'] = self::PAGES['TECHNICIAN'];
+        $_SESSION['current_page'] = Shared::PAGES['TECHNICIAN'];
         return $this->indexActivityView($activities);
 
     }
@@ -100,7 +82,7 @@ class ActivityController extends Controller
         $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
         $activities = Attivita::listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
 
-        $_SESSION['current_page'] = self::PAGES['MANAGER'];
+        $_SESSION['current_page'] = Shared::PAGES['MANAGER'];
         return $this->indexActivityView($activities);
     }
 
@@ -111,7 +93,7 @@ class ActivityController extends Controller
         $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
         $activities = Attivita::listAdministrativeActivities($start_date);
 
-        $_SESSION['current_page'] = self::PAGES['ADMINISTRATIVE'];
+        $_SESSION['current_page'] = Shared::PAGES['ADMINISTRATIVE'];
         return $this->indexActivityView($activities);
     }
 
@@ -122,14 +104,14 @@ class ActivityController extends Controller
         $state = $request->get('state');
         $date = $request->get('date');
         $team_member_id = $request->get('user');
-        $accounted_selector = $request->get('billing-state');
+        $billing_accounted_selector = $request->get('billing-state');
 
         $period = $period == null ? -1 : $period;
         $costumer = $costumer == null ? -1 : $costumer;
         $state = $state == null ? -1 : $state;
         $date = $date == null ? -1 : $date;
         $team_member_id = $team_member_id == null ? -1 : $team_member_id;
-        $accounted_selector = $accounted_selector == null ? -1 : $accounted_selector;
+        $billing_accounted_selector = $billing_accounted_selector == null ? -1 : $billing_accounted_selector;
 
         Log::debug('filterPost', [
             'period' => $period,
@@ -137,12 +119,12 @@ class ActivityController extends Controller
             'state' => $state,
             'date' => $date,
             'user' => $team_member_id,
-            'accounted' => $accounted_selector]);
+            'accounted' => $billing_accounted_selector]);
         return redirect()->route('activity.filter.get',
-            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id, 'billing_state' => $accounted_selector]);
+            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id, 'billing_accounted_state' => $billing_accounted_selector]);
     }
 
-    public function filter($period, $costumer, $state, $date, $team_member_id, $accounted_selector)
+    public function filter($period, $costumer, $state, $date, $team_member_id, $billing_accounted_state)
     {
         $user_id = $_SESSION['user_id'];
 
@@ -151,16 +133,16 @@ class ActivityController extends Controller
         $state = $state == -1 ? null : $state;
         $date = $date == -1 ? null : $date;
         $team_member_id = $team_member_id == -1 ? null : $team_member_id;
-        $accounted_selector = $accounted_selector == -1 ? null : $accounted_selector;
+        $billing_accounted_state = $billing_accounted_state == -1 ? null : $billing_accounted_state;
 
         $end_date = null;
-        if ($period == 1) { // current week
+        if ($period == Shared::FILTER_PERIOD['CURRENT_WEEK']) { // current week
             $start_date = super_time_parser::now()->startOf('week')->format('Y-m-d');
-        } else if ($period == 2) { // current 2 weeks
+        } else if ($period == Shared::FILTER_PERIOD['CURRENT_TWO_WEEKS']) { // current 2 weeks
             $start_date = super_time_parser::now()->startOf('week')->subDays(7)->format('Y-m-d');
-        } else if ($period == 3) { // current month
+        } else if ($period == Shared::FILTER_PERIOD['CURRENT_MONTH']) { // current month
             $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
-        } else if ($period == 4) { // last month
+        } else if ($period == Shared::FILTER_PERIOD['LAST_MONTH']) { // last month
             $end_date = super_time_parser::now()->startOfMonth()->subDay()->format('Y-m-d');
             $start_date = super_time_parser::parse($end_date)->startOfMonth()->format('Y-m-d');
         } else {
@@ -174,12 +156,12 @@ class ActivityController extends Controller
             'state' => $state,
             'date' => $date,
             'user' => $team_member_id,
-            'billing_state' => $accounted_selector
+            'billing_accounted_state' => $billing_accounted_state
         ]);
 
         $team_member_ids = null;
         if ($team_member_id != null) {
-            if ($team_member_id == -2) {
+            if ($team_member_id == Shared::FILTER_TEAM['TEAM_MEMBER_NOT_SELECTED']) {
                 $team_member_ids = Persona::listTeamIDS($user_id);
             } else {
                 $team_member_ids = array($team_member_id);
@@ -187,15 +169,15 @@ class ActivityController extends Controller
         }
 
         $accounted = null;
-        if ($accounted_selector != null) {
-            $accounted = $accounted_selector == 10 ? 2 : $accounted;
-            $accounted = $accounted_selector == 11 ? 1 : $accounted;
+        if ($billing_accounted_state != null) {
+            $accounted = $billing_accounted_state == Shared::FILTER_ACCOUNTED['ACCOUNTED'] ? 2 : $accounted;
+            $accounted = $billing_accounted_state == Shared::FILTER_ACCOUNTED['NOT_ACCOUNTED'] ? 1 : $accounted;
         }
 
-        if ($_SESSION['current_page'] == self::PAGES['ADMINISTRATIVE']) {
+        if ($_SESSION['current_page'] == Shared::PAGES['ADMINISTRATIVE']) {
             Log::debug('Administrative filter');
             $activities = Attivita::filterAdministrativeActivities(
-                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $accounted_selector, $accounted);
+                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_accounted_state, $accounted);
 
         } else {
             Log::debug('Tech filter');
@@ -226,7 +208,7 @@ class ActivityController extends Controller
             $state = $activity->statoAttivita()->get()->first();
         }
 
-        if ($method == self::METHODS['ADD'] || $method == self::METHODS['EDIT']) {
+        if ($method == Shared::METHODS['ADD'] || $method == Shared::METHODS['EDIT']) {
             $costumers = Cliente::listActiveCostumer();
             $orders = Commessa::listActiveOrder();
             if ($manager) {
@@ -237,16 +219,13 @@ class ActivityController extends Controller
             }
         }
 
-        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('activity.show')
-            ->with('username', $username)
-            ->with('user_roles', $user_roles)
             ->with('method', $method)
             ->with('tech_name', $tech_name)
-            ->with('SHOW', self::METHODS['SHOW'])
-            ->with('EDIT', self::METHODS['EDIT'])
-            ->with('DELETE', self::METHODS['DELETE'])
-            ->with('ADD', self::METHODS['ADD'])
+            ->with('SHOW', Shared::METHODS['SHOW'])
+            ->with('EDIT', Shared::METHODS['EDIT'])
+            ->with('DELETE', Shared::METHODS['DELETE'])
+            ->with('ADD', Shared::METHODS['ADD'])
             ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)->with('current_billing_state', $billing_state)
             ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)->with('billing_states', $billing_states)
             ->with('previous_url', $_SESSION['previous_url'])
@@ -263,7 +242,7 @@ class ActivityController extends Controller
     public function show(int $id)
     {
         Log::debug('Show_activity', ['id' => $id]);
-        return $this->sedActivityView(self::METHODS['SHOW'], $id);
+        return $this->sedActivityView(Shared::METHODS['SHOW'], $id);
     }
 
     /**
@@ -274,7 +253,7 @@ class ActivityController extends Controller
     public function create()
     {
         Log::debug('Create_activity');
-        return $this->sedActivityView(self::METHODS['ADD']);
+        return $this->sedActivityView(Shared::METHODS['ADD']);
     }
 
     /**
@@ -311,7 +290,7 @@ class ActivityController extends Controller
     public function edit($id)
     {
         Log::debug('Edit_activity', ['id' => $id]);
-        return $this->sedActivityView(self::METHODS['EDIT'], $id);
+        return $this->sedActivityView(Shared::METHODS['EDIT'], $id);
     }
 
     /**
@@ -358,7 +337,7 @@ class ActivityController extends Controller
     public function confirmDestroy($id)
     {
         Log::debug('ConfirmDestroy_activity', ['id' => $id]);
-        return $this->sedActivityView(self::METHODS['DELETE'], $id);
+        return $this->sedActivityView(Shared::METHODS['DELETE'], $id);
     }
 
 

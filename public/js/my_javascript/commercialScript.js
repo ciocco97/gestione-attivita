@@ -7,12 +7,12 @@ function commercial_script() {
 
         // Abilito azioni switch report
         $("[id^=report_switch_]").on("change", function () {
-            order_change($(this), "report_switch_", AJAX_METHODS.order_change_report_index);
+            order_change($(this), "report_switch_", GLOBAL.AJAX_METHODS['order_change_report_index']);
         });
 
         // Abilito le azioni select state
         $("[id^=order_state_select_]").on("change", function () {
-            order_change($(this), "order_state_select_", AJAX_METHODS.order_change_state_index);
+            order_change($(this), "order_state_select_", GLOBAL.AJAX_METHODS['order_change_state_index']);
         });
     });
 }
@@ -21,10 +21,10 @@ function order_change(element, id_prefix, ajax_method) {
     let order_id = getSuffix(element, id_prefix);
     let value;
     switch (ajax_method) {
-        case AJAX_METHODS.order_change_report_index:
+        case GLOBAL.AJAX_METHODS['order_change_report_index']:
             value = element.is(":checked") ? 1 : 0;
             break
-        case AJAX_METHODS.order_change_state_index:
+        case GLOBAL.AJAX_METHODS['order_change_state_index']:
             value = element.val();
             break
     }

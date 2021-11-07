@@ -24,6 +24,13 @@
                         <i class="bi bi-key me-2"></i>@lang('labels.change') password
                     </a>
                 </li>
+                @if(in_array($ROLES['ADMINISTRATOR'], $user_roles))
+                    <li>
+                        <a class="dropdown-item" href="">
+                            <i class="bi bi-award-fill me-2"></i>@lang('labels.admin')
+                        </a>
+                    </li>
+                @endif
                 <li>
                     <a class="dropdown-item" href="{{ route('user.logout') }}">
                         <i class="bi bi-box-arrow-right me-2"></i>Logout
@@ -53,20 +60,20 @@
 
         <div class="order-lg-1 collapse navbar-collapse" id="navbar">
             <ul class="navbar-nav">
-                @if(in_array(2, $user_roles))
+                @if(in_array($ROLES['COMMERCIAL'], $user_roles))
                     <li id="commercial_nav_tab" class="nav-item">
                         <a class="nav-link" href="{{ route('costumer.index') }}">@lang('labels.commercial_tab')</a>
                     </li>
                 @endif
 
-                @if(in_array(1, $user_roles))
+                @if(in_array($ROLES['ADMINISTRATIVE'], $user_roles))
                     <li id="administrative_nav_tab" class="nav-item">
                         <a class="nav-link"
                            href="{{ route('administrative.index') }}">@lang('labels.administrative_tab')</a>
                     </li>
                 @endif
 
-                @if(in_array(3, $user_roles))
+                @if(in_array($ROLES['MANAGER'], $user_roles))
                     <li id="manager_nav_tab" class="nav-item">
                         <a class="nav-link" href="{{ route('manager.index') }}">@lang('labels.manager_tab')</a>
                     </li>

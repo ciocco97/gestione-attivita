@@ -1,17 +1,17 @@
 <button id="activities_change_btn" class="btn btn-outline-success rounded-end border-start-0 px-1"
         data-bs-toggle="dropdown" style="display: none;">
-    @if($current_page == $pages['TECHNICIAN']) {{-- Technician --}}
+    @if($current_page == $PAGES['TECHNICIAN']) {{-- Technician --}}
     @lang('labels.change') @lang('labels.state')
     @endif
     <i class="bi bi-three-dots-vertical"></i>
 </button>
 <ul class="dropdown-menu">
-    @if($current_page == $pages['MANAGER'])
+    @if($current_page == $PAGES['MANAGER'])
         <li><h6 class="dropdown-header">@lang('labels.other_states')</h6></li>
-    @elseif($current_page == $pages['TECHNICIAN'])
+    @elseif($current_page == $PAGES['TECHNICIAN'])
         <li><h6 class="dropdown-header">@lang('labels.states')</h6></li>
     @endif
-    @if($current_page == $pages['ADMINISTRATIVE'])
+    @if($current_page == $PAGES['ADMINISTRATIVE'])
         <li><h6 class="dropdown-header">@lang('labels.other_state')</h6></li>
         <li>
             <button id="activities_change_1" class="dropdown-item" data-state="1">

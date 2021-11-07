@@ -11,9 +11,7 @@
     <script src="{{ url('/') }}/js/jquery-3.6.0.min.js"></script>
 
     <!-- My scripts -->
-    <script src="{{ url('/') }}/js/my_javascript/myScript.js"></script>
-    <script src="{{ url('/') }}/js/my_javascript/commercialScript.js"></script>
-    <script src="{{ url('/') }}/js/my_javascript/technician_manager_administrativeScript.js"></script>
+    <script src="{{ url('/') }}/js/my_javascript/requirements.js"></script>
 
     <title>@yield('title')</title>
 
