@@ -27,8 +27,8 @@ var shared_vars = ( function () {
                 if (!instance) {
                     console.log("Var in RAM not found. Try to load from session storage")
                     instance = sessionStorage.global_variables
-                    if (!instance) {
-                        console.log("var in session storage not found. Load from server")
+                    if (!instance || instance == "{}") {
+                        console.log("Var in session storage not found. Load from server")
                         instance = pullSharedVariables()
                         sessionStorage.setItem("global_variables", JSON.stringify(instance))
                     } else {
@@ -41,3 +41,7 @@ var shared_vars = ( function () {
         };
     }
 )();
+
+$("document").ready(function () {
+    GLOBAL = shared_vars.getInstance()
+})

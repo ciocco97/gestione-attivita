@@ -3,7 +3,6 @@
     'use strict';
     let a = [
         'shared_variablesScript',
-        'common_codeScript',
         'myScript',
         'technician_manager_administrativeScript',
         'commercialScript',
