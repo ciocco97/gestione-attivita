@@ -18,15 +18,17 @@ waiter_prefix = "wait_change_";
 // ADMINISTRATOR = 4;
 
 
-function disable_row(id, administrative) {
+function disable_row(id, administrative, accounted) {
     $("a.btn[id$=" + id + "][id!=show_" + id + "]")
         .addClass('disabled')
         .children().removeClass('text-danger text-warning');
     if (!administrative) {
         $("input[id$=" + id + "]").attr("disabled", true);
+        if (accounted) {
+            $("button[id$=" + id + "]").attr("disabled", true);
+        }
     }
     $("select[id$=" + id + "]").attr("disabled", true);
-    // $("button[id$=" + id + "]").attr("disabled", true);
 }
 
 function getSuffix(element, id_prefix) {

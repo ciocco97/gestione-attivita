@@ -1,7 +1,7 @@
 <table class="table table-hover table-bordered border-secondary text-center text-dark align-middle">
     <thead>
     <tr>
-        <th scope="col"></th>
+        <th scope="col">@include('checkbox.universal_activity_check')</th>
         @if ($current_page == $PAGES['MANAGER'])
             <th scope="col">@lang('labels.tech_tab')</th>
         @endif

@@ -37,7 +37,7 @@ class Persona extends Model
 
     public static function listUsers()
     {
-        return Persona::all();
+        return Persona::all()->sortBy("nome");
     }
 
     public static function validUser($email, $password, $user_id = -1)
@@ -126,7 +126,7 @@ class Persona extends Model
     public static function listTeam(int $user_id)
     {
         $user = Persona::find($user_id);
-        return $user->sottoposti()->get();
+        return $user->sottoposti()->orderBy("nome")->get();
     }
 
     public static function listTeamIDS(int $user_id)

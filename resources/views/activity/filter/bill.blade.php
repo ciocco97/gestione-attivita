@@ -8,7 +8,7 @@
                 <option value="" selected
                         hidden>@lang('labels.select') @lang('labels.billing_state')</option>
                 <option value="{{ $FILTER_ACCOUNTED['ACCOUNTED'] }}">@lang('labels.accounted')</option>
-                <option value="{{ $FILTER_ACCOUNTED['NOT_ACCOUNTED'] }}">@lang('labels.not_accounted')</option>
+                <option value="{{ $FILTER_ACCOUNTED['NOT_ACCOUNTED'] }}">@lang('labels.not') @lang('labels.accounted')</option>
                 @foreach($billing_states as $state)
                     <option
                         value="{{ $state->id }}">{{ $state->descrizione_stato_fatturazione }}</option>

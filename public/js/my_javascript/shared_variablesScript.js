@@ -12,7 +12,8 @@ function pullSharedVariables() {
                 ACTIVITY_ACCOUNTED_STATES: data["ACTIVITY_ACCOUNTED_STATES"],
                 ROLES: data["ROLES"],
                 AJAX_METHODS: data["AJAX_METHODS"],
-                PAGES: data["PAGES"]
+                PAGES: data["PAGES"],
+                NUM_SELECTABLE_ROWS: 0,
             }
         }
     });

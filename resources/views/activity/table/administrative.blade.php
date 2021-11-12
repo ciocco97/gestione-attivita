@@ -1,7 +1,7 @@
 <table class="table table-bordered border-secondary text-center text-dark align-middle">
     <thead>
     <tr>
-        <th scope="col"></th>
+        <th scope="col">@include('checkbox.universal_activity_check')</th>
         <th scope="col">@lang('labels.billing_state')</th>
         <th scope="col">@lang('labels.tech_tab')</th>
         <th scope="col">@lang('labels.date')</th>
