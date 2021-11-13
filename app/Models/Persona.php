@@ -16,15 +16,18 @@ class Persona extends Model
     public $timestamps = false;
     protected $hidden = ['pivot', 'password'];
 
-    public function attivita() {
+    public function attivita()
+    {
         return $this->belongsTo(Attivita::class);
     }
 
-    public function sottoposti() {
+    public function sottoposti()
+    {
         return $this->belongsToMany(Persona::class, 'manager_sottoposto', 'manager_id', 'sottoposto_id');
     }
 
-    public function manager() {
+    public function manager()
+    {
         return $this->belongsToMany(Persona::class, 'manager_sottoposto', 'sottoposto_id', 'manager_id');
     }
 
@@ -32,7 +35,6 @@ class Persona extends Model
     {
         return $this->belongsToMany(Ruolo::class, 'persona_ruolo');
     }
-
 
 
     public static function listUsers()
@@ -51,13 +53,17 @@ class Persona extends Model
         return $persona ?? false;
     }
 
-    public static function storeToken($email, $token)
+    public static function storeToken($email, $token): bool
     {
-        return Persona::where('email', $email)
+        if (Persona::where('email', $email)->get()->count() == 0) {
+            return false;
+        }
+        Persona::where('email', $email)
             ->update([
                 'token' => md5($token),
                 'istante_creazione_token' => Carbon::now()->toDateTimeString()
             ]);
+        return true;
     }
 
     public static function validToken($email, $token): bool
@@ -87,9 +93,9 @@ class Persona extends Model
     }
 
 
-    public static function haveUpdatePermissionOnActivity($user_id, $activity): bool
+    public static function haveUpdatePermissionOnActivity($user_id, Attivita $activity): bool
     {
-        return Persona::haveTechnicianPermissionOnActivity($user_id, $activity)
+        return (Persona::haveTechnicianPermissionOnActivity($user_id, $activity) && !Attivita::isApproved($activity))
             || Persona::haveManagerPermissionOnActivity($user_id, $activity);
     }
 

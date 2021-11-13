@@ -62,6 +62,21 @@ class Shared
         'ALL' => 5
     );
 
+    const USER_ACTIVE = array(
+        'ACTIVE' => 1,
+        'NOT_ACTIVE' => 0
+    );
+
+    const AJAX_METHODS = [
+        'order_change_report_index' => 1,
+        'order_change_state_index' => 2,
+        'activity_change_billable_duration_index' => 3,
+        'activity_change_billing_state_index' => 4,
+        'activity_send_report_index' => 5,
+        'activities_change_accounted_index' => 6,
+        'activities_change_state_index' => 7
+    ];
+
 //    Sto parametrizzando i valori dei filtri
 //    Ma quello che stavo cercando di capire è come mai se dalla pagina manager
 //    filtro senza selezionare un team member, mi fa lo stesso filtro del tecnico

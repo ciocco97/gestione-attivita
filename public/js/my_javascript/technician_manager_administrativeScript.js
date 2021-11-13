@@ -133,7 +133,9 @@ function table_setup(page) {
 
 function attach_table_tools(tbody_id, search_field_id, select_num_rows_id, save_current_page_element_id) {
     let num_rows_chosen = localStorage["num_rows"];
-    $(select_num_rows_id).val(num_rows_chosen)
+    if (num_rows_chosen) {
+        $(select_num_rows_id).val(num_rows_chosen)
+    }
 
     $(search_field_id).on("keyup", function () {
         search_and_pagination(tbody_id, search_field_id, select_num_rows_id, save_current_page_element_id);
@@ -410,7 +412,6 @@ function activities_change(element, ajax_method) {
 
 
 function change_state_setup(page) {
-    console.log(GLOBAL.NUM_SELECTABLE_ROWS)
     checked_activity_ids = [];
     $("input:checkbox[id^=check_select_]").on("change", function () {
         activity_checked($(this), page == GLOBAL.PAGES['ADMINISTRATIVE']);

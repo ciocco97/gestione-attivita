@@ -55,5 +55,10 @@ class ViewSharedProvider extends ServiceProvider
             $view->with('FILTER_TEAM', Shared::FILTER_TEAM);
         });
 
+        view()->composer('*.administrator', function ($view) {
+            $view->with('USER_ACTIVE', Shared::USER_ACTIVE)
+                ->with('AJAX_METHODS', Shared::AJAX_METHODS);
+        });
+
     }
 }

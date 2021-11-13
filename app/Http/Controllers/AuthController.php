@@ -187,9 +187,10 @@ class AuthController extends Controller
         } else if ($inserted_token == null) {
             Log::debug(2);
             $generated_token = Str::random(10);
-            Persona::storeToken($email, $generated_token);
-            Mail::to($email)
-                ->queue(new ResetPasswordToken($generated_token));
+            if (Persona::storeToken($email, $generated_token)) {
+                Mail::to($email)
+                    ->queue(new ResetPasswordToken($generated_token));
+            }
             return view('user.reset_password')
                 ->with('email', $email);
         } else if ($new_password == null && $retipe_password == null){

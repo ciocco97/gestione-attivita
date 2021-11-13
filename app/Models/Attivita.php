@@ -332,4 +332,8 @@ class Attivita extends Model
         }
     }
 
+    public static function isApproved(Attivita $activity) {
+        return $activity->stato_attivita_id == Shared::ACTIVITY_STATES['APPROVED'];
+    }
+
 }

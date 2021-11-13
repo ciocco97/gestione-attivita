@@ -33,27 +33,13 @@
 @endsection
 
 @section('main')
-    <div id="costumers" class="mt-3 row">
-        <div class="col d-none d-md-block">
-            @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
-                @if($num % 2 == 0)
-                    @include('costumer.table.costumer')
-                @endif
-            @endforeach
-        </div>
-        <div class="col d-none d-md-block">
-            @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
-                @if($num % 2 != 0)
-                    @include('costumer.table.costumer')
-                @endif
-            @endforeach
-        </div>
 
-        <div class="col d-block d-md-none">
-            @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
+    <div id="costumers" class="row row-cols-1 row-cols-md-2 g-3 mt-2">
+        @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
+            <div class="col">
                 @include('costumer.table.costumer')
-            @endforeach
-        </div>
+            </div>
+        @endforeach
     </div>
 
     <script>

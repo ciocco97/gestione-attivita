@@ -1,4 +1,4 @@
-<div class="card mb-2 border-info col">
+<div class="card border-secondary">
     <div class="card-body">
         <div class="d-flex justify-content-between">
             <h5 class="card-title">{{ $costumer_orders_nums[0]->nome }}</h5>

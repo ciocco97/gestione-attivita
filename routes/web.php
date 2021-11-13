@@ -8,9 +8,9 @@ use App\Http\Controllers\ActivityController;
 use \App\Http\Middleware\MyAuth;
 use \App\Http\Middleware\Language;
 use \App\Http\Controllers\AjaxController;
-use \App\Http\Controllers\ActivityMailController;
 use \App\Http\Controllers\CostumerController;
 use \App\Http\Controllers\OrderController;
+use \App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +67,8 @@ Route::middleware([Language::class])->group(function () {
         Route::post('/order/{id}/update', [OrderController::class, 'update'])->name('order.update');
         Route::get('/order/{id}/destroy', [OrderController::class, 'destroy'])->name('order.destroy');
         Route::get('/ajax/order/change', [AjaxController::class, 'ajaxOrderChange']);
+
+        Route::resource('user', UserController::class);
     });
 });
 

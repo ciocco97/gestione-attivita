@@ -11,15 +11,6 @@ use Illuminate\Support\Facades\Log;
 
 class AjaxController extends Controller
 {
-    const AJAX_METHODS = [
-        'order_change_report_index' => 1,
-        'order_change_state_index' => 2,
-        'activity_change_billable_duration_index' => 3,
-        'activity_change_billing_state_index' => 4,
-        'activity_send_report_index' => 5,
-        'activities_change_accounted_index' => 6,
-        'activities_change_state_index' => 7
-    ];
 
     public function getSharedVariables(Request $request)
     {
@@ -29,7 +20,7 @@ class AjaxController extends Controller
             'ACTIVITY_ACCOUNTED_STATES' => Shared::ACTIVITY_ACCOUNTED_STATES,
             'ROLES' => Shared::ROLES,
             'PAGES' => Shared::PAGES,
-            'AJAX_METHODS' => self::AJAX_METHODS
+            'AJAX_METHODS' => Shared::AJAX_METHODS
         );
         return response()->json($to_return);
     }
@@ -64,10 +55,10 @@ class AjaxController extends Controller
 
         $result = false;
         switch ($ajax_method) {
-            case self::AJAX_METHODS['activities_change_accounted_index']:
+            case Shared::AJAX_METHODS['activities_change_accounted_index']:
                 $result = Attivita::accountedUpdateByActivityIDS($user_id, $ids, $value);
                 break;
-            case self::AJAX_METHODS['activities_change_state_index']:
+            case Shared::AJAX_METHODS['activities_change_state_index']:
                 $result = Attivita::stateUpdateByActivityIDS($user_id, $ids, $value);
                 break;
         }
@@ -85,13 +76,13 @@ class AjaxController extends Controller
 
         $result = false;
         switch ($ajax_method) {
-            case self::AJAX_METHODS['activity_change_billable_duration_index']:
+            case Shared::AJAX_METHODS['activity_change_billable_duration_index']:
                 $result = Attivita::changeActivityBillableDuration($user_id, $activity_id, $value);
                 break;
-            case self::AJAX_METHODS['activity_change_billing_state_index']:
+            case Shared::AJAX_METHODS['activity_change_billing_state_index']:
                 $result = Attivita::changeActivityBillingState($user_id, $activity_id, $value);
                 break;
-            case self::AJAX_METHODS['activity_send_report_index']:
+            case Shared::AJAX_METHODS['activity_send_report_index']:
                 $result = Attivita::sendActivityReport($user_id, $activity_id);
                 break;
         }
@@ -108,10 +99,10 @@ class AjaxController extends Controller
 
         $result = false;
         switch ($ajax_method) {
-            case self::AJAX_METHODS['order_change_report_index']:
+            case Shared::AJAX_METHODS['order_change_report_index']:
                 $result = Commessa::changeOrderReport($user_id, $order_id, $value);
                 break;
-            case self::AJAX_METHODS['order_change_state_index']:
+            case Shared::AJAX_METHODS['order_change_state_index']:
                 $result = Commessa::changeOrderState($user_id, $order_id, $value);
                 break;
         }
