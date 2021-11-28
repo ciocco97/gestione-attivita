@@ -7,7 +7,7 @@ function common_for_tma_scripts(page) {
 function technician_script() {
     $('document').ready(function () {
         // Evidenzio il tab technician nella navbar
-        $("#technician_nav_tab").children().addClass("active");
+        focus_nav_tab("technician");
         common_for_tma_scripts(GLOBAL.PAGES['TECHNICIAN'])
 
         $("#activities_change_btn").removeClass("px-1");
@@ -18,7 +18,7 @@ function technician_script() {
 function manager_script() {
     $('document').ready(function () {
         // Evidenzio il tab manager nella navbar
-        $("#manager_nav_tab").children().addClass("active");
+        focus_nav_tab("manager");
         common_for_tma_scripts(GLOBAL.PAGES['MANAGER'])
     });
 
@@ -27,7 +27,7 @@ function manager_script() {
 function administrative_activity_script() {
     $('document').ready(function () {
         // Evidenzio il tab administrative nella navbar
-        $("#administrative_nav_tab").children().addClass("active");
+        focus_nav_tab("administrative");
         common_for_tma_scripts(GLOBAL.PAGES['ADMINISTRATIVE'])
     });
 }
@@ -293,7 +293,11 @@ function filter_setup() {
         if (value == "") {
             $("#master_period_filter").prop("disabled", false);
         } else {
-            $("#master_period_filter").prop("disabled", true);
+            let master_period_filter = $("#master_period_filter");
+            master_period_filter.prop("disabled", true);
+            for(let i = 0; i < master_period_filter.length; i++) {
+                master_period_filter[i].selectedIndex =0;
+            }
         }
     })
 

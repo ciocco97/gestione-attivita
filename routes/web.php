@@ -33,6 +33,7 @@ Route::middleware([Language::class])->group(function () {
     Route::post('/user/authentication', [AuthController::class, 'authentication'])->name('user.authentication');
     Route::get('/user/logout', [AuthController::class, 'logout'])->name('user.logout');
     Route::match(['get', 'post'], '/user/reset/password/', [AuthController::class, 'resetPasswordProcedure'])->name('user.reset.password');
+    Route::get('/ajax/user/check_credentials', [AjaxController::class, 'ajaxCheckCredentials']);
 
 
     Route::middleware([MyAuth::class])->group(function () {

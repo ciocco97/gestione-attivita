@@ -3,7 +3,7 @@
 @section('title', 'Gestione attività : Autenticazione')
 
 @section('navbar')
-    @include('user.external_navbar')
+    @include('navbar.nav')
 @endsection
 
 @section('body')
@@ -17,17 +17,20 @@
                 </div>
 
                 <div class="card p-4 pb-1">
-                    <form action="{{ route('user.authentication') }}" method="post">
+                    <form id="login_form" action="{{ route('user.authentication') }}" method="post">
                         @csrf
                         <div class="mb-3">
                             <label for="#inputEmail" class="form-label">@lang('labels.email')</label>
                             <input type="email" class="form-control" id="inputEmail" name="email"
-                                   placeholder="Inserisci email" value="{{ $email }}" required>
+                                   placeholder="@lang('labels.insert') email" value="{{ $email }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="#inputPassword" class="form-label">Password</label>
                             <input type="password" class="form-control" id="inputPassword" name="password"
                                    placeholder="Password" required>
+                        </div>
+                        <div id="login_error" class="alert alert-danger text-center" style="display: none;">
+                            @lang('text.credential_check_error')
                         </div>
                         <div class="mb-3 form-check">
                             <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe"
@@ -37,12 +40,21 @@
                             >
                             <label class="form-check-label" for="rememberMe">@lang('labels.remember')</label>
                         </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Login</button>
+
+                        <button id="login_button" type="submit" class="btn btn-primary">
+                            <div id="wait_check_credentials"
+                                 class="spinner-border spinner-border-sm text-success"
+                                 role="status"
+                                 style="display: none;">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <i id="symbol_check_credentials" class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </button>
+
 
                         <div class="d-flex justify-content-center mt-3">
                             <div class="flex-fill border-bottom mx-5 mb-2"></div>
-                            <div class="text-secondary">OR</div>
+                            <div class="text-secondary">@lang('labels.or')</div>
                             <div class="flex-fill border-bottom mx-5 mb-2"></div>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
@@ -59,5 +71,9 @@
             <div class="col-md-2 col-lg-3"></div>
         </div>
     </div>
+
+    <script>
+        login_script()
+    </script>
 
 @endsection

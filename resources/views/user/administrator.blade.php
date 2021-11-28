@@ -1,9 +1,9 @@
-@extends('layouts.tmac')
+@extends('layouts.tma')
 
 @section('title', 'Gestione : utente')
 
 @section('navbar')
-    @include('nav')
+    @include('navbar.nav')
 @endsection
 
 @section('actions')
@@ -24,7 +24,7 @@
     <div id="users" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-1">
         @foreach($users as $num => $user)
             <div class="col">
-                @include('user.card.registry')
+                @include('user.card.user_registry')
             </div>
         @endforeach
     </div>

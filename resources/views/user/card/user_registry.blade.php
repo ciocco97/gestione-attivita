@@ -7,19 +7,15 @@
                 <h5 class="card-title">{{ $user->nome }} {{ $user->cognome }}</h5>
             </div>
             <div class="d-flex">
-                <a id="show_{{ $user->id }}" class="btn pt-0"
-                   href="{{ route('user.show', ['user' => $user->id]) }}">
+                <a id="show_{{ $user->id }}" class="btn pt-0" href="{{ route('user.show', ['user' => $user->id]) }}">
                     <i class="bi bi-eye text-secondary"></i>
                 </a>
 
-                <a id="edit_{{ $user->id }}" class="btn pt-0"
-                   href="{{ route('user.edit', ['user' => $user->id]) }}">
+                <a id="edit_{{ $user->id }}" class="btn pt-0" href="{{ route('user.edit', ['user' => $user->id]) }}">
                     <i class="bi bi-pencil text-warning"></i>
                 </a>
                 @if($user->num_activity > 0)
-                    <a id="delete_{{ user->id }}"
-                       class="btn pt-0 disabled"
-                       href="">
+                    <a id="delete_{{ $user->id }}" class="btn pt-0 disabled" href="">
                         <i class="bi bi-trash"></i>
                     </a>
                 @else

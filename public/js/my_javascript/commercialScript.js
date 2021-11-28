@@ -3,7 +3,7 @@
 function commercial_script() {
     $('document').ready(function () {
         // Evidenzio il tab commercial nella navbar
-        $("#commercial_nav_tab").children().addClass("active");
+        focus_nav_tab("commercial");
 
         // Abilito azioni switch report
         $("[id^=report_switch_]").on("change", function () {

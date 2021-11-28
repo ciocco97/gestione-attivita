@@ -1,22 +1,6 @@
 GREEN_COLOR = "#c7edc9";
 waiter_prefix = "wait_change_";
 
-// AJAX_METHODS = {
-//     order_change_report_index: 1,
-//     order_change_state_index: 2,
-//     activity_change_billable_duration_index: 3,
-//     activity_change_billing_state_index: 4,
-//     activity_send_report_index: 5,
-//     activities_change_accounted_index: 6,
-//     activities_change_state_index: 7
-// };
-//
-// TECHNICIAN = 0;
-// MANAGER = 3;
-// ADMINISTRATIVE = 1;
-// COMMERCIAL = 2;
-// ADMINISTRATOR = 4;
-
 
 function disable_row(id, administrative, accounted) {
     $("a.btn[id$=" + id + "][id!=show_" + id + "]")
@@ -72,6 +56,11 @@ function check_password_equality(p_new, p_retipe) {
     console.log("check_password_equality" + equal);
     $("#retype_password_alert").toggle(!equal && p_retipe !== "");
     return equal;
+}
+
+
+function focus_nav_tab(nav_tab_id_prefix) {
+    $("[id^=" + nav_tab_id_prefix + "_nav_tab]").children().addClass("active");
 }
 
 

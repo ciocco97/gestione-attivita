@@ -18,6 +18,7 @@ class UserController extends Controller
         $users = Persona::listUsers();
         $this->addUserPhotoPath($users);
         $this->addUserTeam($users);
+        $this->addUserActivityNum($users);
 //        dump(Storage::disk('local')->allFiles());
 
         return view('user.administrator')->with('users', $users);
@@ -45,7 +46,7 @@ class UserController extends Controller
     public function addUserActivityNum($users)
     {
         foreach ($users as $user) {
-            $user->num_activity = $user->attivita()->count()->get();
+            $user->num_activity = $user->attivita()->count();
         }
     }
 

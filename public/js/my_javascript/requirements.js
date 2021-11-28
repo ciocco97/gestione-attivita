@@ -6,6 +6,7 @@
         'myScript',
         'technician_manager_administrativeScript',
         'commercialScript',
+        'loginScript',
     ];
     let i;
     let s = [];

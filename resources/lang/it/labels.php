@@ -7,6 +7,7 @@ return [
     'administrative_tab' => 'Amministrativo',
     'manager_tab' => 'Manager',
     'tech_tab' => 'Tecnico',
+    'admin' => 'Amministrazione sito',
     'filter' => 'Filtra',
     'add' => 'Aggiungi',
     'initial_date' => 'Data di inizio',
@@ -36,7 +37,7 @@ return [
     'back' => 'Torna indietro',
     'forgot_password' => 'Ti sei per caso dimenticato la password?',
     'search' => 'Cerca',
-    'search_placeholder' => 'Cerca Nella tabella',
+    'search_placeholder' => 'Cerca in tutte le colonne della tabella',
     'num_rows' => 'Numero righe',
     'period' => 'Periodo',
     'last_week' => 'Settimana corrente',
@@ -69,5 +70,6 @@ return [
     'num_orders' => 'Numero commesse',
     'num' => 'Numero',
     'name' => 'Nome',
-
+    'or' => 'OPPURE',
+    'insert' => 'Inserisci',
 ];

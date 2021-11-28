@@ -3,7 +3,7 @@
 @section('title', 'dipende, da mettere a posto')
 
 @section('navbar')
-    @include('nav')
+    @include('navbar.nav')
 @endsection
 
 @section('body')

@@ -6,13 +6,23 @@ use App\DataLayer;
 use App\Models\Attivita;
 use App\Models\Cliente;
 use App\Models\Commessa;
+use App\Models\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AjaxController extends Controller
 {
 
-    public function getSharedVariables(Request $request)
+    public function ajaxCheckCredentials(Request $request) {
+        Log::debug("ciao");
+        $user_email = $request->input('user_email');
+        $user_md5_password = $request->input('user_md5_password');
+        Log::debug('ajaxCheckCredentials', ['email' => $user_email]);
+        $result = Persona::validUser($user_email, $user_md5_password);
+        return response()->json($result);
+    }
+
+    public function getSharedVariables()
     {
         $to_return = array(
             'ACTIVITY_STATES' => Shared::ACTIVITY_STATES,

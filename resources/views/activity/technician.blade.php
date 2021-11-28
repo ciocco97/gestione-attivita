@@ -1,9 +1,9 @@
-@extends('layouts.tmac')
+@extends('layouts.tma')
 
 @section('title', 'Gestione : attivita')
 
 @section('navbar')
-    @include('nav')
+    @include('navbar.nav')
 @endsection
 
 @section('actions')

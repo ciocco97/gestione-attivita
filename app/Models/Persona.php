@@ -18,7 +18,7 @@ class Persona extends Model
 
     public function attivita()
     {
-        return $this->belongsTo(Attivita::class);
+        return $this->hasMany(Attivita::class);
     }
 
     public function sottoposti()

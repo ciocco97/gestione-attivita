@@ -50,7 +50,7 @@ class Commessa extends Model
 
     public static function listActiveOrder(): \Illuminate\Support\Collection
     {
-        return StatoCommessa::find(1)->commesse()->get();
+        return StatoCommessa::find(1)->commesse()->orderBy('descrizione_commessa')->get();
     }
 
     public static function listActiveOrderByCostumerID(int $costumer_id): \Illuminate\Support\Collection

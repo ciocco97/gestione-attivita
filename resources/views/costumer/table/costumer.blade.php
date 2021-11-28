@@ -6,7 +6,7 @@
                 <td>
                     <a id="show_{{ $costumer_orders_nums[0]->id }}" class="btn pt-0"
                        href="{{ route('costumer.show', ['costumer' => $costumer_orders_nums[0]->id]) }}">
-                        <i class="bi bi-eye text-secondary"></i>
+                        <i class="bi bi-eye" style="color: #30834a"></i>
                     </a>
                 </td>
 
