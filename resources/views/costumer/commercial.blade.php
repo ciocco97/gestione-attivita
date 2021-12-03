@@ -7,36 +7,32 @@
 @endsection
 
 @section('actions')
-    <div class="d-flex justify-content-end">
-        <div class="btn-group" role="group">
-            <a class="btn btn-outline-success" href="{{ route('costumer.create') }}">
-                <i class="bi bi-emoji-smile me-2"></i>@lang('labels.add') @lang('labels.costumer')
-            </a>
-            <a class="btn btn-outline-primary" href="{{ route('order.create') }}">
-                <i class="bi bi-file-earmark-ruled me-2"></i>@lang('labels.add') @lang('labels.order')
-            </a>
-        </div>
-    </div>
+    @include('shared.button_filter')
+    <a class="btn btn-outline-success" href="{{ route('costumer.create') }}">
+        <i class="bi bi-emoji-smile me-2"></i>@lang('labels.add') @lang('labels.costumer')
+    </a>
+    <a class="btn btn-outline-primary" href="{{ route('order.create') }}">
+        <i class="bi bi-file-earmark-ruled me-2"></i>@lang('labels.add') @lang('labels.order')
+    </a>
 @endsection
 
 @section('filters')
-    <form id="master_filter_form" class="mb-0" action="{{ route('activity.filter') }}" method="post">
-        @csrf
-        <div class="row">
-            <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
-            </div>
-
-            <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
-            </div>
+    @csrf
+    <div class="row">
+        <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
         </div>
-    </form>
+
+        <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
+        </div>
+        @include('shared.filter.submit')
+    </div>
 @endsection
 
 @section('main')
 
-    <div id="costumers" class="row row-cols-1 row-cols-md-2 g-3 mt-2">
+    <div id="costumers" class="row row-cols-1 row-cols-xxl-2 g-3 mt-2">
         @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
-            <div class="col">
+            <div>
                 @include('costumer.table.costumer')
             </div>
         @endforeach

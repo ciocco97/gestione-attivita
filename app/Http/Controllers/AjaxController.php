@@ -14,11 +14,13 @@ class AjaxController extends Controller
 {
 
     public function ajaxCheckCredentials(Request $request) {
-        Log::debug("ciao");
         $user_email = $request->input('user_email');
         $user_md5_password = $request->input('user_md5_password');
-        Log::debug('ajaxCheckCredentials', ['email' => $user_email]);
-        $result = Persona::validUser($user_email, $user_md5_password);
+        Log::debug('ajaxCheckCredentials', ['email' => $user_email, 'md5 password' => $user_md5_password]);
+        $result = false;
+        if ($user_email != null && $user_md5_password != null) {
+            $result = Persona::validUser($user_email, $user_md5_password) != null;
+        }
         return response()->json($result);
     }
 

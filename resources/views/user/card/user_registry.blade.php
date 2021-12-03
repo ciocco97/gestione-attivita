@@ -32,7 +32,7 @@
 
             <li class="list-group-item d-flex">
                 <input id="user_email_{{ $user->id }}" class="form-control" type="email" value="{{ $user->email }}">
-                @include('button.confirm', ['element_id' => $user->id])
+                @include('shared.button_confirm', ['element_id' => $user->id])
             </li>
             <li class="list-group-item">
                 <div class="accordion-item mb-2">

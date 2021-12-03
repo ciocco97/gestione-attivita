@@ -9,7 +9,7 @@
 @section('actions')
     <div class="d-flex justify-content-end">
         <div class="btn-group" role="group">
-            @include('button.filter')
+            @include('shared.button_filter')
 
             @if($current_page == $PAGES['TECHNICIAN'])
                 <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">
@@ -18,11 +18,11 @@
             @endif
 
             @if($current_page == $PAGES['MANAGER'])
-                @include('activity.button.activity_mass_change', ['value' => $ACTIVITY_STATES['APPROVED']])
+                @include('shared.button_activity_mass_change', ['value' => $ACTIVITY_STATES['APPROVED']])
             @elseif($current_page == $PAGES['ADMINISTRATIVE'])
-                @include('activity.button.activity_mass_change', ['value' => $ACTIVITY_ACCOUNTED_STATES['ACCOUNTED']])
+                @include('shared.button_activity_mass_change', ['value' => $ACTIVITY_ACCOUNTED_STATES['ACCOUNTED']])
             @endif
-            @include('activity.button.mass_change_extend')
+            @include('shared.button_activity_mass_change_extend')
 
             {{--@include('activity.modal_confirmation')--}}
         </div>
@@ -30,49 +30,49 @@
 @endsection
 
 @section('filters')
-    <form id="master_filter_form" class="mb-0" action="{{ route('activity.filter') }}" method="post">
-        @csrf
-        <div class="row">
-            <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
-                @include('activity.filter.period')
-                @include('activity.filter.date')
-            </div>
-
-            <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
-                @include('activity.filter.costumer')
-                @if($current_page == $PAGES['ADMINISTRATIVE'])
-                    @include('activity.filter.bill')
-                @else
-                    @include('activity.filter.state')
-                @endif
-                @if($current_page == $PAGES['MANAGER'] || $current_page == $PAGES['ADMINISTRATIVE'])
-                    @include('activity.filter.user')
-                @endif
-            </div>
-
-            <div> <!-- Riga per il submit della form dei filtri -->
-                @include('activity.filter.submit')
-            </div>
-
+    @csrf
+    <div class="row">
+        <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
+            @include('shared.filter.period')
+            @include('shared.filter.date')
         </div>
-    </form>
+
+        <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
+            @include('shared.filter.costumer')
+            @if($current_page == $PAGES['ADMINISTRATIVE'])
+                @include('shared.filter.bill_or_accounted_state')
+            @else
+                @include('shared.filter.state')
+            @endif
+            @if($current_page == $PAGES['MANAGER'] || $current_page == $PAGES['ADMINISTRATIVE'])
+                @include('shared.filter.user')
+            @endif
+        </div>
+
+        <div> <!-- Riga per il submit della form dei filtri -->
+            @include('shared.filter.submit')
+        </div>
+
+    </div>
 @endsection
 
 @section('main')
 
-    @include('pagination.search_and_num_rows')
+    @include('shared.pagination.search_and_num_rows')
 
 
     <div class="row mt-2"> <!-- Master table -->
         <div class="table-responsive">
-            @if($current_page == $PAGES['ADMINISTRATIVE'])
-                @include('activity.table.administrative')
-            @else
-                @include('activity.table.tech')
-            @endif
+            <table class="table table-hover table-bordered border-secondary text-center text-dark align-middle">
+                @if($current_page == $PAGES['ADMINISTRATIVE'])
+                    @include('activity.table.administrative')
+                @else
+                    @include('activity.table.tech')
+                @endif
+            </table>
         </div>
     </div>
 
-    @include('pagination.page_selector')
+    @include('shared.pagination.page_selector')
 
 @endsection

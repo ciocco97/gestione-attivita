@@ -14,7 +14,7 @@
                         value="{{ $state->id }}">{{ $state->descrizione_stato_fatturazione }}</option>
                 @endforeach
             </select>
-            @include('button.reset', ['btn_target_id' => '#master_billing_state_filter'])
+            @include('shared.button_reset', ['btn_target_id' => '#master_billing_state_filter'])
         </div>
     </div>
 </div>

@@ -4,7 +4,7 @@
     <div class="col-md-8">
         <div class="d-flex">
             <input type="date" class="form-control" id="master_date_filter" name="date">
-            @include('button.reset', ['btn_target_id' => '#master_date_filter', 'change' => '#master_date_filter'])
+            @include('shared.button_reset', ['btn_target_id' => '#master_date_filter', 'change' => '#master_date_filter'])
         </div>
     </div>
 </div>

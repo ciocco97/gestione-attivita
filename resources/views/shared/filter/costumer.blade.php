@@ -12,7 +12,7 @@
                     <option value="{{ $costumer->id }}">{{ $costumer->nome }}</option>
                 @endforeach
             </select>
-            @include('button.reset', ['btn_target_id' => '#master_costumer_filter'])
+            @include('shared.button_reset', ['btn_target_id' => '#master_costumer_filter'])
         </div>
     </div>
 </div>

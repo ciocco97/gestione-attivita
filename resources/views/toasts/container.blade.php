@@ -3,16 +3,11 @@
     <!-- - `.toast-container` for spacing between toasts -->
     <!-- - `.position-absolute`, `top-0` & `end-0` to position the toasts in the upper right corner -->
     <!-- - `.p-3` to prevent the toasts from sticking to the edge of the container  -->
-    <div class="toast-container position-fixed end-0 bottom-0 p-3">
-
-
-
-    </div>
 
     <!-- button to initialize toast -->
     <button type="button" class="btn btn-primary" id="toastbtn">Initialize toast</button>
 
-    <div class="toast-container position-fixed end-0 bottom-0 p-3">
+    <div class="toast-container position-fixed end-50 bottom-0 p-3">
 
         <!-- Toast -->
         <div class="toast" role="status" data-bs-delay="2000">

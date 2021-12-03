@@ -13,7 +13,7 @@
                 <option value="{{ $FILTER_PERIOD['LAST_MONTH'] }}">@lang('labels.last_month')</option>
                 <option value="{{ $FILTER_PERIOD['ALL'] }}">@lang('labels.all')</option>
             </select>
-            @include('button.reset', ['btn_target_id' => '#master_period_filter', 'change' => '#master_period_filter'])
+            @include('shared.button_reset', ['btn_target_id' => '#master_period_filter', 'change' => '#master_period_filter'])
         </div>
     </div>
 </div>

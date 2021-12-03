@@ -34,12 +34,7 @@
                             @endif
                         @endforeach
                     </select>
-                    <div id="wait_change_order_state_select_{{ $costumer_order->id }}"
-                         class="spinner-border spinner-border-sm text-success"
-                         role="status"
-                         style="display: none;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+                    @include('shared.spinner_wait', ['element_id' => 'order_state_select_' . $costumer_order->id])
                 </div>
             </td>
             <td>
@@ -53,32 +48,18 @@
                                    id="report_switch_{{ $costumer_order->id }}">
                         @endif
                     </div>
-                    <div id="wait_change_report_switch_{{ $costumer_order->id }}"
-                         class="spinner-border spinner-border-sm text-success"
-                         role="status"
-                         style="display: none;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+                    @include('shared.spinner_wait', ['element_id' => 'report_switch_' . $costumer_order->id])
                 </div>
 
             </td>
             <td>
-                <a id="edit_{{ $costumer_order->id }}" class="btn pt-0"
-                   href="{{ route('order.edit', ['order' => $costumer_order->id]) }}">
-                    <i class="bi bi-pencil text-warning"></i>
-                </a>
+                @include('shared.button_edit', ['element_id' => $costumer_order->id, 'element_type' => 'order'])
             </td>
             <td>
                 @if($costumer_order->num_attivita != 0)
-                    <a id="delete_{{ $costumer_order->id }}" class="btn pt-0 disabled"
-                       href="" disabled>
-                        <i class="bi bi-trash"></i>
-                    </a>
+                    @include('shared.button_delete', ['element_id' => $costumer_order->id, 'element_type' => 'order', 'disabled' => true])
                 @else
-                    <a id="delete_{{ $costumer_order->id }}" class="btn pt-0"
-                       href="{{ route('order.destroy.confirm', ['id' => $costumer_order->id]) }}">
-                        <i class="bi bi-trash text-danger"></i>
-                    </a>
+                    @include('shared.button_delete', ['element_id' => $costumer_order->id, 'element_type' => 'order'])
                 @endif
 
             </td>

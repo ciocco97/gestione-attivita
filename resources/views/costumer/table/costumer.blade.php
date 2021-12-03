@@ -4,33 +4,16 @@
             <h5 class="card-title">{{ $costumer_orders_nums[0]->nome }}</h5>
             <div class="d-flex d-inline">
                 <td>
-                    <a id="show_{{ $costumer_orders_nums[0]->id }}" class="btn pt-0"
-                       href="{{ route('costumer.show', ['costumer' => $costumer_orders_nums[0]->id]) }}">
-                        <i class="bi bi-eye" style="color: #30834a"></i>
-                    </a>
+                    @include('shared.button_view', ['element_id' => $costumer_orders_nums[0]->id, 'element_type' => 'costumer'])
                 </td>
 
                 <td>
-                    <a id="edit_{{ $costumer_orders_nums[0]->id }}" class="btn pt-0"
-                       href="{{ route('costumer.edit', ['costumer' => $costumer_orders_nums[0]->id]) }}">
-                        <i class="bi bi-pencil text-warning"></i>
-                    </a>
+                    @include('shared.button_edit', ['element_id' => $costumer_orders_nums[0]->id, 'element_type' => 'costumer'])
                 </td>
                 @if($costumer_orders_nums[2]>0)
-                    <td>
-                        <a id="delete_{{ $costumer_orders_nums[0]->id }}"
-                           class="btn pt-0 disabled"
-                           href="">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </td>
+                    @include('shared.button_delete', ['element_id' => $costumer_orders_nums[0]->id, 'element_type' => 'costumer', 'disabled' => true])
                 @else
-                    <td>
-                        <a id="delete_{{ $costumer_orders_nums[0]->id }}" class="btn pt-0"
-                           href="{{ route('costumer.destroy.confirm', ['id' => $costumer_orders_nums[0]->id]) }}">
-                            <i class="bi bi-trash text-danger"></i>
-                        </a>
-                    </td>
+                    @include('shared.button_delete', ['element_id' => $costumer_orders_nums[0]->id, 'element_type' => 'costumer'])
                 @endif
             </div>
         </div>

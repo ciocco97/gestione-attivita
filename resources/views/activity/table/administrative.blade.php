@@ -1,7 +1,7 @@
-<table class="table table-bordered border-secondary text-center text-dark align-middle">
+
     <thead>
     <tr>
-        <th scope="col">@include('checkbox.universal_activity_check')</th>
+        <th scope="col">@include('shared.checkbox_universal_activity')</th>
         <th scope="col">@lang('labels.billing_state')</th>
         <th scope="col">@lang('labels.tech_tab')</th>
         <th scope="col">@lang('labels.date')</th>
@@ -46,7 +46,9 @@
             </td>
 
             <!--Bottone visualizza-->
-            @include('activity.button.view')
+            <td>
+                @include('shared.button_view', ['element_id' => $activity->id, 'element_type' => 'activity'])
+            </td>
 
         </tr>
     @endforeach
@@ -57,4 +59,3 @@
         administrative_activity_script();
     </script>
 
-</table>

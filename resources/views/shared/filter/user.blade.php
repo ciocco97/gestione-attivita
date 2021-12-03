@@ -11,7 +11,7 @@
                     <option value="{{ $user->id }}">{{ $user->nome }}</option>
                 @endforeach
             </select>
-            @include('button.reset', ['btn_target_id' => '#master_user_filter', 'btn_reset_id' => $FILTER_TEAM['TEAM_MEMBER_NOT_SELECTED']])
+            @include('shared.button_reset', ['btn_target_id' => '#master_user_filter', 'btn_reset_id' => $FILTER_TEAM['TEAM_MEMBER_NOT_SELECTED']])
         </div>
     </div>
 </div>

@@ -3,7 +3,7 @@
 @section('title', 'Gestione attività : Reset password')
 
 @section('navbar')
-    @include('user.external_navbar')
+    @include('navbar.nav')
 @endsection
 
 @section('body')

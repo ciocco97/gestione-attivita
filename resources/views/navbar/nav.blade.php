@@ -23,7 +23,7 @@
                     @if(in_array($ROLES['ADMINISTRATOR'], $user_roles))
                         <li>
                             <a class="dropdown-item" href="{{ route('user.index') }}">
-                                <i class="bi bi-award-fill me-2"></i>@lang('labels.admin')
+                                <i class="bi bi-gear me-2"></i>@lang('labels.admin')
                             </a>
                         </li>
                     @endif

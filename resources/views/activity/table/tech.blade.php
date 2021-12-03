@@ -1,7 +1,7 @@
-<table class="table table-hover table-bordered border-secondary text-center text-dark align-middle">
+
     <thead>
     <tr>
-        <th scope="col">@include('checkbox.universal_activity_check')</th>
+        <th scope="col">@include('shared.checkbox_universal_activity')</th>
         @if ($current_page == $PAGES['MANAGER'])
             <th scope="col">@lang('labels.tech_tab')</th>
         @endif
@@ -48,6 +48,7 @@
             <td id="costumer_{{ $activity->id }}">{{ $activity->nome_cliente }}</td>
             <td id="order_{{ $activity->id }}">{{ $activity->descrizione_commessa }}</td>
             <td id="duration_{{ $activity->id }}">{{ substr($activity->durata, 0, 5) }}</td>
+
             @if ($current_page == $PAGES['MANAGER'])
                 <td id="billable_duration_{{ $activity->id }}">
                     <div class="d-flex justify-content-center">
@@ -55,17 +56,14 @@
                                type="time"
                                value="{{ $activity->durata_fatturabile }}"
                                style="max-width: 100px">
-                        <div id="wait_change_billable_duration_input_{{ $activity->id }}"
-                             class="spinner-border spinner-border-sm text-success"
-                             role="status"
-                             style="display: none;">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                        @include('shared.spinner_wait', ['element_id' => 'billable_duration_input_' . $activity->id])
                     </div>
                 </td>
             @endif
+
             <td id="state_{{ $activity->id }}"
                 data-state-id="{{ $activity->stato_attivita_id }}">{{ $activity->descrizione_stato_attivita }}</td>
+
             @if($current_page == $PAGES['MANAGER'])
                 <td id="billing_state_{{ $activity->id }}">
                     <div class="d-flex justify-content-center">
@@ -81,55 +79,29 @@
                                 @endif
                             @endforeach
                         </select>
-                        <div id="wait_change_billing_state_select_{{ $activity->id }}"
-                             class="spinner-border spinner-border-sm text-success"
-                             role="status"
-                             style="display: none;">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                        @include('shared.spinner_wait', ['element_id' => 'billing_state_select_' . $activity->id])
                     </div>
                 </td>
         @endif
 
         <!-- Bottone rapportino -->
             <td>
-                @if($activity->rapportino_cliente && $activity->rapportino_commessa)
-                    <button id="send_report_{{ $activity->id }}" class="btn pt-0">
-                        @if($activity->rapportino_attivita)
-                            <i class="bi bi-clipboard-check text-success"></i>
-                        @else
-                            <i class="bi bi-clipboard text-primary"></i>
-                        @endif
-                    </button>
-                    <div id="wait_change_send_report_{{ $activity->id }}" class="spinner-border spinner-border-sm text-success"
-                         role="status"
-                         style="display: none;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                @else
-                    <a id="send_report_{{ $activity->id }}" class="btn pt-0 disabled">
-                        <i class="bi bi-clipboard-x text-danger"></i>
-                    </a>
-                @endif
+                @include('shared.button_report')
             </td>
 
             <!--Bottone visualizza-->
-            @include('activity.button.view')
+            <td>
+                @include('shared.button_view', ['element_id' => $activity->id, 'element_type' => 'activity'])
+            </td>
 
             <!--Bottone modifica-->
             <td>
-                <a id="edit_{{ $activity->id }}" class="btn pt-0"
-                   href="{{ route('activity.edit', ['activity' => $activity->id]) }}">
-                    <i class="bi bi-pencil text-warning"></i>
-                </a>
+                @include('shared.button_edit', ['element_id' => $activity->id, 'element_type' => 'activity'])
             </td>
 
             <!--Bottone elimina-->
             <td>
-                <a id="delete_{{ $activity->id }}" class="btn pt-0"
-                   href="{{ route('activity.destroy.confirm', ['id' => $activity->id]) }}">
-                    <i class="bi bi-trash text-danger"></i>
-                </a>
+                @include('shared.button_delete', ['element_id' => $activity->id, 'element_type' => 'activity'])
             </td>
         </tr>
     @endforeach
@@ -144,4 +116,3 @@
         @endif
     </script>
 
-</table>
