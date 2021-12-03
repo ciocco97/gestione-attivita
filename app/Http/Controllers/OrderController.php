@@ -128,8 +128,8 @@ class OrderController extends Controller
         $description = $request->get('description');
         $costumer = $request->get('costumer');
         $state = $request->get('state');
-        $report = $request->get('report') == "on" ? 1 : 0;
-        Log::debug('Update_costumer', [
+        $report = $request->get('report_switch') == "on" ? 1 : 0;
+        Log::debug('Update_order', [
             'description' => $description,
             'costumer' => $costumer,
             'state' => $state,

@@ -50,12 +50,10 @@
             <td id="duration_{{ $activity->id }}">{{ substr($activity->durata, 0, 5) }}</td>
 
             @if ($current_page == $PAGES['MANAGER'])
+
                 <td id="billable_duration_{{ $activity->id }}">
                     <div class="d-flex justify-content-center">
-                        <input id="billable_duration_input_{{ $activity->id }}" class="form-control"
-                               type="time"
-                               value="{{ $activity->durata_fatturabile }}"
-                               style="max-width: 100px">
+                        @include('shared.input_general', ['label' => false, 'input_id' => 'billable_duration_' . $activity->id, 'input_type' => 'time', 'element' => $activity, 'element_descr_key' => 'durata_fatturabile', 'style' => 'max-width: 100px'])
                         @include('shared.spinner_wait', ['element_id' => 'billable_duration_input_' . $activity->id])
                     </div>
                 </td>
@@ -67,18 +65,7 @@
             @if($current_page == $PAGES['MANAGER'])
                 <td id="billing_state_{{ $activity->id }}">
                     <div class="d-flex justify-content-center">
-                        <select class="form-select" id="billing_state_select_{{ $activity->id }}"
-                                style="width: auto;">
-                            @foreach($billing_states as $billing_state)
-                                @if($billing_state->id == $activity->stato_fatturazione_id)
-                                    <option value="{{ $billing_state->id }}"
-                                            selected>{{ $billing_state->descrizione_stato_fatturazione }}</option>
-                                @else
-                                    <option
-                                        value="{{ $billing_state->id }}">{{ $billing_state->descrizione_stato_fatturazione }}</option>
-                                @endif
-                            @endforeach
-                        </select>
+                        @include('shared.select_general', ['label' => false, 'select_id' => 'billing_state_select_' . $activity->id, 'element_list' => $billing_states, 'element_descr_key' => 'descrizione_stato_fatturazione', 'current_element' => $activity->stato_fatturazione_id, 'style' => 'width: auto;'])
                         @include('shared.spinner_wait', ['element_id' => 'billing_state_select_' . $activity->id])
                     </div>
                 </td>

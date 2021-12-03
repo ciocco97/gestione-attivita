@@ -22,32 +22,14 @@
             </td>
             <td>
                 <div class="d-flex justify-content-center">
-                    <select class="form-select" id="order_state_select_{{ $costumer_order->id }}"
-                            style="width: auto;">
-                        @foreach($order_states as $order_state)
-                            @if($order_state->id == $costumer_order->stato_commessa_id)
-                                <option value="{{ $order_state->id }}"
-                                        selected>{{ $order_state->descrizione_stato_commessa }}</option>
-                            @else
-                                <option
-                                    value="{{ $order_state->id }}">{{ $order_state->descrizione_stato_commessa }}</option>
-                            @endif
-                        @endforeach
-                    </select>
+                    @include('shared.select_general', ['label' => false, 'select_id' => 'order_state_select_' . $costumer_order->id, 'element_list' => $order_states, 'element_descr_key' => 'descrizione_stato_commessa', 'current_element' => $costumer_order->stato_commessa_id, 'style' => 'width: auto;'])
                     @include('shared.spinner_wait', ['element_id' => 'order_state_select_' . $costumer_order->id])
                 </div>
             </td>
             <td>
                 <div class="d-flex justify-content-center">
-                    <div class="form-check form-switch">
-                        @if($costumer_order->rapportino_commessa)
-                            <input class="form-check-input" type="checkbox" id="report_switch_{{ $costumer_order->id }}"
-                                   checked>
-                        @else
-                            <input class="form-check-input" type="checkbox"
-                                   id="report_switch_{{ $costumer_order->id }}">
-                        @endif
-                    </div>
+                    @include('shared.input_switch', ['element' => $costumer_order->rapportino_commessa, 'element_id' => 'report_switch_' . $costumer_order->id, 'label' => false])
+
                     @include('shared.spinner_wait', ['element_id' => 'report_switch_' . $costumer_order->id])
                 </div>
 

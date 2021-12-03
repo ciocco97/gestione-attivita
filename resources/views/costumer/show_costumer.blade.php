@@ -41,111 +41,21 @@
                     <div class="row mb-md-2 mt-3"> <!-- Primi tre campi -->
 
                         <div class="col-md-6 mb-2 mb-md-0">
-                            <label class="form-label" for="name">@lang('labels.name')</label>
-                            @if($method != $ADD)
-                                @if($method == $EDIT)
-                                    <input class="form-control" type="text" id="name" name="name"
-                                           value="{{ $costumer->nome }}"
-                                           placeholder="@lang('labels.type') @lang('labels.name')">
-                                @else
-                                    <input class="form-control" type="text" id="name" name="name"
-                                           value="{{ $costumer->nome }}" disabled>
-                                @endif
-                            @else
-                                <input class="form-control" type="text" id="name" name="name"
-                                       placeholder="@lang('labels.type') @lang('labels.name')">
-                            @endif
+                            @include('shared.input_general', ['input_id' => 'name', 'element_type' => __('labels.name'), 'input_type' => 'text', 'element_descr_key' => 'nome', 'element' => $method == $ADD ? null : $costumer, 'placeholder' => __('labels.type') . ' ' . __('labels.name')])
                         </div>
 
                         <div class="col-md-6 mb-2 mb-md-0">
-                            <label class="form-label" for="email">@lang('labels.email')</label>
-                            @if($method != $ADD)
-                                @if($method == $EDIT)
-                                    <input class="form-control" type="email" id="email" name="email"
-                                           value="{{ $costumer->email }}"
-                                           placeholder="@lang('labels.type') @lang('labels.email')">
-                                @else
-                                    <input class="form-control" type="email" id="name" name="name"
-                                           value="{{ $costumer->email }}" disabled>
-                                @endif
-                            @else
-                                <input class="form-control" type="email" id="email" name="email"
-                                       placeholder="@lang('labels.type') @lang('labels.email')">
-                            @endif
+                            @include('shared.input_general', ['input_id' => 'email', 'element_type' => __('labels.email'), 'input_type' => 'email', 'element_descr_key' => 'email', 'element' => $method == $ADD ? null : $costumer, 'placeholder' => __('labels.type') . ' ' . __('labels.email')])
                         </div>
 
                     </div> <!-- Fine primi 2 campi -->
                     <div class="row mb-md-2"> <!-- Campo rapportino -->
                         <div class="col-md-6 mb-2 mb-md-0">
-                            <label class="form-label" for="report_switch">@lang('labels.report')</label>
-                            <div class="form-check form-switch">
-                                @if($method != $ADD)
-                                    @if($method == $EDIT)
-                                        @if($costumer->rapportino_cliente)
-                                            <input class="form-check-input" type="checkbox" id="report_switch"
-                                                   name="report" checked>
-                                        @else
-                                            <input class="form-check-input" type="checkbox" id="report_switch"
-                                                   name="report">
-                                        @endif
-                                    @else
-                                        @if($costumer->rapportino_cliente)
-                                            <input class="form-check-input" type="checkbox" id="report_switch"
-                                                   name="report" checked disabled>
-                                        @else
-                                            <input class="form-check-input" type="checkbox" id="report_switch"
-                                                   name="report" disabled>
-                                        @endif
-                                    @endif
-                                @else
-                                    <input class="form-check-input" type="checkbox" id="report_switch"
-                                           name="report" checked>
-                                @endif
-                            </div>
+                            @include('shared.input_switch', ['element_id' => 'report_switch', 'element_type' => __('labels.report'), 'element' => $method == $ADD ? null : $costumer->rapportino_cliente, 'required' => false])
                         </div>
                     </div>
 
-                    <div class="row pt-3 pt-lg-4 mb-3"> <!-- Bottoni ai piedi della form -->
-                        <div class="col-lg-6"></div>
-                        @if($method == $EDIT)
-                            <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-secondary w-100" href="{{ $previous_url }}">
-                                    <i class="bi bi-x-square me-2"></i>@lang('labels.cancel')</a>
-                            </div>
-                            <div class="col-sm-6 col-lg-3">
-                                <button class="btn btn-primary w-100" type="submit">
-                                    <i class="bi bi-pencil me-2"></i>@lang('labels.edit')</button>
-                            </div>
-                        @elseif($method == $SHOW)
-                            <div class="col-sm-6 col-lg-3 mb-2 mb-md-0"></div>
-                            <div class="col-sm-6 col-lg-3">
-                                <a class="btn btn-secondary w-100" href="{{ $previous_url }}">
-                                    <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.back')</a>
-                            </div>
-
-                        @elseif($method == $DELETE)
-                            <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-secondary w-100" href="{{ $previous_url }}">
-                                    <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')</a>
-                            </div>
-                            <div class="col-sm-6 col-lg-3">
-                                <button class="btn btn-danger w-100" type="submit">
-                                    <i class="bi bi-trash me-2"></i>@lang('labels.delete')</button>
-                            </div>
-
-                        @else
-                            <div class="col-sm-6 col-lg-3 mb-2 mb-md-0">
-                                <a class="btn btn-danger w-100" href="{{ $previous_url }}">
-                                    <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')</a>
-                            </div>
-                            <div class="col-sm-6 col-lg-3">
-                                <button class="btn btn-primary w-100" type="submit">
-                                    <i class="bi bi-journal-plus me-2"></i>@lang('labels.add')</button>
-                            </div>
-
-                        @endif
-
-                    </div>
+                    @include('shared.footer_add_edit.buttons')
 
                 </form>
             </div>

@@ -223,7 +223,7 @@ class CostumerController extends Controller
         $user_id = $_SESSION['user_id'];
         $name = $request->get('name');
         $email = $request->get('email');
-        $report = $request->get('report') == "on" ? 1 : 0;
+        $report = $request->get('report_switch') == "on" ? 1 : 0;
         Log::debug('Update_costumer', ['id' => $id]);
 
         Cliente::updateCostumer($user_id, $id, $name, $email, $report);
