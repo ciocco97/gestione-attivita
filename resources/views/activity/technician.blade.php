@@ -70,6 +70,7 @@
                     @include('activity.table.tech')
                 @endif
             </table>
+            @include('shared.alert_no_element', ['element_list' => $activities])
         </div>
     </div>
 

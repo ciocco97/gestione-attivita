@@ -38,6 +38,7 @@
                         <div class="row mt-2">
                             <div class="table-responsive">
                                 @include('costumer.table.orders')
+                                @include('shared.alert_no_element', ['element_list' => $costumer_orders_nums[1], 'hint' => false])
                             </div>
                         </div>
                     </div>

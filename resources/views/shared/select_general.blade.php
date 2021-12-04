@@ -1,10 +1,7 @@
-@if(isset($label))
-    @if($label)
-        <label class="form-label" for="{{ $select_id }}">{{ $element_type }}</label>
-    @endif
-@else
+@if(!isset($label) || $label)
     <label class="form-label" for="{{ $select_id }}">{{ $element_type }}</label>
 @endif
+
 <select class="form-select" id="{{ $select_id }}" name="{{ $select_id }}"
     @include('shared.input_required_disabled_style')
 >

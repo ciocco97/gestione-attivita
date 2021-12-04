@@ -28,7 +28,7 @@
             </td>
             <td>
                 <div class="d-flex justify-content-center">
-                    @include('shared.input_switch', ['element' => $costumer_order->rapportino_commessa, 'element_id' => 'report_switch_' . $costumer_order->id, 'label' => false])
+                    @include('shared.input_switch', ['element' => $costumer_order->rapportino_commessa, 'switch_id' => 'report_switch_' . $costumer_order->id, 'label' => false])
 
                     @include('shared.spinner_wait', ['element_id' => 'report_switch_' . $costumer_order->id])
                 </div>

@@ -37,6 +37,7 @@
             </div>
         @endforeach
     </div>
+    @include('shared.alert_no_element', ['element_list' => $costumers_orders_nums])
 
     <script>
         commercial_script();

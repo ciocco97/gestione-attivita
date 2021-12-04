@@ -1,10 +1,7 @@
-@if(isset($label))
-    @if($label)
-        <label class="form-label" for="{{ $input_id }}">{{ $element_type }}</label>
-    @endif
-@else
+@if(!isset($label) || $label)
     <label class="form-label" for="{{ $input_id }}">{{ $element_type }}</label>
 @endif
+
 <input
     class="form-control"
     type="{{ $input_type }}"
@@ -12,7 +9,7 @@
     name="{{ $input_id }}"
 
     @if(isset($placeholder))
-        placeholder="{{ $placeholder }}"
+    placeholder="{{ $placeholder }}"
     @endif
 
     @if(isset($element))

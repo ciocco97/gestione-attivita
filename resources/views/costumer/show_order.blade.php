@@ -56,7 +56,7 @@
                         </div>
 
                         <div class="col-md-6 mb-2 mb-md-0">
-                            @include('shared.input_switch', ['element_id' => 'report_switch', 'element_type' => __('labels.report'), 'element' => $method == $ADD ? null : $order->rapportino_commessa, 'required' => false])
+                            @include('shared.input_switch', ['switch_id' => 'report_switch', 'element_type' => __('labels.report'), 'element' => $method == $ADD ? null : $order->rapportino_commessa, 'required' => false])
                         </div>
                     </div> <!-- Fine ultimo -->
 

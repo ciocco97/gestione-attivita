@@ -1,16 +1,13 @@
-@if(isset($label))
-    @if($label)
-        <label class="form-label" for="{{ $element_id }}">{{ $element_type }}</label>
-    @endif
-@else
-    <label class="form-label" for="{{ $element_id }}">{{ $element_type }}</label>
+@if(!isset($label) || $label)
+    <label class="form-label" for="{{ $switch_id }}">{{ $element_type }}</label>
 @endif
+
 <div class="form-check form-switch">
     <input
         class="form-check-input"
         type="checkbox"
-        id="{{ $element_id }}"
-        name="{{ $element_id }}"
+        id="{{ $switch_id }}"
+        name="{{ $switch_id }}"
 
            @if(isset($element) && $element)
            checked

@@ -9,4 +9,6 @@ return [
     Apri l'email, copia il token e incollalo qui sotto<br>(se non trovi l'email nella inbox prova a cercarlo in spam)",
     'password_success' => 'La password è stata modificata con successo.',
     'token_alert' => 'Token invalido o scaduto. Riprovare.',
+    'no_element_in_table_info' => 'La tabella non contiene elementi in quanto nessun elemento deve essere visualizzato',
+    'no_element_in_table_hing' => 'E\' possibile che questo sia dovuto alla corrente configurazione dei filtri',
 ];

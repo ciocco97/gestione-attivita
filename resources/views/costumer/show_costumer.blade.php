@@ -51,7 +51,7 @@
                     </div> <!-- Fine primi 2 campi -->
                     <div class="row mb-md-2"> <!-- Campo rapportino -->
                         <div class="col-md-6 mb-2 mb-md-0">
-                            @include('shared.input_switch', ['element_id' => 'report_switch', 'element_type' => __('labels.report'), 'element' => $method == $ADD ? null : $costumer->rapportino_cliente, 'required' => false])
+                            @include('shared.input_switch', ['switch_id' => 'report_switch', 'element_type' => __('labels.report'), 'element' => $method == $ADD ? null : $costumer->rapportino_cliente, 'required' => false])
                         </div>
                     </div>
 

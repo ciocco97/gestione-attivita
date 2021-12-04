@@ -72,4 +72,5 @@ return [
     'name' => 'Name',
     'or' => 'OR',
     'insert' => 'Insert',
+    'info' => 'Info',
 ];
