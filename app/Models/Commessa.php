@@ -58,7 +58,7 @@ class Commessa extends Model
         return StatoCommessa::find(1)->commesse()->where('cliente_id', $costumer_id)->get();
     }
 
-    public static function listOrderInfos(): \Illuminate\Support\Collection
+    public static function listOrderInfos(int $state_id = null): \Illuminate\Support\Collection
     {
         $orders = DB::table('commessa')
             ->select(DB::raw('commessa.id,
@@ -70,8 +70,11 @@ class Commessa extends Model
                 stato_commessa.descrizione_stato_commessa'
             ))
             ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
-            ->orderBy('commessa.descrizione_commessa')
-            ->get();
+            ->orderBy('commessa.descrizione_commessa');
+        if ($state_id != null) {
+            $orders->where('commessa.stato_commessa_id', $state_id);
+        }
+        $orders = $orders->get();
         $nums = DB::table('commessa')
             ->select(DB::raw('commessa.id, count(*) AS num_attivita'))
             ->join('attivita', 'commessa.id', '=', 'attivita.commessa_id')

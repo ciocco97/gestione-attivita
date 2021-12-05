@@ -6,7 +6,14 @@
     @include('shared.input_required_disabled_style')
 >
     @if(isset($element_type))
-        <option value="" disabled selected hidden>@lang('labels.select') {{ $element_type }}</option>
+        <option
+            @if(isset($default_value))
+            value="{{$default_value}}"
+            @else
+            value=""
+            @endif
+            disabled selected hidden>@lang('labels.select') {{ $element_type }}
+        </option>
     @endif
     @if($element_list == null)
         <option value="{{ $current_element->id }}"

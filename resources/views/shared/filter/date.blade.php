@@ -3,7 +3,7 @@
            for="#master_date_filter">@lang('labels.date')</label>
     <div class="col-md-8">
         <div class="d-flex">
-            <input type="date" class="form-control" id="master_date_filter" name="date">
+            @include('shared.input_general', ['label' => false, 'input_id' => 'master_date_filter', 'input_type' => 'date'])
             @include('shared.button_reset', ['btn_target_id' => '#master_date_filter', 'change' => '#master_date_filter'])
         </div>
     </div>

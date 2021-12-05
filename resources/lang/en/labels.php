@@ -73,4 +73,5 @@ return [
     'or' => 'OR',
     'insert' => 'Insert',
     'info' => 'Info',
+    'order_state' => 'Order state',
 ];

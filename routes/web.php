@@ -62,6 +62,8 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/costumer/{id}/confirm', [CostumerController::class, 'confirmDestroy'])->name('costumer.destroy.confirm');
         Route::post('/costumer/{id}/update', [CostumerController::class, 'update'])->name('costumer.update');
         Route::get('/costumer/{id}/destroy', [CostumerController::class, 'destroy'])->name('costumer.destroy');
+        Route::post('/costumer/index/filter', [CostumerController::class, 'filterPost'])->name('costumer.filter');
+        Route::get('/costumer/filter/{costumer}/{state}', [CostumerController::class, 'filter'])->name('costumer.filter.get');
 
         Route::resource('order', OrderController::class);
         Route::get('/order/{id}/confirm', [OrderController::class, 'confirmDestroy'])->name('order.destroy.confirm');

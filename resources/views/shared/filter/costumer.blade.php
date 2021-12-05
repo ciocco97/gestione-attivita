@@ -4,14 +4,7 @@
     </label>
     <div class="col-md-8">
         <div class="d-flex">
-            <select class="form-select" id="master_costumer_filter" name="costumer">
-                <option value="" selected hidden>
-                    @lang('labels.select') @lang('labels.costumer')
-                </option>
-                @foreach($costumers as $costumer)
-                    <option value="{{ $costumer->id }}">{{ $costumer->nome }}</option>
-                @endforeach
-            </select>
+            @include('shared.select_general', ['label' => false, 'select_id' => 'master_costumer_filter', 'element_type' => __('labels.costumer'), 'element_list' => $costumers, 'element_descr_key' => 'nome'])
             @include('shared.button_reset', ['btn_target_id' => '#master_costumer_filter'])
         </div>
     </div>

@@ -42,7 +42,7 @@
             @if($current_page == $PAGES['ADMINISTRATIVE'])
                 @include('shared.filter.bill_or_accounted_state')
             @else
-                @include('shared.filter.state')
+                @include('shared.filter.activity_state')
             @endif
             @if($current_page == $PAGES['MANAGER'] || $current_page == $PAGES['ADMINISTRATIVE'])
                 @include('shared.filter.user')

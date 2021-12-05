@@ -1,5 +1,3 @@
-
-
 function commercial_script() {
     $('document').ready(function () {
         // Evidenzio il tab commercial nella navbar
@@ -14,7 +12,28 @@ function commercial_script() {
         $("[id^=order_state_select_]").on("change", function () {
             order_change($(this), "order_state_select_", GLOBAL.AJAX_METHODS['order_change_state_index']);
         });
+
+        current_costumer_selected_setup()
+
+        filter_setup()
     });
+}
+
+function current_costumer_selected_setup() {
+    let current_selected_costumer = localStorage["current_selected_costumer"]
+    if (current_selected_costumer != -1) {
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $("#costumer_number_"+current_selected_costumer).offset().top-100
+        }, 200);
+        $("#show_collapse_" + current_selected_costumer).trigger("click")
+    }
+    $("button[id^=show_collapse_]").on('click', function () {
+        if ($(this).attr("aria-expanded") == "true") {
+            localStorage["current_selected_costumer"] = getSuffix($(this), "show_collapse_")
+        } else {
+            localStorage["current_selected_costumer"] = -1;
+        }
+    })
 }
 
 function order_change(element, id_prefix, ajax_method) {

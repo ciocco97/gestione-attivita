@@ -11,8 +11,8 @@
     </tr>
     </thead>
 
-    <tbody id="master_tbody_{{ $costumer_orders_nums[0]->id }}">
-    @foreach($costumer_orders_nums[1] as $costumer_order)
+    <tbody id="master_tbody_{{ $costumer_infos->id }}">
+    @foreach($costumer_infos->commesse as $costumer_order)
         <tr id="order_{{ $costumer_order->id }}">
             <td>
                 {{ $costumer_order->descrizione_commessa }}

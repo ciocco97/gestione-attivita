@@ -19,10 +19,14 @@
 @section('filters')
     @csrf
     <div class="row">
-        <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
+        <div class="col-md-5"> <!-- Prima coppia/terna di filtri -->
+            @include('shared.filter.costumer')
         </div>
 
-        <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
+        <div class="col-md-2"></div>
+
+        <div class="col-md-5"> <!-- Seconda coppia di filtri -->
+            @include('shared.filter.order_state')
         </div>
         @include('shared.filter.submit')
     </div>
@@ -31,13 +35,13 @@
 @section('main')
 
     <div id="costumers" class="row row-cols-1 row-cols-xxl-2 g-3 mt-2">
-        @foreach($costumers_orders_nums as $num => $costumer_orders_nums)
-            <div>
+        @foreach($costumers_infos as $num => $costumer_infos)
+            <div id="costumer_number_{{ $costumer_infos->id }}">
                 @include('costumer.table.costumer')
             </div>
         @endforeach
     </div>
-    @include('shared.alert_no_element', ['element_list' => $costumers_orders_nums])
+    @include('shared.alert_no_element', ['element_list' => $costumers_infos])
 
     <script>
         commercial_script();

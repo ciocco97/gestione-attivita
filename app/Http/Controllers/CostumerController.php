@@ -17,63 +17,16 @@ use Illuminate\Support\Facades\Redirect;
 class CostumerController extends Controller
 {
 
-    public function indexCostumerViewOld($activities)
-    {
-        $_SESSION['previous_url'] = url()->current();
-        $username = $_SESSION['username'];
-        $user_id = $_SESSION['user_id'];
-
-        $dl = new DataLayer();
-        $costumers = $dl->listActiveCostumer();
-        list($activities, $not_bill_a_nums) = $dl->getCommercialInfos($start_date);
-
-        $infos = array();
-        foreach ($costumers as $costumer) {
-            $costumer_id = $costumer->id;
-            $not_bill_a_num = $not_bill_a_nums->filter(function ($value) use (&$costumer_id) {
-                return $value->cliente_id == $costumer_id;
-            })->pluck('attivita_num')->first();
-            $costumer_activities = $activities->filter(function ($value) use (&$costumer_id) {
-                return $value->cliente_id == $costumer_id;
-            })->map(function ($item) {
-                $billable_duration = $item->durata_fatturabile;
-                if ($billable_duration == null) {
-                    $billable_duration = super_time_parser::parse($item->durata);
-                    $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
-                    $item->durata_fatturabile = $billable_duration->format("H:i");
-                }
-                return $item;
-            })->toArray();
-            if (count($costumer_activities) != 0) {
-                $info = array($costumer, $not_bill_a_num, $costumer_activities);
-                array_push($infos, $info);
-            }
-        }
-        $billing_states = $dl->listBillingStates();
-
-        $user_roles = $dl->listUserRoles($user_id)->toArray();
-        return view('costumer.commercial')
-            ->with('username', $username)
-            ->with('user_roles', $user_roles)
-            ->with('billing_states', $billing_states)
-            ->with('costumers_nums_activities', $infos);
-    }
-
     public function indexCostumerView($costumers_infos)
     {
         $_SESSION['previous_url'] = url()->current();
         Log::debug('indexCostumerView');
-        $username = $_SESSION['username'];
-        $user_id = $_SESSION['user_id'];
 
+        $costumers = Cliente::listCostumer();
         $order_states = StatoCommessa::listOrderStates();
-        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('costumer.commercial')
-            ->with('username', $username)
-            ->with('user_roles', $user_roles)
-            ->with('order_states', $order_states)
-            ->with('costumers_orders_nums', $costumers_infos)
-            ->with('pages', Shared::PAGES)
+            ->with('order_states', $order_states)->with('costumers', $costumers)
+            ->with('costumers_infos', $costumers_infos)
             ->with('current_page', $_SESSION['current_page']);
     }
 
@@ -86,51 +39,75 @@ class CostumerController extends Controller
     {
         Log::debug('Home');
 
-        $costumers_infos = $this->getCostumersInfos();
+        $costumers_infos = $this->getCostumerInfos();
 
         $_SESSION['current_page'] = Shared::PAGES['COMMERCIAL'];
         return $this->indexCostumerView($costumers_infos);
     }
 
-    private function getCostumersInfos(): array
+    public function filterPost(Request $request)
     {
-        $costumers = Cliente::listCostumer();
-        $numAccountedActivities_perCostumer = Cliente::getNumActivitiesPerCostumer(true);
+        $costumer_id = $request->get('master_costumer_filter');
+        $state_id = $request->get('master_order_state_filter');
+
+        $costumer_id = $costumer_id == null ? -1 : $costumer_id;
+        $state_id = $state_id == null ? -1 : $state_id;
+
+        Log::debug('filterPost', [
+            'costumer' => $costumer_id,
+            'state' => $state_id
+        ]);
+        return redirect()->route('costumer.filter.get',
+            ['costumer' => $costumer_id, 'state' => $state_id]);
+    }
+
+    public function filter($costumer_id, $state_id)
+    {
+        $user_id = $_SESSION['user_id'];
+
+        $costumer_id = $costumer_id == -1 ? null : $costumer_id;
+        $state_id = $state_id == -1 ? null : $state_id;
+
+        Log::debug('filter', [
+            'costumer' => $costumer_id,
+            'state' => $state_id,
+        ]);
+
+        Log::debug('Commercial filter');
+        $costumers_infos = $this->getCostumerInfos($costumer_id, $state_id);
+
+        return $this->indexCostumerView($costumers_infos);
+    }
+
+    private function getCostumerInfos($costumer_id_param = null, $state_id_param = null): \Illuminate\Support\Collection
+    {
+        $costumers = Cliente::listCostumer($costumer_id_param);
         $numActivities_perCostumer = Cliente::getNumActivitiesPerCostumer();
+        $numAccountedActivities_perCostumer = Cliente::getNumActivitiesPerCostumer(true);
+        $orders = Commessa::listOrderInfos($state_id_param);
 
-        $orders = Commessa::listOrderInfos();
-
-        $costumers_infos = array();
         foreach ($costumers as $costumer) {
             $costumer_id = $costumer->id;
-            $costumer_orders = $orders->filter(function ($value) use (&$costumer_id) {
+            $costumer->commesse = $orders->filter(function ($value) use (&$costumer_id) {
                 return $value->cliente_id == $costumer_id;
             });
-            $costumer_accounted_activities_num = $numAccountedActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
+            $costumer->num_attivita = $numActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
+                return $value->cliente_id == $costumer_id;
+            })->pluck('attivita_num')->first();
+            $costumer->num_attivita_contabilizzate = $numAccountedActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
                 return $value->cliente_id == $costumer_id;
             })->pluck('attivita_num')->first();
 
-            $costumer_activities_num = $numActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
-                return $value->cliente_id == $costumer_id;
-            })->pluck('attivita_num')->first();
-
-            if ($costumer_activities_num == null) {
-                $costumer_activities_num = 0;
+            if ($costumer->num_attivita == null) {
+                $costumer->num_attivita = 0;
             }
-            if ($costumer_accounted_activities_num == null) {
-                $costumer_accounted_activities_num = 0;
+            if ($costumer->num_attivita_contabilizzate == null) {
+                $costumer->num_attivita_contabilizzate = 0;
             }
-
-            $info = array($costumer, $costumer_orders, $costumer_activities_num, $costumer_accounted_activities_num);
-            array_push($costumers_infos, $info);
         }
-
-//        dump($costumers_infos);
-//        exit();
-
-        return $costumers_infos;
-
+        return $costumers;
     }
+
 
     public function sedCostumerView($method, int $costumer_id = -1)
     {
@@ -162,7 +139,8 @@ class CostumerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public
+    function create()
     {
         return $this->sedCostumerView(Shared::METHODS['ADD']);
     }
@@ -173,7 +151,8 @@ class CostumerController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public
+    function store(Request $request)
     {
         $user_id = $_SESSION['user_id'];
         $name = $request->get('name');
@@ -195,7 +174,8 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public
+    function show($id)
     {
         return $this->sedCostumerView(Shared::METHODS['SHOW'], $id);
     }
@@ -206,7 +186,8 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public
+    function edit($id)
     {
         return $this->sedCostumerView(Shared::METHODS['EDIT'], $id);
     }
@@ -218,7 +199,8 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public
+    function update(Request $request, $id)
     {
         $user_id = $_SESSION['user_id'];
         $name = $request->get('name');
@@ -237,7 +219,8 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         Log::debug('Destroy_costumer', ['id' => $id]);
         Cliente::destroyCostumer($id, $_SESSION['user_id']);
@@ -245,7 +228,8 @@ class CostumerController extends Controller
         return Redirect::to($_SESSION['previous_url']);
     }
 
-    public function confirmDestroy($id)
+    public
+    function confirmDestroy($id)
     {
         Log::debug('ConfirmDestroy_costumer', ['id' => $id]);
         return $this->sedCostumerView(Shared::METHODS['DELETE'], $id);

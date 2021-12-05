@@ -335,6 +335,10 @@ function filter_setup() {
             } // Se la data è settata disabilita il filtro sul periodo
             $("#master_date_filter").val(date);
         }
+        let order_state = localStorage["master_order_state_filter"];
+        if (order_state) {
+            $("#master_order_state_filter option[value=" + order_state + "]").prop("selected", true);
+        }
     } else {
         filter_reset();
     }
@@ -349,6 +353,7 @@ function save_filters() {
     localStorage["master_date_filter"] = $("#master_date_filter").val();
     localStorage["master_user_filter"] = $("#master_user_filter").val();
     localStorage["master_billing_state_filter"] = $("#master_billing_state_filter").val();
+    localStorage["master_order_state_filter"] = $("#master_order_state_filter").val();
     $("#master_filter_form").submit();
 }
 
@@ -359,6 +364,7 @@ function filter_reset() {
     localStorage.removeItem("master_date_filter");
     localStorage.removeItem("master_user_filter");
     localStorage.removeItem("master_billing_state_filter");
+    localStorage.removeItem("master_order_state_filter");
 }
 
 

@@ -100,10 +100,10 @@ class ActivityController extends Controller
     public function filterPost(Request $request)
     {
         $period = $request->get('period');
-        $costumer = $request->get('costumer');
-        $state = $request->get('state');
-        $date = $request->get('date');
-        $team_member_id = $request->get('user');
+        $costumer = $request->get('master_costumer_filter');
+        $state = $request->get('master_state_filter');
+        $date = $request->get('master_date_filter');
+        $team_member_id = $request->get('master_user_filter');
         $billing_accounted_selector = $request->get('billing-state');
 
         $period = $period == null ? -1 : $period;

@@ -25,9 +25,13 @@ class Cliente extends Model
     }
 
 
-    public static function listCostumer(): \Illuminate\Support\Collection
+    public static function listCostumer(int $costumer_id = null): \Illuminate\Support\Collection
     {
-        return Cliente::orderBy('nome')->get();
+        $query = Cliente::orderBy('nome');
+        if ($costumer_id != null) {
+            $query->where('id', $costumer_id);
+        }
+        return $query->get();
     }
 
     public static function listActiveCostumer(): \Illuminate\Support\Collection

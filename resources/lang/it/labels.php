@@ -73,4 +73,5 @@ return [
     'or' => 'OPPURE',
     'insert' => 'Inserisci',
     'info' => 'Informazione',
+    'order_state' => 'Stato commessa',
 ];

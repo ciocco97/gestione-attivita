@@ -18,7 +18,12 @@
             <div class="card mt-2">
                 <div class="card-body mb-0">
                     <div class="container-fluid">
-                        <form id="master_filter_form" class="mb-0" action="{{ route('activity.filter') }}"
+                        <form id="master_filter_form" class="mb-0"
+                              @if($current_page == $PAGES['COMMERCIAL'])
+                              action="{{ route('costumer.filter') }}"
+                              @else
+                              action="{{ route('activity.filter') }}"
+                              @endif
                               method="post">
                             @yield('filters')
                         </form>
