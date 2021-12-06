@@ -74,4 +74,5 @@ return [
     'insert' => 'Insert',
     'info' => 'Info',
     'order_state' => 'Order state',
+    'active_user' => 'Active user',
 ];

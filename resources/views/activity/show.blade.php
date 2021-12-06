@@ -27,83 +27,85 @@
 
                     @csrf
 
-                    @if($method == $EDIT)
-                        <h3>@lang('labels.edit') @lang('labels.activity')
-                            @elseif($method == $SHOW)
-                                <h3>@lang('labels.show') @lang('labels.activity')
-                                    @elseif($method == $DELETE)
-                                        <h3>@lang('labels.delete') @lang('labels.activity')
-                                            @else
-                                                <h3>@lang('labels.add') @lang('labels.activity')
-                                                    @endif
-                                                    - {{ $tech_name }}</h3>
+                    <h3>
+                        @if($method == $EDIT)
+                            @lang('labels.edit') @lang('labels.activity')
+                        @elseif($method == $SHOW)
+                            @lang('labels.show') @lang('labels.activity')
+                        @elseif($method == $DELETE)
+                            @lang('labels.delete') @lang('labels.activity')
+                        @else
+                            @lang('labels.add') @lang('labels.activity')
+                        @endif
+                        - {{ $tech_name }}
+                    </h3>
 
-                                                <div class="row mb-md-2 mt-3"> <!-- Primi due campi -->
-                                                    <div class="col-md-6 mb-2 mb-md-0"> <!-- Primo campo -->
-                                                        @include('shared.select_general', ['select_id' => 'costumer', 'element_type' => __('labels.costumer'), 'element_list' => $costumers, 'element_descr_key' => 'nome', 'current_element' => $method == $ADD ? null : $current_costumer])
-                                                    </div>
+                    <div class="row mb-md-2 mt-3"> <!-- Primi due campi -->
+                        <div class="col-md-6 mb-2 mb-md-0"> <!-- Primo campo -->
+                            @include('shared.select_general', ['select_id' => 'costumer', 'element_type' => __('labels.costumer'), 'element_list' => $costumers, 'element_descr_key' => 'nome', 'current_element' => $method == $ADD ? null : $current_costumer])
+                        </div>
 
-                                                    <div class="col-md-6 mb-2 mb-md-0"> <!-- Secondo campo -->
-                                                        @include('shared.select_general', ['select_id' => 'order', 'element_type' => __('labels.order'), 'element_list' => $orders, 'element_descr_key' => 'descrizione_commessa', 'current_element' => $method == $ADD ? null : $current_order])
-                                                    </div>
+                        <div class="col-md-6 mb-2 mb-md-0"> <!-- Secondo campo -->
+                            @include('shared.select_general', ['select_id' => 'order', 'element_type' => __('labels.order'), 'element_list' => $orders, 'element_descr_key' => 'descrizione_commessa', 'current_element' => $method == $ADD ? null : $current_order])
+                        </div>
 
-                                                </div> <!-- Fine primi 2 campi -->
+                    </div> <!-- Fine primi 2 campi -->
 
-                                                <div class="row mb-md-2"> <!-- Secondi tre campi -->
+                    <div class="row mb-md-2"> <!-- Secondi tre campi -->
 
-                                                    <div class="col-md-6 mb-2"> <!-- Terzo campo -->
-                                                        @include('shared.input_general', ['input_id' => 'date', 'element_type' => __('labels.date'), 'input_type' => 'date', 'element_descr_key' => 'data', 'element' => $method == $ADD ? null : $activity])
-                                                    </div>
+                        <div class="col-md-6 mb-2"> <!-- Terzo campo -->
+                            @include('shared.input_general', ['input_id' => 'date', 'element_type' => __('labels.date'), 'input_type' => 'date', 'element_descr_key' => 'data', 'element' => $method == $ADD ? null : $activity])
+                        </div>
 
-                                                    <div class="col-md-6 mb-2"> <!-- Quarto campo -->
-                                                        @include('shared.input_general', ['input_id' => 'duration', 'element_type' => __('labels.duration'), 'input_type' => 'time', 'element_descr_key' => 'durata', 'element' => $method == $ADD ? null : $activity])
-                                                    </div>
+                        <div class="col-md-6 mb-2"> <!-- Quarto campo -->
+                            @include('shared.input_general', ['input_id' => 'duration', 'element_type' => __('labels.duration'), 'input_type' => 'time', 'element_descr_key' => 'durata', 'element' => $method == $ADD ? null : $activity])
+                        </div>
 
-                                                    <div class="col-md-6 mb-2"> <!-- Quinto campo -->
-                                                        @include('shared.input_general', ['input_id' => 'startTime', 'element_type' => __('labels.start_time'), 'input_type' => 'time', 'element_descr_key' => 'ora_inizio', 'element' => $method == $ADD ? null : $activity])
-                                                    </div>
+                        <div class="col-md-6 mb-2"> <!-- Quinto campo -->
+                            @include('shared.input_general', ['input_id' => 'startTime', 'element_type' => __('labels.start_time'), 'input_type' => 'time', 'element_descr_key' => 'ora_inizio', 'element' => $method == $ADD ? null : $activity])
+                        </div>
 
-                                                    <div class="col-md-6 mb-2"> <!-- Sesto campo -->
-                                                        @include('shared.input_general', ['input_id' => 'endTime', 'element_type' => __('labels.end_time'), 'input_type' => 'time', 'element_descr_key' => 'ora_fine', 'element' => $method == $ADD ? null : $activity, 'required' => false])
-                                                    </div>
+                        <div class="col-md-6 mb-2"> <!-- Sesto campo -->
+                            @include('shared.input_general', ['input_id' => 'endTime', 'element_type' => __('labels.end_time'), 'input_type' => 'time', 'element_descr_key' => 'ora_fine', 'element' => $method == $ADD ? null : $activity, 'required' => false])
+                        </div>
 
-                                                </div> <!-- Fine secondi tre campi -->
+                    </div> <!-- Fine secondi tre campi -->
 
-                                                @if($manager)
-                                                    <div class="row mb-md-2"> <!-- Fatturazione -->
-                                                        <div class="col-md-6 mb-2 mb-md-0">
-                                                            @include('shared.select_general', ['select_id' => 'billing_state', 'element_type' => __('labels.billing_state'), 'element_list' => $billing_states, 'element_descr_key' => 'descrizione_stato_fatturazione', 'current_element' => $method == $ADD ? null : $current_billing_state, 'required' => false])
-                                                        </div>
-                                                    </div>
-                                                @endif
+                    @if($manager)
+                        <div class="row mb-md-2"> <!-- Fatturazione -->
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                @include('shared.select_general', ['select_id' => 'billing_state', 'element_type' => __('labels.billing_state'), 'element_list' => $billing_states, 'element_descr_key' => 'descrizione_stato_fatturazione', 'current_element' => $method == $ADD ? null : $current_billing_state, 'required' => false])
+                            </div>
+                        </div>
+                    @endif
 
-                                                <div class="row mb-md-2"> <!-- Terzo gruppo -->
-                                                    <div class="col-md-12 mb-2 mb-md-0">
-                                                        @include('shared.input_general', ['input_id' => 'location', 'element_type' => __('labels.location'), 'input_type' => 'text', 'element_descr_key' => 'luogo', 'element' => $method == $ADD ? null : $activity, 'required' => false])
-                                                    </div>
-                                                </div>
+                    <div class="row mb-md-2"> <!-- Terzo gruppo -->
+                        <div class="col-md-12 mb-2 mb-md-0">
+                            @include('shared.input_general', ['input_id' => 'location', 'element_type' => __('labels.location'), 'input_type' => 'text', 'element_descr_key' => 'luogo', 'element' => $method == $ADD ? null : $activity, 'required' => false])
+                        </div>
+                    </div>
 
-                                                <div class="row mb-md-2"> <!-- Quarto -->
-                                                    <div class="col-md-12 mb-2 mb-md-0">
-                                                        @include('shared.input_textarea', ['input_id' => 'description', 'element_type' => __('labels.description'), 'element_descr_key' => 'descrizione_attivita', 'element' => $method == $ADD ? null : $activity])
+                    <div class="row mb-md-2"> <!-- Quarto -->
+                        <div class="col-md-12 mb-2 mb-md-0">
+                            @include('shared.input_textarea', ['input_id' => 'description', 'element_type' => __('labels.description'), 'element_descr_key' => 'descrizione_attivita', 'element' => $method == $ADD ? null : $activity])
 
-                                                    </div>
-                                                </div>
+                        </div>
+                    </div>
 
-                                                <div class="row mb-md-2"> <!-- Quinto -->
-                                                    <div class="col-md-12 mb-2 mb-md-0">
-                                                        @include('shared.input_general', ['input_id' => 'internalNotes', 'element_type' => __('labels.internal_notes'), 'input_type' => 'text', 'element_descr_key' => 'note_interne', 'element' => $method == $ADD ? null : $activity, 'required' => false])
+                    <div class="row mb-md-2"> <!-- Quinto -->
+                        <div class="col-md-12 mb-2 mb-md-0">
+                            @include('shared.input_general', ['input_id' => 'internalNotes', 'element_type' => __('labels.internal_notes'), 'input_type' => 'text', 'element_descr_key' => 'note_interne', 'element' => $method == $ADD ? null : $activity, 'required' => false])
 
-                                                    </div>
-                                                </div>
+                        </div>
+                    </div>
 
-                                                <div class="row mb-md-2"> <!-- Ultimo -->
-                                                    <div class="col-md-12 mb-2 mb-md-0">
-                                                        @include('shared.select_general', ['select_id' => 'state', 'element_type' => __('labels.state'), 'element_list' => $states, 'element_descr_key' => 'descrizione_stato_attivita', 'current_element' => $method == $ADD ? null : $current_state])
-                                                    </div>
-                                                </div> <!-- Fine ultimo -->
+                    <div class="row mb-md-2"> <!-- Ultimo -->
+                        <div class="col-md-12 mb-2 mb-md-0">
+                            @include('shared.select_general', ['select_id' => 'state', 'element_type' => __('labels.state'), 'element_list' => $states, 'element_descr_key' => 'descrizione_stato_attivita', 'current_element' => $method == $ADD ? null : $current_state])
+                        </div>
+                    </div> <!-- Fine ultimo -->
 
-                        @include('shared.footer_add_edit.buttons')
+                    @include('shared.footer_add_edit.buttons')
 
                 </form>
             </div>

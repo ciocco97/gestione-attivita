@@ -14,7 +14,14 @@
 
     @if(isset($element))
     value="{{ $element->$element_descr_key }}"
-    @endif
+@endif
 
-    @include('shared.input_required_disabled_style')
+@if(isset($data))
+    @foreach($data as $name => $val)
+        data-{{ $name }}="{{ $val }}"
+    @endforeach
+@endif
+
+@include('shared.input_required_disabled_style')
+
 >

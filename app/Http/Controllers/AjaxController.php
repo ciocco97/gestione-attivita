@@ -13,13 +13,36 @@ use Illuminate\Support\Facades\Log;
 class AjaxController extends Controller
 {
 
-    public function ajaxCheckCredentials(Request $request) {
+    public function ajaxCheckCredentials(Request $request)
+    {
         $user_email = $request->input('user_email');
         $user_md5_password = $request->input('user_md5_password');
         Log::debug('ajaxCheckCredentials', ['email' => $user_email, 'md5 password' => $user_md5_password]);
         $result = false;
         if ($user_email != null && $user_md5_password != null) {
             $result = Persona::validUser($user_email, $user_md5_password) != null;
+        }
+        return response()->json($result);
+    }
+
+    public function ajaxUserChange(Request $request)
+    {
+        $user_id = $_SESSION['user_id'];
+        $val = $request->input('val');
+        $ajax_method = $request->input('ajax_method');
+
+        Log::debug('ajaxUserChange', ['val' => $val]);
+
+        $result = false;
+        switch ($ajax_method) {
+            case Shared::AJAX_METHODS['user_change_email']:
+                break;
+            case Shared::AJAX_METHODS['user_change_team_member']:
+                break;
+            case Shared::AJAX_METHODS['user_change_role']:
+                break;
+            case Shared::AJAX_METHODS['user_change_active_state']:
+                break;
         }
         return response()->json($result);
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Persona extends Model
@@ -39,7 +40,7 @@ class Persona extends Model
 
     public static function listUsers()
     {
-        return Persona::all()->sortBy("nome");
+        return Persona::all()->sortBy('nome');
     }
 
     public static function validUser($email, $password, $user_id = -1)
@@ -126,6 +127,11 @@ class Persona extends Model
     public static function haveCommercialPermission($user_id): bool
     {
         return in_array(2, Persona::listUserRoles($user_id)->toArray());
+    }
+
+    public static function haveAdministratorPermission($user_id): bool
+    {
+        return in_array(4, Persona::listUserRoles($user_id)->toArray());
     }
 
 

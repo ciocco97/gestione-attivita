@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\LangController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -39,6 +40,9 @@ Route::middleware([Language::class])->group(function () {
     Route::middleware([MyAuth::class])->group(function () {
         Route::get('/user/choose/password', [AuthController::class, 'choosePassword'])->name('user.choose.password');
         Route::post('/user/change/password', [AuthController::class, 'changePassword'])->name('user.change.password');
+
+        Route::get('/image/profile/{id}/show', [ImageController::class, 'showImageProfile'])->name('image.profile.show');
+
         Route::resource('activity', ActivityController::class);
         Route::post('/activity/{id}/update', [ActivityController::class, 'update'])->name('activity.update');
         Route::get('/activity/{id}/destroy', [ActivityController::class, 'destroy'])->name('activity.destroy');
@@ -53,6 +57,8 @@ Route::middleware([Language::class])->group(function () {
 
         Route::get('/ajax/ordersByCostumer', [AjaxController::class, 'ordersByCostumer']);
         Route::get('/ajax/costumerByOrder', [AjaxController::class, 'costumerByOrder']);
+
+        Route::get('/ajax/user/change', [AjaxController::class, 'ajaxUserChange']);
 
 
         Route::get('/activity/manager/index', [ActivityController::class, 'managerIndex'])->name('manager.index');
@@ -72,6 +78,7 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/ajax/order/change', [AjaxController::class, 'ajaxOrderChange']);
 
         Route::resource('user', UserController::class);
+        Route::get('/user/{id}/confirm', [UserController::class, 'destroy'])->name('user.destroy.confirm');
     });
 });
 

@@ -24,7 +24,7 @@ function current_costumer_selected_setup() {
     let current = $("#costumer_number_"+current_selected_costumer)
     if (current_selected_costumer != -1 && current.length > 0) {
         $([document.documentElement, document.body]).animate({
-            scrollTop: current.offset().top-100
+            scrollTop: current.offset().top-125
         }, 200);
         $("#show_collapse_" + current_selected_costumer).trigger("click")
     }

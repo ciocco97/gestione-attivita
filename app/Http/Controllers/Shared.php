@@ -74,7 +74,11 @@ class Shared
         'activity_change_billing_state_index' => 4,
         'activity_send_report_index' => 5,
         'activities_change_accounted_index' => 6,
-        'activities_change_state_index' => 7
+        'activities_change_state_index' => 7,
+        'user_change_email' => 8,
+        'user_change_team_member' => 9,
+        'user_change_role' => 10,
+        'user_change_active_state' => 11,
     ];
 
 //    Sto parametrizzando i valori dei filtri

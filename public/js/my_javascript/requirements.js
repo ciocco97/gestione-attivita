@@ -7,6 +7,7 @@
         'technician_manager_administrativeScript',
         'commercialScript',
         'loginScript',
+        'administrator',
     ];
     let i;
     let s = [];

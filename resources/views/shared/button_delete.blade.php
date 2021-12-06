@@ -5,9 +5,7 @@
     "
    href="{{ route( $element_type . '.destroy.confirm', ['id' => $element_id]) }}">
     <i class="bi bi-trash
-@if(isset($disabled) && $disabled)
-
-@else
+@if(!(isset($disabled) && $disabled))
         text-danger
 @endif
         "></i>

@@ -21,7 +21,7 @@
 @endsection
 
 @section('main')
-    <div id="users" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-1">
+    <div id="accordion_parent" class="row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3 mt-1">
         @foreach($users as $num => $user)
             <div class="col">
                 @include('user.card.user_registry')
@@ -30,7 +30,7 @@
     </div>
 
     <script>
-
+        administrator_script()
     </script>
 
 @endsection

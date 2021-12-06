@@ -61,7 +61,9 @@ class ViewSharedProvider extends ServiceProvider
 
         view()->composer('*.administrator', function ($view) {
             $view->with('USER_ACTIVE', Shared::USER_ACTIVE)
-                ->with('AJAX_METHODS', Shared::AJAX_METHODS);
+                ->with('AJAX_METHODS', Shared::AJAX_METHODS)
+                ->with('USER_ROLES', Shared::ROLES)
+            ;
         });
 
     }

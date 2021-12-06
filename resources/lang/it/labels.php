@@ -74,4 +74,5 @@ return [
     'insert' => 'Inserisci',
     'info' => 'Informazione',
     'order_state' => 'Stato commessa',
+    'active_user' => 'Utente attivo',
 ];

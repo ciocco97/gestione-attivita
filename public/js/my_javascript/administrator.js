@@ -1,0 +1,90 @@
+function administrator_script() {
+    $('document').ready(function () {
+        email_change_setup();
+        team_change_setup();
+        roles_change_setup();
+        active_user_change_setup();
+    });
+}
+
+function email_change_setup() {
+    $("input[type=email][id^=user_email_]").on("keyup", function () {
+        disable_enable_email_reset_confirm_button($(this))
+    })
+    $("button[id^=reset_button_]").on("click", function () {
+        reset_user_email(getSuffix($(this), "reset_button_"))
+    })
+    $("button[id^=confirm_button_]").on("click", function () {
+        change_user_email(getSuffix($(this), "confirm_button_"))
+    })
+}
+function reset_user_email(user_id) {
+    let input_email = $("#user_email_"+user_id);
+    input_email.val(input_email.attr("value"))
+    disable_enable_email_reset_confirm_button(input_email)
+}
+function change_user_email(user_id) {
+    let input_email = $("#user_email_"+user_id);
+    let new_email = input_email.val()
+    input_email.attr("value", new_email)
+    let icon = $("#icon_change_user_email_"+user_id)
+    let spinner = $("#wait_change_user_email_"+user_id)
+    user_change(new_email, GLOBAL.AJAX_METHODS['user_change_email'], spinner, icon)
+    disable_enable_email_reset_confirm_button(input_email)
+}
+function disable_enable_email_reset_confirm_button(element) {
+    let user_id = getSuffix(element, "user_email_")
+    if (element.val() === element.attr("value")) {
+        $("#confirm_button_"+user_id).attr("disabled", true)
+        $("#reset_button_"+user_id).attr("disabled", true)
+    } else {
+        $("#confirm_button_"+user_id).attr("disabled", false)
+        $("#reset_button_"+user_id).attr("disabled", false)
+    }
+}
+
+function team_change_setup(){
+    $("input[type=checkbox][id^=check_team_member_]").on("change", function () {
+        let manager_id = $(this).attr("data-manager-id")
+        let team_member_id = $(this).attr("data-team-member-id")
+        let action = $(this).is(":checked")
+        let val = {}; val["manager_id"] = manager_id; val["team_member_id"] = team_member_id; val["action"] = action;
+
+        let spinner = $("#wait_change_user_team_"+manager_id)
+        user_change(val, GLOBAL.AJAX_METHODS['user_change_team_member'], spinner)
+    })
+}
+function roles_change_setup(){
+    $("input[type=checkbox][id^=check_role_]").on("change", function () {
+        let user_id = $(this).attr("data-user-id")
+        let role_id = $(this).attr("data-role-id")
+        let action = $(this).is(":checked")
+        let val = {}; val["user_id"] = user_id; val["role_id"] = role_id; val["action"] = action;
+
+        let spinner = $("#wait_change_user_roles_"+user_id)
+        user_change(val, GLOBAL.AJAX_METHODS['user_change_role'], spinner)
+    })
+}
+function active_user_change_setup(){
+    $("input[type=checkbox][id^=active_user_switch_]").on("change", function () {
+        let action = $(this).is(":checked")
+        user_change(action, GLOBAL.AJAX_METHODS['user_change_active_state'])
+    })
+}
+
+function user_change(val, ajax_method, spinner, icon=null) {
+    if (icon) { icon.hide(); }
+    if (spinner) { spinner.show(); }
+
+    $.ajax({
+        url: '/ajax/user/change',
+        type: 'GET',
+        data: {val: val, ajax_method: ajax_method},
+        success: function (data) {
+            console.log(data)
+            if (spinner) { spinner.hide(); }
+            if (icon) { icon.show(); }
+        }
+    });
+
+}

@@ -1,4 +1,4 @@
-@if(!isset($label) || $label)
+@if(!isset($label) || $label && (!isset($in_line_label) || !$in_line_label))
     <label class="form-label" for="{{ $switch_id }}">{{ $element_type }}</label>
 @endif
 
@@ -15,4 +15,8 @@
 
         @include('shared.input_required_disabled_style')
     >
+    @if(!isset($label) || $label && isset($in_line_label) && $in_line_label)
+        <label class="form-label" for="{{ $switch_id }}">{{ $element_type }}</label>
+    @endif
 </div>
+

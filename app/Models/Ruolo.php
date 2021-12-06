@@ -18,4 +18,8 @@ class Ruolo extends Model
         return $this->belongsToMany(Persona::class, 'persona_ruolo');
     }
 
+    public static function listRoles() {
+        return Ruolo::all()->sortBy('descrizione_ruolo');
+    }
+
 }

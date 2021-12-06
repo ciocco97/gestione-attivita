@@ -7,22 +7,10 @@
                 <h5 class="card-title">{{ $user->nome }} {{ $user->cognome }}</h5>
             </div>
             <div class="d-flex">
-                <a id="show_{{ $user->id }}" class="btn pt-0" href="{{ route('user.show', ['user' => $user->id]) }}">
-                    <i class="bi bi-eye text-secondary"></i>
-                </a>
-
-                <a id="edit_{{ $user->id }}" class="btn pt-0" href="{{ route('user.edit', ['user' => $user->id]) }}">
-                    <i class="bi bi-pencil text-warning"></i>
-                </a>
                 @if($user->num_activity > 0)
-                    <a id="delete_{{ $user->id }}" class="btn pt-0 disabled" href="">
-                        <i class="bi bi-trash"></i>
-                    </a>
+                    @include('shared.button_delete', ['element_id' => $user->id, 'element_type' => 'user', 'disabled' => true])
                 @else
-                    <a id="delete_{{ $user->id }}" class="btn pt-0"
-                       href="{{ route('user.destroy', ['user' => $user->id]) }}">
-                        <i class="bi bi-trash text-danger"></i>
-                    </a>
+                    @include('shared.button_delete', ['element_id' => $user->id, 'element_type' => 'user', 'disabled' => true])
                 @endif
             </div>
         </div>
@@ -31,57 +19,17 @@
         <ul class="list-group list-group-flush">
 
             <li class="list-group-item d-flex">
-                <input id="user_email_{{ $user->id }}" class="form-control" type="email" value="{{ $user->email }}">
+                @include('shared.input_general', ['input_id' => 'user_email_' . $user->id, 'input_type' => 'email', 'element_descr_key' => 'email', 'element' => $user, 'placeholder' => __('labels.type'). ' ' .__('labels.email'), 'data' => ['user-id' => $user->id], 'required' => false, 'label' => false])
                 @include('shared.button_confirm', ['element_id' => $user->id])
             </li>
             <li class="list-group-item">
-                <div class="accordion-item mb-2">
-                    <h2 class="accordion-header">
-                        <button id="show_collapse_{{ $user->id }}"
-                                class="accordion-button collapsed"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#collapse_{{ $user->id }}">
-                            @lang('labels.team')
-                        </button>
-                    </h2>
-                    <div id="collapse_{{ $user->id }}"
-                         class="accordion-collapse collapse"
-                         data-bs-parent="#users">
-                        <div class="accordion-body">
-                            <div class="row mt-2">
-                                <ul class="list-group list-group-flush">
-                                    @foreach($users as $user_deep)
-                                        <li class="list-group-item d-flex">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
-                                                       id="check_team_member_{{ $user_deep->id }}"
-                                                       @if($user->team_ids && in_array($user_deep->id, $user->team_ids))
-                                                       checked
-                                                    @endif>
-                                                <label class="form-check-label"
-                                                       for="#check_team_member_{{ $user_deep->id }}">
-                                                    {{ $user_deep->nome }} {{ $user_deep->cognome }}
-                                                </label>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+                @include('user.card.accordion_team')
             </li>
             <li class="list-group-item">
-                <div class="form-check form-switch">
-                    <label for="#active_user_switch_{{ $user->id }}">@lang('labels.active') @lang('labels.user')</label>
-                    @if($user->attivo == $USER_ACTIVE['ACTIVE'])
-                        <input class="form-check-input" type="checkbox" id="active_user_switch_{{ $user->id }}" checked>
-                    @elseif($user->attivo == $USER_ACTIVE['NOT_ACTIVE'])
-                        <input class="form-check-input" type="checkbox" id="active_user_switch_{{ $user->id }}">
-                    @endif
-                </div>
+                @include('user.card.accordion_role')
+            </li>
+            <li class="list-group-item">
+                @include('shared.input_switch', ['element_type' => __('labels.active_user'), 'switch_id' => 'active_user_switch_' . $user->id, 'element' => $user->attivo == $USER_ACTIVE['ACTIVE'], 'label' => true, 'in_line_label' => true])
             </li>
         </ul>
     </div>
