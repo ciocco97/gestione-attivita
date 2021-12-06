@@ -1,5 +1,5 @@
 <div class="card border-secondary">
-    <div class="card-body">
+    <div class="card-body"><!-- rgba(0,36,255,0.15) -->
         <div class="d-flex justify-content-between">
             <h5 class="card-title">{{ $costumer_infos->nome }}</h5>
             <div class="d-flex d-inline">

@@ -10,13 +10,13 @@ use App\Models\Persona;
 use App\Models\StatoAttivita;
 use App\Models\StatoFatturazione;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon as super_time_parser;
 
 class ActivityController extends Controller
 {
-
 
 
     private function indexActivityView($activities)
@@ -105,6 +105,7 @@ class ActivityController extends Controller
         $date = $request->get('master_date_filter');
         $team_member_id = $request->get('master_user_filter');
         $billing_accounted_selector = $request->get('billing-state');
+        Log::debug($team_member_id);
 
         $period = $period == null ? -1 : $period;
         $costumer = $costumer == null ? -1 : $costumer;
@@ -113,7 +114,7 @@ class ActivityController extends Controller
         $team_member_id = $team_member_id == null ? -1 : $team_member_id;
         $billing_accounted_selector = $billing_accounted_selector == null ? -1 : $billing_accounted_selector;
 
-        Log::debug('filterPost', [
+        Log::debug('filterPost_activity', [
             'period' => $period,
             'costumer' => $costumer,
             'state' => $state,
@@ -149,7 +150,7 @@ class ActivityController extends Controller
             $start_date = null;
         }
 
-        Log::debug('filter', [
+        Log::debug('filter_activity', [
             'start_date' => $start_date,
             'end_date' => $end_date,
             'costumer' => $costumer,
@@ -173,7 +174,7 @@ class ActivityController extends Controller
             $accounted = $billing_accounted_state == Shared::FILTER_ACCOUNTED['ACCOUNTED'] ? 2 : $accounted;
             $accounted = $billing_accounted_state == Shared::FILTER_ACCOUNTED['NOT_ACCOUNTED'] ? 1 : $accounted;
         }
-
+        DB::enableQueryLog();
         if ($_SESSION['current_page'] == Shared::PAGES['ADMINISTRATIVE']) {
             Log::debug('Administrative filter');
             $activities = Attivita::filterAdministrativeActivities(
@@ -184,6 +185,8 @@ class ActivityController extends Controller
             $activities = Attivita::filterActiveActivityByUserID(
                 $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
         }
+        $query = DB::getQueryLog();
+        Log::debug($query);
         return $this->indexActivityView($activities);
     }
 

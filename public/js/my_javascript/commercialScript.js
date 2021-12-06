@@ -21,9 +21,10 @@ function commercial_script() {
 
 function current_costumer_selected_setup() {
     let current_selected_costumer = localStorage["current_selected_costumer"]
-    if (current_selected_costumer != -1) {
+    let current = $("#costumer_number_"+current_selected_costumer)
+    if (current_selected_costumer != -1 && current.length > 0) {
         $([document.documentElement, document.body]).animate({
-            scrollTop: $("#costumer_number_"+current_selected_costumer).offset().top-100
+            scrollTop: current.offset().top-100
         }, 200);
         $("#show_collapse_" + current_selected_costumer).trigger("click")
     }

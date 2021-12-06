@@ -10,9 +10,9 @@
             @if(isset($default_value))
             value="{{$default_value}}"
             @else
-            value=""
+            value="" disabled
             @endif
-            disabled selected hidden>@lang('labels.select') {{ $element_type }}
+            selected hidden>@lang('labels.select') {{ $element_type }}
         </option>
     @endif
     @if($element_list == null)

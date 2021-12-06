@@ -21,7 +21,7 @@ class UserController extends Controller
         $this->addUserActivityNum($users);
 //        dump(Storage::disk('local')->allFiles());
 
-        return view('user.administrator')->with('users', $users);
+        return view('user.administrator')->with('users', $users)->with('current_page', Shared::PAGES['ADMINISTRATOR']);
     }
 
     public function addUserPhotoPath($users)

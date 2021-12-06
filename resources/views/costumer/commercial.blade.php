@@ -19,13 +19,11 @@
 @section('filters')
     @csrf
     <div class="row">
-        <div class="col-md-5"> <!-- Prima coppia/terna di filtri -->
+        <div class="col-md-6"> <!-- Prima coppia/terna di filtri -->
             @include('shared.filter.costumer')
         </div>
 
-        <div class="col-md-2"></div>
-
-        <div class="col-md-5"> <!-- Seconda coppia di filtri -->
+        <div class="col-md-6"> <!-- Seconda coppia di filtri -->
             @include('shared.filter.order_state')
         </div>
         @include('shared.filter.submit')
