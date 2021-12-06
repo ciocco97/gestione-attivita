@@ -259,7 +259,7 @@ class Attivita extends Model
     public static function filterAdministrativeActivities($start_date, $end_date, $costumer, $state, $date, $user_selected_id, $billing_state, $accounted): \Illuminate\Support\Collection
     {
         $basic_query = Attivita::basicQueryForListApprovedActivity();
-        Log::debug('filterAdministrativeActivities', ['user_selected_id' => $user_selected_id, 'TEAM_MEMBER_NOT_SELECTED' => Shared::FILTER_TEAM['TEAM_MEMBER_NOT_SELECTED']]);
+
         if ($user_selected_id != Shared::FILTER_TEAM['TEAM_MEMBER_NOT_SELECTED'] && $user_selected_id != null) {
             $basic_query->where('attivita.persona_id', $user_selected_id);
         }

@@ -64,7 +64,7 @@
                                                     </div>
 
                                                     <div class="col-md-6 mb-2"> <!-- Sesto campo -->
-                                                        @include('shared.input_general', ['input_id' => 'endTime', 'element_type' => __('labels.end_time'), 'input_type' => 'time', 'element_descr_key' => 'ora_fine', 'element' => $method == $ADD ? null : $activity])
+                                                        @include('shared.input_general', ['input_id' => 'endTime', 'element_type' => __('labels.end_time'), 'input_type' => 'time', 'element_descr_key' => 'ora_fine', 'element' => $method == $ADD ? null : $activity, 'required' => false])
                                                     </div>
 
                                                 </div> <!-- Fine secondi tre campi -->
@@ -79,7 +79,7 @@
 
                                                 <div class="row mb-md-2"> <!-- Terzo gruppo -->
                                                     <div class="col-md-12 mb-2 mb-md-0">
-                                                        @include('shared.input_general', ['input_id' => 'location', 'element_type' => __('labels.location'), 'input_type' => 'text', 'element_descr_key' => 'luogo', 'element' => $method == $ADD ? null : $activity])
+                                                        @include('shared.input_general', ['input_id' => 'location', 'element_type' => __('labels.location'), 'input_type' => 'text', 'element_descr_key' => 'luogo', 'element' => $method == $ADD ? null : $activity, 'required' => false])
                                                     </div>
                                                 </div>
 
@@ -92,7 +92,7 @@
 
                                                 <div class="row mb-md-2"> <!-- Quinto -->
                                                     <div class="col-md-12 mb-2 mb-md-0">
-                                                        @include('shared.input_general', ['input_id' => 'internalNotes', 'element_type' => __('labels.internal_notes'), 'input_type' => 'text', 'element_descr_key' => 'note_interne', 'element' => $method == $ADD ? null : $activity])
+                                                        @include('shared.input_general', ['input_id' => 'internalNotes', 'element_type' => __('labels.internal_notes'), 'input_type' => 'text', 'element_descr_key' => 'note_interne', 'element' => $method == $ADD ? null : $activity, 'required' => false])
 
                                                     </div>
                                                 </div>
