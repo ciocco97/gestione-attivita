@@ -36,12 +36,23 @@ class AjaxController extends Controller
         $result = false;
         switch ($ajax_method) {
             case Shared::AJAX_METHODS['user_change_email']:
+                $result = Persona::changeEmail($user_id, $val['user_id'] + 0, $val['new_email']);
                 break;
             case Shared::AJAX_METHODS['user_change_team_member']:
+                $action = $val['action'] == "true";
+                $result = Persona::changeTeamMember(
+                    $user_id, $val['manager_id'] + 0, $val['team_member_id'] + 0, $action
+                );
                 break;
             case Shared::AJAX_METHODS['user_change_role']:
+                $action = $val['action'] == "true";
+                $result = Persona::changeRole(
+                    $user_id, $val['user_id'] + 0, $val['role_id'] + 0, $action
+                );
                 break;
             case Shared::AJAX_METHODS['user_change_active_state']:
+                $action = $val['action'] == "true";
+                $result = Persona::changeActiveState($user_id, $val['user_id'] + 0, $action);
                 break;
         }
         return response()->json($result);

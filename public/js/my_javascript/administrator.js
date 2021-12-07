@@ -29,7 +29,8 @@ function change_user_email(user_id) {
     input_email.attr("value", new_email)
     let icon = $("#icon_change_user_email_"+user_id)
     let spinner = $("#wait_change_user_email_"+user_id)
-    user_change(new_email, GLOBAL.AJAX_METHODS['user_change_email'], spinner, icon)
+    let val = {}; val["user_id"] = user_id; val["new_email"] = new_email;
+    user_change(val, GLOBAL.AJAX_METHODS['user_change_email'], spinner, icon)
     disable_enable_email_reset_confirm_button(input_email)
 }
 function disable_enable_email_reset_confirm_button(element) {
@@ -67,8 +68,11 @@ function roles_change_setup(){
 }
 function active_user_change_setup(){
     $("input[type=checkbox][id^=active_user_switch_]").on("change", function () {
+        let user_id = getSuffix($(this), "active_user_switch_")
         let action = $(this).is(":checked")
-        user_change(action, GLOBAL.AJAX_METHODS['user_change_active_state'])
+        let val = {}; val["user_id"] = user_id; val["action"] = action;
+        let spinner = $("#wait_change_active_user_switch_"+user_id);
+        user_change(val, GLOBAL.AJAX_METHODS['user_change_active_state'], spinner)
     })
 }
 

@@ -29,7 +29,10 @@
                 @include('user.card.accordion_role')
             </li>
             <li class="list-group-item">
-                @include('shared.input_switch', ['element_type' => __('labels.active_user'), 'switch_id' => 'active_user_switch_' . $user->id, 'element' => $user->attivo == $USER_ACTIVE['ACTIVE'], 'label' => true, 'in_line_label' => true])
+                <div class="d-flex">
+                    @include('shared.input_switch', ['element_type' => __('labels.active_user'), 'switch_id' => 'active_user_switch_' . $user->id, 'element' => $user->attivo == $USER_ACTIVE['ACTIVE'], 'label' => true, 'in_line_label' => true])
+                    @include('shared.spinner_wait', ['element_id' => 'active_user_switch_' . $user->id])
+                </div>
             </li>
         </ul>
     </div>

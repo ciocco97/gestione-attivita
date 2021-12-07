@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Shared;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -156,6 +157,56 @@ class Persona extends Model
             $roles->push($manager_role);
         }
         return $roles->pluck('id');
+    }
+
+    public static function changeEmail(int $logged_user_id, int $target_user_id, $email): bool
+    {
+        if (self::haveAdministratorPermission($logged_user_id)) {
+            $user = Persona::find($target_user_id);
+            $user->email = $email;
+            $user->save();
+            return true;
+        }
+        return false;
+    }
+
+    public static function changeTeamMember(int $logged_user_id, int $manager_id, $team_member_id, bool $attach): bool
+    {
+        if (self::haveAdministratorPermission($logged_user_id)) {
+            $user = Persona::find($manager_id);
+            if ($attach) {
+                $user->sottoposti()->attach($team_member_id);
+            } else {
+                $user->sottoposti()->detach($team_member_id);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static function changeRole(int $logged_user_id, int $target_id, int $role_id, bool $attach): bool
+    {
+        if (self::haveAdministratorPermission($logged_user_id)) {
+            $user = Persona::find($target_id);
+            if ($attach) {
+                $user->ruoli()->attach($role_id);
+            } else {
+                $user->ruoli()->detach($role_id);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static function changeActiveState(int $logged_user_id, int $target_id, bool $active): bool
+    {
+        if (self::haveAdministratorPermission($logged_user_id)) {
+            $user = Persona::find($target_id);
+            $user->attivo = $active ? Shared::USER_ACTIVE['ACTIVE'] : Shared::USER_ACTIVE['NOT_ACTIVE'];
+            $user->save();
+            return true;
+        }
+        return false;
     }
 
 
