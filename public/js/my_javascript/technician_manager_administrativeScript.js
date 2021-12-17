@@ -40,6 +40,9 @@ function show_activity_script() {
         $("#order").change(function () {
             filter_costumers_when_order_selected();
         });
+        $("#compute_duration").click(function () {
+            compute_duration_in_activity_show();
+        })
     });
 }
 
@@ -97,7 +100,7 @@ function table_setup(page) {
             activity_change($(this), "send_report_", GLOBAL.AJAX_METHODS['activity_send_report_index']);
         });
 
-        $("[id^=billable_duration_input_]").on("change", function () {
+        $("[id^=billable_duration_]").on("change", function () {
             activity_change($(this), "billable_duration_input_", GLOBAL.AJAX_METHODS['activity_change_billable_duration_index']);
         });
 
@@ -525,4 +528,18 @@ function filter_costumers_when_order_selected() {
             $("#costumer").val(data.id);
         }
     });
+}
+
+function compute_duration_in_activity_show() {
+    let start_time = $("#startTime").val(); let end_time = $("#endTime").val();
+    if (end_time !== "") {
+        start_time = moment(start_time, "HH:mm"); end_time = moment(end_time, "HH:mm");
+
+        let duration = moment.duration(end_time.diff(start_time));
+
+        let hours = Math.abs(parseInt(duration.asHours()));
+        let minutes = parseInt(duration.asMinutes())%60;
+
+        $("#duration").val(("0" + hours).slice(-2)+":"+("0" + minutes).slice(-2))
+    }
 }

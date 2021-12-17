@@ -48,7 +48,8 @@ class ViewSharedProvider extends ServiceProvider
             $view->with('ACTIVITY_STATES', Shared::ACTIVITY_STATES)
                 ->with('ACTIVITY_ACCOUNTED_STATES', Shared::ACTIVITY_ACCOUNTED_STATES)
                 ->with('ACTIVITY_BILLING_STATES', Shared::ACTIVITY_BILLING_STATES)
-                ->with('FILTER_ACCOUNTED', Shared::FILTER_ACCOUNTED);
+                ->with('FILTER_ACCOUNTED', Shared::FILTER_ACCOUNTED)
+                ->with('CURRENT_PAGE', $_SESSION['current_page']);
         });
 
         view()->composer('*.period', function ($view) {
@@ -62,8 +63,7 @@ class ViewSharedProvider extends ServiceProvider
         view()->composer('*.administrator', function ($view) {
             $view->with('USER_ACTIVE', Shared::USER_ACTIVE)
                 ->with('AJAX_METHODS', Shared::AJAX_METHODS)
-                ->with('USER_ROLES', Shared::ROLES)
-            ;
+                ->with('USER_ROLES', Shared::ROLES);
         });
 
     }

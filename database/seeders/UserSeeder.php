@@ -15,56 +15,55 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $francesco = Persona::create([
-            'nome' => 'Francesco',
-            'cognome' => 'Cremascoli',
-            'email' => 'francesco.cremascoli97@gmail.com',
+        $admin = Persona::create([
+            'nome' => 'Admin',
+            'cognome' => 'Admin',
+            'email' => 'team.biteam.srl@gmail.com',
             'password' => md5('password')
         ]);
 
         $paolo = Persona::create([
             'nome' => 'Paolo',
             'cognome' => 'Cremascoli',
-            'email' => 'p.cremascoli@gmail.com',
+            'email' => 'pcremascoli@gmail.com',
             'password' => md5('password')
         ]);
 
         $gianmarco = Persona::create([
             'nome' => 'Gianmarco',
             'cognome' => 'Baronio',
-            'email' => 'g.baronio@gmail.com',
+            'email' => 'team.biteam.srl@gmail.com',
             'password' => md5('password')
         ]);
 
         $alice = Persona::create([
             'nome' => 'Alice',
             'cognome' => 'Cremascoli',
-            'email' => 'a.cremascoli@gmail.com',
+            'email' => 'team.biteam.srl@gmail.com',
             'password' => md5('password'),
         ]);
 
         $andrea = Persona::create([
             'nome' => 'Andrea',
             'cognome' => 'Malago',
-            'email' => 'a.malago@gmail.com',
+            'email' => 'team.biteam.srl@gmail.com',
             'password' => md5('password'),
         ]);
 
         $riccardo = Persona::create([
             'nome' => 'Riccardo',
             'cognome' => 'Tengattini',
-            'email' => 'a.tengattini@gmail.com',
+            'email' => 'team.biteam.srl@gmail.com',
             'password' => md5('password'),
         ]);
 
         DB::table('persona_ruolo')->insert([
             ['persona_id' => $paolo->id, 'ruolo_id' => 1],
             ['persona_id' => $paolo->id, 'ruolo_id' => 2],
-            ['persona_id' => $paolo->id, 'ruolo_id' => 4],
             ['persona_id' => $gianmarco->id, 'ruolo_id' => 1],
             ['persona_id' => $gianmarco->id, 'ruolo_id' => 2],
-            ['persona_id' => $gianmarco->id, 'ruolo_id' => 4],
-            ['persona_id' => $alice->id, 'ruolo_id' => 1]
+            ['persona_id' => $alice->id, 'ruolo_id' => 1],
+            ['persona_id' => $admin->id, 'ruolo_id' => 4],
         ]);
 
         DB::table('manager_sottoposto')->insert([

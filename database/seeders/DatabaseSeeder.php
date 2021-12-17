@@ -29,10 +29,11 @@ class DatabaseSeeder extends Seeder
             OrderStateSeeder::class,
             BillingStateSeeder::class,
             ActivityStateSeeder::class,
-            CostumerSeeder::class,
-            OrderSeeder::class
+//            CostumerSeeder::class,
+//            OrderSeeder::class
         ]);
 
+        /*
         $stati_attivita = StatoAttivita::all();
         $stati_fatturazione = StatoFatturazione::all();
         $persone = Persona::all();
@@ -64,7 +65,7 @@ class DatabaseSeeder extends Seeder
                         ])->create();
                 }
             }
-        }
+        } */
 
     }
 }

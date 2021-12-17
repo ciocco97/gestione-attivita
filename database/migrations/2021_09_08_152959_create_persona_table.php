@@ -17,7 +17,7 @@ class CreatePersonaTable extends Migration
             $table->id();
             $table->string('nome');
             $table->string('cognome');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('password');
             $table->string('attivo')->default(1);
             $table->string('token')->nullable();

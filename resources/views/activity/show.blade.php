@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="col-md-6 mb-2"> <!-- Quarto campo -->
-                            @include('shared.input_general', ['input_id' => 'duration', 'element_type' => __('labels.duration'), 'input_type' => 'time', 'element_descr_key' => 'durata', 'element' => $method == $ADD ? null : $activity])
+                            @include('shared.input_general', ['input_id' => 'duration', 'element_type' => __('labels.duration'), 'input_type' => 'time', 'element_descr_key' => 'durata', 'element' => $method == $ADD ? null : $activity, 'compute_button' => true])
                         </div>
 
                         <div class="col-md-6 mb-2"> <!-- Quinto campo -->
@@ -71,10 +71,13 @@
 
                     </div> <!-- Fine secondi tre campi -->
 
-                    @if($manager)
+                    @if($CURRENT_PAGE != $PAGES['TECHNICIAN'])
                         <div class="row mb-md-2"> <!-- Fatturazione -->
                             <div class="col-md-6 mb-2 mb-md-0">
                                 @include('shared.select_general', ['select_id' => 'billing_state', 'element_type' => __('labels.billing_state'), 'element_list' => $billing_states, 'element_descr_key' => 'descrizione_stato_fatturazione', 'current_element' => $method == $ADD ? null : $current_billing_state, 'required' => false])
+                            </div>
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                @include('shared.input_general', ['input_id' => 'billable_duration', 'element_type' => __('labels.duration') . ' ' . __('labels.billable_duration'), 'input_type' => 'time', 'element_descr_key' => 'durata_fatturabile', 'element' => $method == $ADD ? null : $activity])
                             </div>
                         </div>
                     @endif

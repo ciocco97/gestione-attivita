@@ -24,7 +24,7 @@
 
 @yield('body')
 
-@include('toasts.container')
+{{--@include('toasts.container')--}}
 
 </body>
 </html>

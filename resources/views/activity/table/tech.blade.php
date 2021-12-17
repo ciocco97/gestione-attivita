@@ -53,7 +53,7 @@
 
                 <td id="billable_duration_{{ $activity->id }}">
                     <div class="d-flex justify-content-center">
-                        @include('shared.input_general', ['label' => false, 'input_id' => 'billable_duration_' . $activity->id, 'input_type' => 'time', 'element' => $activity, 'element_descr_key' => 'durata_fatturabile', 'style' => 'max-width: 100px'])
+                        @include('shared.input_general', ['label' => false, 'input_id' => 'billable_duration_input_' . $activity->id, 'input_type' => 'time', 'element' => $activity, 'element_descr_key' => 'durata_fatturabile', 'style' => 'max-width: 100px'])
                         @include('shared.spinner_wait', ['element_id' => 'billable_duration_input_' . $activity->id])
                     </div>
                 </td>

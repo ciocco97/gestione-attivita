@@ -7,7 +7,6 @@ use App\Mail\ActivityReport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class Attivita extends Model
@@ -43,7 +42,6 @@ class Attivita extends Model
     }
 
 
-
     public static function getActivityByActivityAndUserID(int $activity_id, int $user_id)
     {
         $activity = Attivita::find($activity_id);
@@ -54,38 +52,58 @@ class Attivita extends Model
         }
     }
 
-    public static function storeActivity($user_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state)
+    public static function commonStoreUpdate(
+        $activity, $activity_order_id, $activity_date, $activity_start,
+                   $activity_end, $activity_duration, $activity_location,
+                   $activity_description, $activity_internal_notes, $activity_state_id
+    )
     {
-        Attivita::create([
-            'persona_id' => $user_id,
-            'commessa_id' => $order_id,
-            'data' => $date,
-            'ora_inizio' => $startTime,
-            'ora_fine' => $endTime,
-            'durata' => $duration,
-            'luogo' => $location,
-            'descrizione_attivita' => $description,
-            'note_interne' => $internalNotes,
-            'stato_attivita_id' => $state,
-            'rapportino_attivita' => 0
-        ]);
+        $activity->commessa_id = $activity_order_id;
+        $activity->data = $activity_date;
+        $activity->ora_inizio = $activity_start;
+        $activity->ora_fine = $activity_end;
+        $activity->durata = $activity_duration;
+        $activity->luogo = $activity_location;
+        $activity->descrizione_attivita = $activity_description;
+        $activity->note_interne = $activity_internal_notes;
+        $activity->stato_attivita_id = $activity_state_id;
     }
 
-    public static function updateActivity($user_id, $activity_id, $order_id, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state): bool
+    public static function storeActivity(
+        $activity_user_id, $activity_order_id, $activity_date, $activity_start,
+        $activity_end, $activity_duration, $activity_location,
+        $activity_description, $activity_internal_notes, $activity_state_id
+    )
+    {
+        $activity = new Attivita();
+        $activity->persona_id = $activity_user_id;
+        $activity->rapportino_attivita = 0;
+        $activity->stato_fatturazione_id = Shared::ACTIVITY_BILLING_STATES['TO_BILL'];
+        self::commonStoreUpdate($activity, $activity_order_id, $activity_date, $activity_start,
+            $activity_end, $activity_duration, $activity_location,
+            $activity_description, $activity_internal_notes, $activity_state_id);
+        $activity->save();
+    }
+
+    public static function updateActivity(
+        $user_id, $activity_id, $activity_order_id, $activity_date, $activity_start,
+        $activity_end, $activity_duration, $activity_billable_duration, $activity_location,
+        $activity_description, $activity_internal_notes, $activity_state_id,
+        $activity_billing_state_id
+    ): bool
     {
         $activity = Attivita::find($activity_id);
         if (Persona::haveUpdatePermissionOnActivity($user_id, $activity)) {
-            $activity->update([
-                'commessa_id' => $order_id,
-                'data' => $date,
-                'ora_inizio' => $startTime,
-                'ora_fine' => $endTime,
-                'durata' => $duration,
-                'luogo' => $location,
-                'descrizione_attivita' => $description,
-                'note_interne' => $internalNotes,
-                'stato_attivita_id' => $state
-            ]);
+            if ($activity_billing_state_id != null) {
+                $activity->stato_fatturazione_id = $activity_billing_state_id;
+            }
+            if ($activity_billable_duration != null) {
+                $activity->durata_fatturabile = $activity_billable_duration;
+            }
+            self::commonStoreUpdate($activity, $activity_order_id, $activity_date, $activity_start,
+                $activity_end, $activity_duration, $activity_location,
+                $activity_description, $activity_internal_notes, $activity_state_id);
+            $activity->save();
             return true;
         }
         return false;
@@ -334,7 +352,8 @@ class Attivita extends Model
         }
     }
 
-    public static function isApproved(Attivita $activity) {
+    public static function isApproved(Attivita $activity)
+    {
         return $activity->stato_attivita_id == Shared::ACTIVITY_STATES['APPROVED'];
     }
 

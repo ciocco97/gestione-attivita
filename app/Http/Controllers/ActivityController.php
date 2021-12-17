@@ -41,13 +41,13 @@ class ActivityController extends Controller
                 $states = StatoAttivita::listActivityState();
                 $users = Persona::listTeam($user_id);
                 $billing_states = StatoFatturazione::listBillingStates();
-                $this->addBillableDuration($activities);
+                $this->addBillableDurationToActivities($activities);
                 break;
             case Shared::PAGES['ADMINISTRATIVE']:
                 $costumers = Cliente::listCostumer();
                 $users = Persona::listUsers();
                 $billing_states = StatoFatturazione::listBillingStates();
-                $this->addBillableDuration($activities);
+                $this->addBillableDurationToActivities($activities);
                 break;
         }
 
@@ -189,8 +189,7 @@ class ActivityController extends Controller
 
     private function sedActivityView($method, int $activity_id = -1)
     {
-        $manager = str_contains($_SESSION['previous_url'], 'manager');
-
+        $manager = $_SESSION['current_page'] == Shared::PAGES['MANAGER'];
         Log::debug('sedActivityView');
         $username = $_SESSION['username'];
         $user_id = $_SESSION['user_id'];
@@ -199,6 +198,7 @@ class ActivityController extends Controller
         $tech_name = $username;
         if ($activity_id != -1) {
             $activity = Attivita::getActivityByActivityAndUserID($activity_id, $user_id);
+            $this->addBillableDuration($activity);
             $order = $activity->commessa()->get()->first();
             $costumer = $order->cliente()->get()->first();
             $tech_name = Persona::find($activity->persona_id)->nome;
@@ -218,6 +218,7 @@ class ActivityController extends Controller
             }
         }
 
+
         return view('activity.show')
             ->with('method', $method)
             ->with('tech_name', $tech_name)
@@ -227,8 +228,7 @@ class ActivityController extends Controller
             ->with('ADD', Shared::METHODS['ADD'])
             ->with('activity', $activity)->with('current_order', $order)->with('current_costumer', $costumer)->with('current_state', $state)->with('current_billing_state', $billing_state)
             ->with('costumers', $costumers)->with('orders', $orders)->with('states', $states)->with('billing_states', $billing_states)
-            ->with('previous_url', $_SESSION['previous_url'])
-            ->with('manager', $manager);
+            ->with('previous_url', $_SESSION['previous_url']);
 
     }
 
@@ -255,6 +255,54 @@ class ActivityController extends Controller
         return $this->sedActivityView(Shared::METHODS['ADD']);
     }
 
+    public function calculateDuration($duration, $start_time, $end_time): string
+    {
+        $duration = super_time_parser::parse($duration);
+
+        if ($duration->format('H:i') == "00:00") {
+            $start_time = super_time_parser::parse($start_time);
+            $end_time = super_time_parser::parse($end_time);
+            $duration = $end_time->diff($start_time);
+            $duration = $duration->h . ':' . $duration->i;
+        }
+        return $duration;
+    }
+
+    public function ActivityFromPostHTTP(Request $request, $id = null)
+    {
+        $user_id = $_SESSION['user_id'];
+        $activity_order_id = $request->get('order');
+        $activity_date = super_time_parser::parse($request->get('date'))->format('Y-m-d');
+        $activity_start = $request->get('startTime');
+        $activity_end = $request->get('endTime');
+        $activity_duration = $request->get('duration');
+        $activity_duration = $this->calculateDuration($activity_duration, $activity_start, $activity_end);
+        $activity_location = $request->get('location');
+        $activity_description = $request->get('description');
+        $activity_internal_notes = $request->get('internalNotes');
+        $activity_state_id = $request->get('state');
+        $activity_billing_state_id = $activity_billable_duration = null;
+        if ($_SESSION['current_page'] != Shared::PAGES['TECHNICIAN']) {
+            $activity_billing_state_id = $request->get('billing_state');
+            $activity_billable_duration = $request->get('billable_duration');
+        }
+
+        if ($id == null) {
+            Attivita::storeActivity(
+                $user_id, $activity_order_id, $activity_date, $activity_start,
+                $activity_end, $activity_duration, $activity_location,
+                $activity_description, $activity_internal_notes, $activity_state_id
+            );
+        } else {
+            Attivita::updateActivity(
+                $user_id, $id, $activity_order_id, $activity_date, $activity_start,
+                $activity_end, $activity_duration, $activity_billable_duration, $activity_location,
+                $activity_description, $activity_internal_notes, $activity_state_id,
+                $activity_billing_state_id
+            );
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -263,19 +311,8 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
-        $user_id = $_SESSION['user_id'];
-        $order = $request->get('order');
-        $date = super_time_parser::parse($request->get('date'))->format('Y-m-d');
-        $startTime = $request->get('startTime');
-        $endTime = $request->get('endTime');
-        $duration = $request->get('duration');
-        $location = $request->get('location');
-        $description = $request->get('description');
-        Log::debug('Store_activity', ['description' => $description]);
-        $internalNotes = $request->get('internalNotes');
-        $state = $request->get('state');
-
-        Attivita::storeActivity($user_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
+        Log::debug('Store_activity', ['description' => $request->get('description')]);
+        $this->ActivityFromPostHTTP($request);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -302,19 +339,7 @@ class ActivityController extends Controller
     public function update(Request $request, $id)
     {
         Log::debug('Update_activity', ['id' => $id]);
-        $user_id = $_SESSION['user_id'];
-        $activity_id = $id;
-        $order = $request->get('order');
-        $date = super_time_parser::parse($request->get('date'))->format('Y-m-d');
-        $startTime = $request->get('startTime');
-        $endTime = $request->get('endTime');
-        $duration = $request->get('duration');
-        $location = $request->get('location');
-        $description = $request->get('description');
-        $internalNotes = $request->get('internalNotes');
-        $state = $request->get('state');
-
-        Attivita::updateActivity($user_id, $activity_id, $order, $date, $startTime, $endTime, $duration, $location, $description, $internalNotes, $state);
+        $this->ActivityFromPostHTTP($request, $id);
 
         return Redirect::to($_SESSION['previous_url']);
     }
@@ -355,15 +380,22 @@ class ActivityController extends Controller
         }
     }
 
-    private function addBillableDuration($activities)
+    private function addBillableDuration($activity)
+    {
+        $billable_duration = $activity->durata_fatturabile;
+        if ($billable_duration == null) {
+            $billable_duration = super_time_parser::parse($activity->durata);
+            if ($billable_duration->minute % 15 != 0) {
+                $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
+            }
+            $activity->durata_fatturabile = $billable_duration->format("H:i");
+        }
+    }
+
+    private function addBillableDurationToActivities($activities)
     {
         foreach ($activities as $activity) {
-            $billable_duration = $activity->durata_fatturabile;
-            if ($billable_duration == null) {
-                $billable_duration = super_time_parser::parse($activity->durata);
-                $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
-                $activity->durata_fatturabile = $billable_duration->format("H:i");
-            }
+            $this->addBillableDuration($activity);
         }
     }
 

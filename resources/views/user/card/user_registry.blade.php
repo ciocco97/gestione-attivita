@@ -10,7 +10,7 @@
                 @if($user->num_activity > 0)
                     @include('shared.button_delete', ['element_id' => $user->id, 'element_type' => 'user', 'disabled' => true])
                 @else
-                    @include('shared.button_delete', ['element_id' => $user->id, 'element_type' => 'user', 'disabled' => true])
+                    @include('shared.button_delete', ['element_id' => $user->id, 'element_type' => 'user', 'disabled' => false])
                 @endif
             </div>
         </div>
