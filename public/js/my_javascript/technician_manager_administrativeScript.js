@@ -43,6 +43,7 @@ function show_activity_script() {
         $("#compute_duration").click(function () {
             compute_duration_in_activity_show();
         })
+        $("[data-bs-toggle=tooltip]").tooltip();
     });
 }
 
@@ -127,7 +128,7 @@ function table_setup(page) {
         "#master_num_rows",
         "#pagination_selector_1");
 
-    $("[data-bs-toggle=tooltip]").tooltip();
+    -
 
     filter_setup();
 

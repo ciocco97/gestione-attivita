@@ -29,6 +29,6 @@
 
         >
         @if(isset($compute_button) && $compute_button && isset($method) && $method != $SHOW && $method != $DELETE)
-            @include('shared.button_compute')
+            @include('shared.button_compute_duration')
     </div>
 @endif

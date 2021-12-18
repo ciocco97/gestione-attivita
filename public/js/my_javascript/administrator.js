@@ -35,12 +35,14 @@ function change_user_email(user_id) {
 }
 function disable_enable_email_reset_confirm_button(element) {
     let user_id = getSuffix(element, "user_email_")
+    let confirm_button = $("#confirm_button_"+user_id)
+    let reset_button = $("#reset_button_"+user_id)
     if (element.val() === element.attr("value")) {
-        $("#confirm_button_"+user_id).attr("disabled", true)
-        $("#reset_button_"+user_id).attr("disabled", true)
+        confirm_button.attr("disabled", true).removeClass("text-success border-success").addClass("text-secondary border-secondary")
+        reset_button.attr("disabled", true).removeClass("text-warning border-warning").addClass("text-secondary border-secondary")
     } else {
-        $("#confirm_button_"+user_id).attr("disabled", false)
-        $("#reset_button_"+user_id).attr("disabled", false)
+        confirm_button.attr("disabled", false).removeClass("text-secondary border-secondary").addClass("text-success border-success")
+        reset_button.attr("disabled", false).removeClass("text-secondary border-secondary").addClass("text-warning border-warning")
     }
 }
 
@@ -53,7 +55,14 @@ function team_change_setup(){
 
         let spinner = $("#wait_change_user_team_"+manager_id)
         user_change(val, GLOBAL.AJAX_METHODS['user_change_team_member'], spinner)
+        checkManager(manager_id)
     })
+}
+function checkManager(user_id) {
+    let team_num = $("[id^=check_team_member_"+user_id+"]").filter(function () {
+        return $(this).is(":checked")
+    }).length
+    $("#check_role_"+user_id+"_3").prop("checked", team_num > 0)
 }
 function roles_change_setup(){
     $("input[type=checkbox][id^=check_role_]").on("change", function () {
