@@ -7,6 +7,7 @@ return [
     'administrative_tab' => 'Administrative',
     'manager_tab' => 'Manager',
     'tech_tab' => 'Technician',
+    'administrator_tab' => 'Administrator',
     'admin' => 'Site administrator',
     'filter' => 'Filter',
     'add' => 'Add',
@@ -75,4 +76,7 @@ return [
     'info' => 'Info',
     'order_state' => 'Order state',
     'active_user' => 'Active user',
+    'tech' => 'user',
+    'team' => 'Team',
+    'roles' => 'Roles',
 ];

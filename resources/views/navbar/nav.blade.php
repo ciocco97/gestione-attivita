@@ -64,6 +64,11 @@
 
                     @include('navbar.navbar_link', ['navbar_link_id' => "technician_nav_tab", 'navbar_link_route' => route('activity.index'), 'navbar_link_text' => __('labels.tech_tab')])
 
+                    @if(in_array($ROLES['ADMINISTRATOR'], $user_roles))
+                        @include('navbar.navbar_link', ['navbar_link_id' => "administrator_nav_tab", 'navbar_link_route' => route('user.index'), 'navbar_link_text' => __('labels.administrator_tab'), 'hide' => true])
+                    @endif
+
+
                 </ul>
 
             </div>

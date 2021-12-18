@@ -209,5 +209,36 @@ class Persona extends Model
         return false;
     }
 
+    public static function getUserByID($current_user_id, $user_id) {
+        if (self::haveAdministratorPermission($current_user_id)) {
+            return Persona::find($user_id);
+        }
+        return false;
+    }
+
+    public static function storeUser($user_id, $name, $surname, $email) {
+        if (self::haveAdministratorPermission($user_id)) {
+            Persona::create([
+                'nome' => $name,
+                'cognome' => $surname,
+                'email' => $email,
+                'password' => '5f4dcc3b5aa765d61d8327deb882cf99',
+                'attivo' => 0,
+            ]);
+            return true;
+        }
+        return false;
+    }
+
+    public static function destroyUser($current_user_id, $user_id) {
+        if (self::haveAdministratorPermission($current_user_id) && $user_id != 1) {
+            if (Persona::find($user_id)->attivita()->count() == 0) {
+                Persona::destroy($user_id);
+            }
+            return true;
+        }
+        return false;
+    }
+
 
 }

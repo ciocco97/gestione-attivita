@@ -120,11 +120,8 @@ class CostumerController extends Controller
             $costumer = Cliente::getCostumerByID($costumer_id);
         }
 
-        $user_roles = Persona::listUserRoles($user_id)->toArray();
         return view('costumer.show_costumer')
             ->with('method', $method)
-            ->with('username', $username)
-            ->with('user_roles', $user_roles)
             ->with('costumer', $costumer)
             ->with('SHOW', Shared::METHODS['SHOW'])
             ->with('EDIT', Shared::METHODS['EDIT'])

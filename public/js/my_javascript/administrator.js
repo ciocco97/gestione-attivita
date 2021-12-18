@@ -4,6 +4,7 @@ function administrator_script() {
         team_change_setup();
         roles_change_setup();
         active_user_change_setup();
+        console.log($("[id^=administrator_nav_tab_]").children().show().addClass("active"))
     });
 }
 

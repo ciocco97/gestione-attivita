@@ -7,6 +7,7 @@ use App\Models\Ruolo;
 use http\Url;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -25,6 +26,8 @@ class UserController extends Controller
         $this->addUserActivityNum($users);
 
         $user_roles = Ruolo::listRoles();
+
+        $_SESSION['previous_url'] = url()->current();
 
         return view('user.administrator')
             ->with('users', $users)
@@ -54,7 +57,11 @@ class UserController extends Controller
     public function addUserActivityNum($users)
     {
         foreach ($users as $user) {
-            $user->num_activity = $user->attivita()->count();
+            if ($user->id != 1) {
+                $user->num_activity = $user->attivita()->count();
+            } else {
+                $user->num_activity = 1;
+            }
         }
     }
 
@@ -65,6 +72,27 @@ class UserController extends Controller
         }
     }
 
+    public function sedUserView($method, int $user_id = -1)
+    {
+        Log::debug('sedUserView');
+        $current_user_id = $_SESSION['user_id'];
+
+        $user = null;
+        if ($user_id != -1) {
+            $user = Persona::getUserByID($current_user_id, $user_id);
+        }
+
+        return view('user.show_user')
+            ->with('method', $method)
+            ->with('user', $user)
+            ->with('SHOW', Shared::METHODS['SHOW'])
+            ->with('EDIT', Shared::METHODS['EDIT'])
+            ->with('DELETE', Shared::METHODS['DELETE'])
+            ->with('ADD', Shared::METHODS['ADD'])
+            ->with('previous_url', $_SESSION['previous_url']);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -72,7 +100,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return $this->sedUserView(Shared::METHODS['ADD']);
     }
 
     /**
@@ -83,7 +111,18 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user_id = $_SESSION['user_id'];
+        $name = $request->get('name');
+        $surname = $request->get('surname');
+        $email = $request->get('email');
+        Log::debug('Store_user', [
+            'name' => $name,
+            'surname' => $surname,
+            'email' => $email
+        ]);
+        Persona::storeUser($user_id, $name, $surname, $email);
+
+        return Redirect::to(route('user.index'));
     }
 
     /**
@@ -128,6 +167,8 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $current_user_id = $_SESSION['user_id'];
+        Persona::destroyUser($current_user_id, $id);
+        return Redirect::to($_SESSION['previous_url']);
     }
 }

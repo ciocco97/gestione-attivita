@@ -22,6 +22,7 @@
                 @include('shared.input_general', ['input_id' => 'user_email_' . $user->id, 'input_type' => 'email', 'element_descr_key' => 'email', 'element' => $user, 'placeholder' => __('labels.type'). ' ' .__('labels.email'), 'data' => ['user-id' => $user->id], 'required' => false, 'label' => false])
                 @include('shared.button_confirm', ['element_id' => $user->id])
             </li>
+            @if($user->id != 1)
             <li class="list-group-item">
                 @include('user.card.accordion_team')
             </li>
@@ -34,6 +35,7 @@
                     @include('shared.spinner_wait', ['element_id' => 'active_user_switch_' . $user->id])
                 </div>
             </li>
+            @endif
         </ul>
     </div>
 </div>
