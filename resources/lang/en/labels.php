@@ -79,4 +79,5 @@ return [
     'tech' => 'user',
     'team' => 'Team',
     'roles' => 'Roles',
+    'surname' => 'Surname',
 ];

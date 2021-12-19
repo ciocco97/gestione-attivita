@@ -111,7 +111,8 @@ class Cliente extends Model
 
     public static function destroyCostumer($id, $user_id): bool
     {
-        if (Persona::haveCommercialPermission($user_id)) {
+        $num_order = Cliente::find($id)->commesse->count();
+        if ($num_order < 1 && Persona::haveCommercialPermission($user_id)) {
             Cliente::destroy($id);
             return true;
         }
@@ -129,6 +130,15 @@ class Cliente extends Model
         if ($accounted) {
             $query->where('attivita.contabilizzata', '=', '2');
         }
+        return $query->get();
+    }
+
+    public static function getNumOrdersPerCostumer(): \Illuminate\Support\Collection
+    {
+        $query = DB::table('cliente')
+            ->select(DB::raw('cliente.id AS cliente_id, count(*) AS commesse_num'))
+            ->join('commessa', 'cliente.id', '=', 'commessa.cliente_id')
+            ->groupBy('cliente.id');
         return $query->get();
     }
 

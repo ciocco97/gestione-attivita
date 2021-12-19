@@ -13,7 +13,13 @@
 
             @if($current_page == $PAGES['TECHNICIAN'])
                 <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">
-                    <i class="bi bi-journal-plus me-2"></i>@lang('labels.add') @lang('labels.activity')
+                    <i class="bi bi-clipboard-plus me-2"></i>@lang('labels.add') @lang('labels.activity')
+                </a>
+            @endif
+
+            @if($current_page == $PAGES['ADMINISTRATIVE'])
+                <a class="btn btn-outline-dark" href="">
+                    <i class="bi bi-cloud-arrow-down me-2"></i>@lang('labels.download') @lang('labels.csv')
                 </a>
             @endif
 

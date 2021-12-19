@@ -10,7 +10,7 @@
                 <td>
                     @include('shared.button_edit', ['element_id' => $costumer_infos->id, 'element_type' => 'costumer'])
                 </td>
-                @if($costumer_infos->num_attivita > 0)
+                @if($costumer_infos->num_commesse > 0)
                     @include('shared.button_delete', ['element_id' => $costumer_infos->id, 'element_type' => 'costumer', 'disabled' => true])
                 @else
                     @include('shared.button_delete', ['element_id' => $costumer_infos->id, 'element_type' => 'costumer'])

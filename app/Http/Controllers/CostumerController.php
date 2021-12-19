@@ -84,6 +84,7 @@ class CostumerController extends Controller
         $costumers = Cliente::listCostumer($costumer_id_param);
         $numActivities_perCostumer = Cliente::getNumActivitiesPerCostumer();
         $numAccountedActivities_perCostumer = Cliente::getNumActivitiesPerCostumer(true);
+        $numOrders_perCostumer = Cliente::getNumOrdersPerCostumer();
         $orders = Commessa::listOrderInfos($state_id_param);
 
         foreach ($costumers as $costumer) {
@@ -97,6 +98,9 @@ class CostumerController extends Controller
             $costumer->num_attivita_contabilizzate = $numAccountedActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
                 return $value->cliente_id == $costumer_id;
             })->pluck('attivita_num')->first();
+            $costumer->num_commesse = $numOrders_perCostumer->filter(function ($value) use (&$costumer_id) {
+                return $value->cliente_id == $costumer_id;
+            })->pluck('commesse_num')->first();
 
             if ($costumer->num_attivita == null) {
                 $costumer->num_attivita = 0;

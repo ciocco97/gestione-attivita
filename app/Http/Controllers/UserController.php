@@ -25,12 +25,24 @@ class UserController extends Controller
         $this->addUserRoles($users);
         $this->addUserActivityNum($users);
 
+        $admin_key = -1;
+        $admin_id = Shared::ADMIN_ID;
+        $admin_user = $users->filter(function ($user, $key) use ($admin_id, &$admin_key) {
+            if ($user->id == $admin_id) {
+                $admin_key = $key;
+                return true;
+            }
+            return false;
+        })->first();
+        $users->forget($admin_key);
+
         $user_roles = Ruolo::listRoles();
 
         $_SESSION['previous_url'] = url()->current();
 
         return view('user.administrator')
             ->with('users', $users)
+            ->with('admin_user', $admin_user)
             ->with('user_roles', $user_roles)
             ->with('current_page', Shared::PAGES['ADMINISTRATOR']);
     }
@@ -57,11 +69,8 @@ class UserController extends Controller
     public function addUserActivityNum($users)
     {
         foreach ($users as $user) {
-            if ($user->id != 1) {
-                $user->num_activity = $user->attivita()->count();
-            } else {
-                $user->num_activity = 1;
-            }
+            if ($user->id != Shared::ADMIN_ID) { $user->num_activity = $user->attivita()->count(); }
+            else { $user->num_activity = 1; }
         }
     }
 

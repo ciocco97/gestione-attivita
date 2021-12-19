@@ -6,7 +6,8 @@
                 data-bs-toggle="collapse"
                 data-bs-target="#collapse_team_{{ $user->id }}">
             @lang('labels.team')
-            <div id="wait_change_user_team_{{ $user->id }}" class="spinner-border spinner-border-sm text-success ms-1" role="status" style="display: none;">
+            <div id="wait_change_user_team_{{ $user->id }}" class="spinner-border spinner-border-sm text-success ms-1"
+                 role="status" style="display: none;">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </button>

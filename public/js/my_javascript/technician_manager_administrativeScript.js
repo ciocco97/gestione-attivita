@@ -72,16 +72,16 @@ function table_setup(page) {
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['CANCELLED']:
-                    $("#send_report_" + id).addClass('disabled') // Disabilito l'invio del rapportino
-                        .children().removeClass('text-primary text-success text-danger'); // Scoloro il relativo bottone
+                    $("#send_report_" + id).addClass('disabled').children().removeClass('text-danger text-warning text-success text-primary') // Disabilito l'invio del rapportino
                     description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
                     $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['APPROVED']:
                     if (!manager) {
-                        $("a.btn[id$=" + id + "][id!=show_" + id + "][id!=send_report_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
-                            .children().removeClass('text-danger text-warning'); // Scoloro i relativi bottoni
+                        $("a.btn[id$=" + id + "][id!=show_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
+                            .children().removeClass('text-danger text-warning text-success'); // Scoloro i relativi bottoni
+                        $("#send_report_" + id).children().removeClass('text-danger text-warning text-success');
                         $("td[id$=" + id + "] input.form-check").attr('disabled', true);
                     } else {
                         let row = $("#activity_row_"+id)
@@ -128,7 +128,7 @@ function table_setup(page) {
         "#master_num_rows",
         "#pagination_selector_1");
 
-    -
+    $("[data-bs-toggle=tooltip]").tooltip();
 
     filter_setup();
 
@@ -393,7 +393,7 @@ function activity_change(element, id_prefix, ajax_method) {
             $("[id=" + waiter_prefix + id_prefix + activity_id + "]").hide();
             if (ajax_method == GLOBAL.AJAX_METHODS['activity_send_report_index'] && data) {
                 $("[id=" + id_prefix + activity_id + "]").html(
-                    "<i class=\"bi bi-clipboard-check text-success\"></i>");
+                    "<i class=\"bi bi-send-check-fill text-success\"></i>");
             }
         }
     });

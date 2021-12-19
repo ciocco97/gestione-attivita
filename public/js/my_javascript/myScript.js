@@ -7,9 +7,9 @@ function disable_row(id, administrative, accounted) {
         .addClass('disabled')
         .children().removeClass('text-danger text-warning');
     if (!administrative) {
-        $("input[id$=" + id + "]").attr("disabled", true);
+        $("td > input[id$=" + id + "]").attr("disabled", true);
         if (accounted) {
-            $("button[id$=" + id + "]").attr("disabled", true);
+            $("td > button[id$=" + id + "]").attr("disabled", true);
         }
     }
     $("select[id$=" + id + "]").attr("disabled", true);

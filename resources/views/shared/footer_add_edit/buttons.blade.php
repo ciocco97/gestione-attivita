@@ -42,7 +42,7 @@
     </div>
     <div class="col-sm-6 col-lg-3">
         <button class="btn btn-primary w-100" type="submit">
-            <i class="bi bi-journal-plus me-2"></i>@lang('labels.add')
+            <i class="bi {{ $icon_code }} me-2"></i>@lang('labels.add')
         </button>
     </div>
 

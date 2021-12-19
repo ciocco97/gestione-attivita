@@ -81,6 +81,8 @@ class Shared
         'user_change_active_state' => 11,
     ];
 
+    const ADMIN_ID = 1;
+
 //    Sto parametrizzando i valori dei filtri
 //    Ma quello che stavo cercando di capire è come mai se dalla pagina manager
 //    filtro senza selezionare un team member, mi fa lo stesso filtro del tecnico

@@ -12,7 +12,7 @@
         <i class="bi bi-person-plus me-2"></i>@lang('labels.add') @lang('labels.costumer')
     </a>
     <a class="btn btn-outline-primary" href="{{ route('order.create') }}">
-        <i class="bi bi-file-earmark-ruled me-2"></i>@lang('labels.add') @lang('labels.order')
+        <i class="bi bi-journal-plus me-2"></i>@lang('labels.add') @lang('labels.order')
     </a>
 @endsection
 

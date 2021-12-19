@@ -40,7 +40,8 @@
             @endif
             <td id="date_{{ $activity->id }}" class="text-nowrap">{{ $activity->data }}</td>
             <td id="startTime_{{ $activity->id }}">{{ substr($activity->ora_inizio, 0, 5) }}</td>
-            <td class="fw-bold" id="desc_{{ $activity->id }}" data-bs-toggle="tooltip"
+            <td class="fw-bold" id="desc_{{ $activity->id }}"
+                data-bs-toggle="tooltip"
                 data-bs-placement="right"
                 title="{{ $activity->descrizione_attivita }}">
                 {{ $activity->desc_attivita }}

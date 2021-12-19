@@ -231,7 +231,8 @@ class Persona extends Model
     }
 
     public static function destroyUser($current_user_id, $user_id) {
-        if (self::haveAdministratorPermission($current_user_id) && $user_id != 1) {
+        $num_activities = Persona::find($user_id)->attivita->count();
+        if ($num_activities < 1 && $user_id != Shared::ADMIN_ID && self::haveAdministratorPermission($current_user_id)) {
             if (Persona::find($user_id)->attivita()->count() == 0) {
                 Persona::destroy($user_id);
             }

@@ -66,5 +66,9 @@ class ViewSharedProvider extends ServiceProvider
                 ->with('USER_ROLES', Shared::ROLES);
         });
 
+        view()->composer('user.*', function ($view) {
+            $view->with('ADMIN_ID', Shared::ADMIN_ID);
+        });
+
     }
 }

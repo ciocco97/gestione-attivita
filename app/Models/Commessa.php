@@ -123,7 +123,8 @@ class Commessa extends Model
 
     public static function destroyOrder($id, $user_id): bool
     {
-        if (Persona::haveCommercialPermission($user_id)) {
+        $num_activities = Commessa::find($id)->attivita->count();
+        if ($num_activities < 1 && Persona::haveCommercialPermission($user_id)) {
             Commessa::destroy($id);
             return true;
         }

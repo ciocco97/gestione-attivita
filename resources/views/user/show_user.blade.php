@@ -55,7 +55,7 @@
                         </div>
                     </div> <!-- Fine primi 2 campi -->
 
-                    @include('shared.footer_add_edit.buttons')
+                    @include('shared.footer_add_edit.buttons', ['icon_code' => 'bi-emoji-smile'])
 
                 </form>
             </div>

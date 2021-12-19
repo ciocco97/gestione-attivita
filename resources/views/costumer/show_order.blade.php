@@ -60,7 +60,7 @@
                         </div>
                     </div> <!-- Fine ultimo -->
 
-                    @include('shared.footer_add_edit.buttons')
+                    @include('shared.footer_add_edit.buttons', ['icon_code' => 'bi-file-earmark-ruled'])
 
                 </form>
             </div>
@@ -68,11 +68,5 @@
             <div class="col-md-1 col-lg-2 col-xl-1"></div>
         </div>
     </div>
-
-    <script>
-        @if($method == $ADD)
-
-        @endif
-    </script>
 
 @endsection
