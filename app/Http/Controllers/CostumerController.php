@@ -140,8 +140,7 @@ class CostumerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public
-    function create()
+    public function create()
     {
         return $this->sedCostumerView(Shared::METHODS['ADD']);
     }
@@ -152,13 +151,12 @@ class CostumerController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public
-    function store(Request $request)
+    public function store(Request $request)
     {
         $user_id = $_SESSION['user_id'];
         $name = $request->get('name');
         $email = $request->get('email');
-        $report = $request->get('report') == "on" ? 1 : 0;
+        $report = $request->get('report_switch') == "on" ? 1 : 0;
         Log::debug('Store_costumer', [
             'name' => $name,
             'email' => $email,
@@ -175,8 +173,7 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function show($id)
+    public function show($id)
     {
         return $this->sedCostumerView(Shared::METHODS['SHOW'], $id);
     }
@@ -187,8 +184,7 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function edit($id)
+    public function edit($id)
     {
         return $this->sedCostumerView(Shared::METHODS['EDIT'], $id);
     }
@@ -200,8 +196,7 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $user_id = $_SESSION['user_id'];
         $name = $request->get('name');
@@ -220,8 +215,7 @@ class CostumerController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public
-    function destroy($id)
+    public function destroy($id)
     {
         Log::debug('Destroy_costumer', ['id' => $id]);
         Cliente::destroyCostumer($id, $_SESSION['user_id']);
@@ -229,8 +223,7 @@ class CostumerController extends Controller
         return Redirect::to($_SESSION['previous_url']);
     }
 
-    public
-    function confirmDestroy($id)
+    public function confirmDestroy($id)
     {
         Log::debug('ConfirmDestroy_costumer', ['id' => $id]);
         return $this->sedCostumerView(Shared::METHODS['DELETE'], $id);
