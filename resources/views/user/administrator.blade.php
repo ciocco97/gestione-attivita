@@ -21,7 +21,7 @@
 @endsection
 
 @section('main')
-    <div id="accordion_parent" class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3 row-cols-xxl-4 g-3 mt-1">
+    <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3 row-cols-xxl-4 g-3 mt-1">
         <div class="col">
             @include('user.card.user_registry', ['user' => $admin_user, 'hide_team_and_roles' => true])
         </div>

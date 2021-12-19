@@ -16,15 +16,17 @@ function commercial_script() {
         current_costumer_selected_setup()
 
         filter_setup()
+
+        shortcuts_setup()
     });
 }
 
 function current_costumer_selected_setup() {
     let current_selected_costumer = localStorage["current_selected_costumer"]
-    let current = $("#costumer_number_"+current_selected_costumer)
+    let current = $("#costumer_number_" + current_selected_costumer)
     if (current_selected_costumer != -1 && current.length > 0) {
         $([document.documentElement, document.body]).animate({
-            scrollTop: current.offset().top-125
+            scrollTop: current.offset().top - 125
         }, 200);
         $("#show_collapse_" + current_selected_costumer).trigger("click")
     }
@@ -57,5 +59,21 @@ function order_change(element, id_prefix, ajax_method) {
         success: function (data) {
             $("[id=" + waiter_prefix + id_prefix + order_id + "]").hide();
         }
+    });
+}
+
+function shortcuts_setup() {
+    var isKeyPressed = {};
+    $(document).keydown(function(keyDownEvent) {
+        isKeyPressed[keyDownEvent.key] = true;
+        if (isKeyPressed['i'] && isKeyPressed['Control']) {
+            $("#add_costumer_button").get(0).click();
+        }
+        if (isKeyPressed['m'] && isKeyPressed['Control']) {
+            $("#add_order_button").get(0).click();
+        }
+    });
+    $(document).keyup(function(keyDownEvent) {
+        isKeyPressed[keyDownEvent.key] = false;
     });
 }
