@@ -54,8 +54,8 @@ class Attivita extends Model
 
     public static function commonStoreUpdate(
         $activity, $activity_order_id, $activity_date, $activity_start,
-                   $activity_end, $activity_duration, $activity_location,
-                   $activity_description, $activity_internal_notes, $activity_state_id
+        $activity_end, $activity_duration, $activity_location,
+        $activity_description, $activity_internal_notes, $activity_state_id
     )
     {
         $activity->commessa_id = $activity_order_id;
@@ -182,6 +182,19 @@ class Attivita extends Model
         return Attivita::addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $state, $date)->get();
     }
 
+    public static function toggleActivityReport($activity_id, $user_id)
+    {
+        $activity = Attivita::find($activity_id);
+        if (Persona::haveUpdatePermissionOnActivity($user_id, $activity)) {
+            $val = $activity->rapportino_attivita ? 0 : 1;
+            $activity->update([
+                'rapportino_attivita' => $val
+            ]);
+            return true;
+        }
+        return false;
+    }
+
     public static function updateActivityReport($activity_id, $user_id, bool $sent): bool
     {
         $activity = Attivita::find($activity_id);
@@ -197,12 +210,14 @@ class Attivita extends Model
 
     public static function sendActivityReport($user_id, $activity_id): bool
     {
-        $activity = Attivita::getActivityForActivityReport($activity_id, $user_id);
+//        $activity = Attivita::getActivityForActivityReport($activity_id, $user_id);
+//
+//        Mail::to($activity->email)
+//            ->queue(new ActivityReport($activity));
+//
+//        return Attivita::updateActivityReport($activity_id, $user_id, true);
 
-        Mail::to($activity->email)
-            ->queue(new ActivityReport($activity));
-
-        return Attivita::updateActivityReport($activity_id, $user_id, true);
+        return Attivita::toggleActivityReport($activity_id, $user_id);
 
     }
 

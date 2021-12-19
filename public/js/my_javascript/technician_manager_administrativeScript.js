@@ -47,6 +47,24 @@ function show_activity_script() {
     });
 }
 
+function disable_edit_delete_button(id) {
+    $("td > a.btn[id$=" + id + "][id!=show_" + id + "]")
+        .addClass('disabled')
+        .children().removeClass('text-danger text-warning');
+}
+
+function disable_report_button(id) {
+    $("#send_report_" + id).addClass("disabled").children().removeClass("text-primary text-success text-warning")
+}
+
+function disable_row(id, administrative, accounted) {
+    if (!administrative) {
+        disable_edit_delete_button(id)
+        $("td > div > input[id$=" + id + "]").attr("disabled", true);
+        $("td > div > select[id$=" + id + "]").attr("disabled", true);
+        disable_report_button(id);
+    }
+}
 
 function table_setup(page) {
     let technician = page == GLOBAL.PAGES['TECHNICIAN'];
@@ -72,21 +90,18 @@ function table_setup(page) {
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['CANCELLED']:
-                    $("#send_report_" + id).addClass('disabled').children().removeClass('text-danger text-warning text-success text-primary') // Disabilito l'invio del rapportino
+                    disable_report_button(id);
                     description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
                     $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['APPROVED']:
                     if (!manager) {
-                        $("a.btn[id$=" + id + "][id!=show_" + id + "]").addClass('disabled') // Disabilito la modifica e l'eliminazione
-                            .children().removeClass('text-danger text-warning text-success'); // Scoloro i relativi bottoni
-                        $("#send_report_" + id).children().removeClass('text-danger text-warning text-success');
-                        $("td[id$=" + id + "] input.form-check").attr('disabled', true);
+                        disable_row(id)
                     } else {
-                        let row = $("#activity_row_"+id)
+                        let row = $("#activity_row_" + id)
                         if (row.attr("data-accounted") == GLOBAL.ACTIVITY_ACCOUNTED_STATES['NOT_ACCOUNTED']) {
-                            num_selectable_rows ++
+                            num_selectable_rows++
                         }
                     }
                     description_td.addClass('text-success', 1000); // Coloro di verde la descrizione dell'attività
@@ -299,8 +314,8 @@ function filter_setup() {
         } else {
             let master_period_filter = $("#master_period_filter");
             master_period_filter.prop("disabled", true);
-            for(let i = 0; i < master_period_filter.length; i++) {
-                master_period_filter[i].selectedIndex =0;
+            for (let i = 0; i < master_period_filter.length; i++) {
+                master_period_filter[i].selectedIndex = 0;
             }
         }
     })
@@ -372,6 +387,17 @@ function filter_reset() {
 }
 
 
+function change_activity_send_report_button(id_prefix, activity_id) {
+    let report_button = $("[id=" + id_prefix + activity_id + "]");
+    if (report_button.attr("data-report-sent") == GLOBAL.REPORT_SENT["sent"]){
+        report_button.html("<i class=\"bi bi-send-fill text-primary\"></i>");
+        report_button.attr("data-report-sent", GLOBAL.REPORT_SENT["not_sent"]);
+    } else {
+        report_button.html("<i class=\"bi bi-send-check-fill text-success\"></i>");
+        report_button.attr("data-report-sent", GLOBAL.REPORT_SENT["sent"]);
+    }
+
+}
 function activity_change(element, id_prefix, ajax_method) {
     let activity_id = getSuffix(element, id_prefix);
     let value = element.val();
@@ -392,8 +418,7 @@ function activity_change(element, id_prefix, ajax_method) {
         success: function (data) {
             $("[id=" + waiter_prefix + id_prefix + activity_id + "]").hide();
             if (ajax_method == GLOBAL.AJAX_METHODS['activity_send_report_index'] && data) {
-                $("[id=" + id_prefix + activity_id + "]").html(
-                    "<i class=\"bi bi-send-check-fill text-success\"></i>");
+                change_activity_send_report_button(id_prefix, activity_id);
             }
         }
     });
@@ -532,15 +557,17 @@ function filter_costumers_when_order_selected() {
 }
 
 function compute_duration_in_activity_show() {
-    let start_time = $("#startTime").val(); let end_time = $("#endTime").val();
+    let start_time = $("#startTime").val();
+    let end_time = $("#endTime").val();
     if (end_time !== "") {
-        start_time = moment(start_time, "HH:mm"); end_time = moment(end_time, "HH:mm");
+        start_time = moment(start_time, "HH:mm");
+        end_time = moment(end_time, "HH:mm");
 
         let duration = moment.duration(end_time.diff(start_time));
 
         let hours = Math.abs(parseInt(duration.asHours()));
-        let minutes = parseInt(duration.asMinutes())%60;
+        let minutes = parseInt(duration.asMinutes()) % 60;
 
-        $("#duration").val(("0" + hours).slice(-2)+":"+("0" + minutes).slice(-2))
+        $("#duration").val(("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2))
     }
 }

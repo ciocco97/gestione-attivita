@@ -13,6 +13,7 @@ function pullSharedVariables() {
                 ROLES: data["ROLES"],
                 AJAX_METHODS: data["AJAX_METHODS"],
                 PAGES: data["PAGES"],
+                REPORT_SENT: data["REPORT_SENT"]
             }
         }
     });

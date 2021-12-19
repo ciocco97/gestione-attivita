@@ -81,6 +81,11 @@ class Shared
         'user_change_active_state' => 11,
     ];
 
+    const REPORT_SENT = [
+        'sent' => 1,
+        'not_sent' => 0,
+    ];
+
     const ADMIN_ID = 1;
 
 //    Sto parametrizzando i valori dei filtri

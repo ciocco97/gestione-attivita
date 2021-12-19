@@ -1,5 +1,5 @@
 @if($activity->rapportino_cliente && $activity->rapportino_commessa)
-    <button id="send_report_{{ $activity->id }}" class="btn pt-0">
+    <button id="send_report_{{ $activity->id }}" class="btn pt-0" data-report-sent="{{ $activity->rapportino_attivita }}">
         @if($activity->rapportino_attivita)
             <i class="bi bi-send-check-fill text-success"></i>
         @else

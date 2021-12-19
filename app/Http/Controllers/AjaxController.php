@@ -66,7 +66,8 @@ class AjaxController extends Controller
             'ACTIVITY_ACCOUNTED_STATES' => Shared::ACTIVITY_ACCOUNTED_STATES,
             'ROLES' => Shared::ROLES,
             'PAGES' => Shared::PAGES,
-            'AJAX_METHODS' => Shared::AJAX_METHODS
+            'AJAX_METHODS' => Shared::AJAX_METHODS,
+            'REPORT_SENT' => Shared::REPORT_SENT,
         );
         return response()->json($to_return);
     }

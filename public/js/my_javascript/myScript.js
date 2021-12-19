@@ -1,20 +1,6 @@
 GREEN_COLOR = "#c7edc9";
 waiter_prefix = "wait_change_";
 
-
-function disable_row(id, administrative, accounted) {
-    $("a.btn[id$=" + id + "][id!=show_" + id + "]")
-        .addClass('disabled')
-        .children().removeClass('text-danger text-warning');
-    if (!administrative) {
-        $("td > input[id$=" + id + "]").attr("disabled", true);
-        if (accounted) {
-            $("td > button[id$=" + id + "]").attr("disabled", true);
-        }
-    }
-    $("select[id$=" + id + "]").attr("disabled", true);
-}
-
 function getSuffix(element, id_prefix) {
     let myRegexp = new RegExp(id_prefix + "(.*)");
     let match = myRegexp.exec(element.attr("id"));
