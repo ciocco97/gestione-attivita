@@ -135,6 +135,15 @@ class Persona extends Model
         return in_array(4, Persona::listUserRoles($user_id)->toArray());
     }
 
+    public static function isActive($user_id): bool
+    {
+        $p = Persona::find($user_id);
+        if ($p && $p->attivo) {
+            return true;
+        }
+        return false;
+    }
+
 
     public static function listTeam(int $user_id)
     {
@@ -234,6 +243,8 @@ class Persona extends Model
         $num_activities = Persona::find($user_id)->attivita->count();
         if ($num_activities < 1 && $user_id != Shared::ADMIN_ID && self::haveAdministratorPermission($current_user_id)) {
             if (Persona::find($user_id)->attivita()->count() == 0) {
+                DB::table('persona_ruolo')->where('persona_id', $user_id)->delete();
+                DB::table('manager_sottoposto')->where('manager_id', $user_id)->orWhere('sottoposto_id', $user_id)->delete();
                 Persona::destroy($user_id);
             }
             return true;
