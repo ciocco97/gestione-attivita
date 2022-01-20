@@ -17,62 +17,62 @@ class UserSeeder extends Seeder
     {
         $admin = Persona::create([
             'nome' => 'Admin',
-            'cognome' => 'Admin',
+            'cognome' => '',
             'email' => 'team.biteam.srl@gmail.com',
             'password' => md5('password')
         ]);
 
-        $paolo = Persona::create([
-            'nome' => 'Paolo',
-            'cognome' => 'Cremascoli',
-            'email' => 'pcremascoli@gmail.com',
+        $paperina = Persona::create([
+            'nome' => 'Paperina',
+            'cognome' => 'Daisy Duck',
+            'email' => 'p.daisyduck@email.pa',
             'password' => md5('password')
         ]);
 
-        $gianmarco = Persona::create([
-            'nome' => 'Gianmarco',
-            'cognome' => 'Baronio',
-            'email' => 'team.biteam.srl@gmail.com',
+        $paperino = Persona::create([
+            'nome' => 'Paperino',
+            'cognome' => 'Donald Duck',
+            'email' => 'p.donaldduck@email.pa',
             'password' => md5('password')
         ]);
 
-        $alice = Persona::create([
-            'nome' => 'Alice',
-            'cognome' => 'Cremascoli',
-            'email' => 'team.biteam.srl@gmail.com',
+        $pippo = Persona::create([
+            'nome' => 'Pippo',
+            'cognome' => 'Goofy',
+            'email' => 'p.goofy@email.to',
             'password' => md5('password'),
         ]);
 
-        $andrea = Persona::create([
-            'nome' => 'Andrea',
-            'cognome' => 'Malago',
-            'email' => 'team.biteam.srl@gmail.com',
+        $topolino = Persona::create([
+            'nome' => 'Topolino',
+            'cognome' => 'Mickey Mouse',
+            'email' => 't.mickeymouse@email.to',
             'password' => md5('password'),
         ]);
 
-        $riccardo = Persona::create([
-            'nome' => 'Riccardo',
-            'cognome' => 'Tengattini',
-            'email' => 'team.biteam.srl@gmail.com',
+        $gamba_di_legno = Persona::create([
+            'nome' => 'Gamba di Legno',
+            'cognome' => 'Pete',
+            'email' => 'g.pete@email.to',
             'password' => md5('password'),
         ]);
 
         DB::table('persona_ruolo')->insert([
-            ['persona_id' => $paolo->id, 'ruolo_id' => 1],
-            ['persona_id' => $paolo->id, 'ruolo_id' => 2],
-            ['persona_id' => $gianmarco->id, 'ruolo_id' => 1],
-            ['persona_id' => $gianmarco->id, 'ruolo_id' => 2],
-            ['persona_id' => $alice->id, 'ruolo_id' => 1],
+            ['persona_id' => $paperina->id, 'ruolo_id' => 1],
+            ['persona_id' => $paperina->id, 'ruolo_id' => 2],
+            ['persona_id' => $paperino->id, 'ruolo_id' => 1],
+            ['persona_id' => $paperino->id, 'ruolo_id' => 2],
+            ['persona_id' => $pippo->id, 'ruolo_id' => 1],
             ['persona_id' => $admin->id, 'ruolo_id' => 4],
         ]);
 
         DB::table('manager_sottoposto')->insert([
-            ['manager_id' => $paolo->id, 'sottoposto_id' => $paolo->id],
-            ['manager_id' => $paolo->id, 'sottoposto_id' => $andrea->id],
-            ['manager_id' => $paolo->id, 'sottoposto_id' => $alice->id],
-            ['manager_id' => $gianmarco->id, 'sottoposto_id' => $gianmarco->id],
-            ['manager_id' => $gianmarco->id, 'sottoposto_id' => $andrea->id],
-            ['manager_id' => $andrea->id, 'sottoposto_id' => $riccardo->id],
+            ['manager_id' => $paperina->id, 'sottoposto_id' => $paperina->id],
+            ['manager_id' => $paperina->id, 'sottoposto_id' => $topolino->id],
+            ['manager_id' => $paperina->id, 'sottoposto_id' => $pippo->id],
+            ['manager_id' => $paperino->id, 'sottoposto_id' => $paperino->id],
+            ['manager_id' => $paperino->id, 'sottoposto_id' => $topolino->id],
+            ['manager_id' => $topolino->id, 'sottoposto_id' => $gamba_di_legno->id],
         ]);
     }
 }
