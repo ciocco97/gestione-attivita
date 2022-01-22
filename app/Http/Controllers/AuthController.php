@@ -33,7 +33,9 @@ class AuthController extends Controller
             $_SESSION['user_id'] = $user->id;
             $_SESSION['username'] = $user->nome;
         } else {
-            Log::debug('Utente disconnesso', ['id' => $_SESSION['user_id']]);
+            if (isset($_SESSION['user_id'])) {
+                Log::debug('Utente disconnesso', ['id' => $_SESSION['user_id']]);
+            }
             $_SESSION['user_id'] = -1;
             $_SESSION['username'] = null;
         }
