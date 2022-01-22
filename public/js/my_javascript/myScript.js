@@ -1,6 +1,11 @@
 GREEN_COLOR = "#c7edc9";
 waiter_prefix = "wait_change_";
 
+$('document').ready(function () {
+    $("[data-bs-toggle=tooltip]").tooltip();
+})
+
+
 function getSuffix(element, id_prefix) {
     let myRegexp = new RegExp(id_prefix + "(.*)");
     let match = myRegexp.exec(element.attr("id"));

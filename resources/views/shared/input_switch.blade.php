@@ -1,5 +1,8 @@
 @if(!isset($label) || $label && (!isset($in_line_label) || !$in_line_label))
     <label class="form-label" for="{{ $switch_id }}">{{ $element_type }}</label>
+    <i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+       title="@lang('text.report_comment')">
+    </i>
 @endif
 
 <div class="form-check form-switch">

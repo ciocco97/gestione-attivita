@@ -11,4 +11,5 @@ return [
     'token_alert' => 'Token invalido o scaduto. Riprovare.',
     'no_element_in_table_info' => 'La tabella non contiene elementi in quanto nessun elemento deve essere visualizzato',
     'no_element_in_table_hing' => 'E\' possibile che questo sia dovuto alla corrente configurazione dei filtri',
+    'report_comment' => 'Se abilitato, i tecnici potranno inviare rapportini per attività di questo/a cliente/commessa',
 ];

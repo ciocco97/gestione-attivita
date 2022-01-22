@@ -7,4 +7,5 @@ return [
     'modal_confirmation_first' => 'Are you really sure you want to modify the state of ',
     'no_element_in_table_info' => 'The table contains no elements as no elements should be displayed',
     'no_element_in_table_hing' => 'This may be due to the current filter configuration',
+    'report_comment' => 'If enabled, technicians will be able to send report for this costumer/order',
 ];
