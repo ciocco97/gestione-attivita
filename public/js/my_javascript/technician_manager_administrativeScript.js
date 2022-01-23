@@ -49,7 +49,7 @@ function show_activity_script() {
 function disable_edit_delete_button(id) {
     $("td > a.btn[id$=" + id + "][id!=show_" + id + "]")
         .addClass('disabled')
-        .children().removeClass('text-danger text-warning');
+        .children().removeClass('text-danger text-warning text-success');
 }
 
 function disable_report_button(id) {
