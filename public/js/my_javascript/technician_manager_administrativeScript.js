@@ -29,6 +29,9 @@ function administrative_activity_script() {
         // Evidenzio il tab administrative nella navbar
         focus_nav_tab("administrative");
         common_for_tma_scripts(GLOBAL.PAGES['ADMINISTRATIVE'])
+        $("#button_download_csv").on("click", function () {
+            window.location.assign('/export/activity');
+        })
     });
 }
 

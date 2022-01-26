@@ -50,6 +50,8 @@ Route::middleware([Language::class])->group(function () {
         Route::post('/activity/index/filter', [ActivityController::class, 'filterPost'])->name('activity.filter');
         Route::get('/activity/filter/{period}/{costumer}/{state}/{date}/{user}/{billing_accounted_state}', [ActivityController::class, 'filter'])->name('activity.filter.get');
 
+        Route::get('/export/activity', [ActivityController::class, 'downloadCSV']);
+
         Route::get('/ajax/shared/vars', [AjaxController::class, 'getSharedVariables']);
 
         Route::get('/ajax/activity/change', [AjaxController::class, 'ajaxActivityChange']);

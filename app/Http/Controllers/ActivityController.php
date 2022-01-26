@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Utils;
+use App\Exports\ActivitiesExport;
 use App\Models\Attivita;
 use App\Models\Cliente;
 use App\Models\Commessa;
@@ -10,10 +10,10 @@ use App\Models\Persona;
 use App\Models\StatoAttivita;
 use App\Models\StatoFatturazione;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon as super_time_parser;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ActivityController extends Controller
 {
@@ -48,6 +48,7 @@ class ActivityController extends Controller
                 $users = Persona::listUsers();
                 $billing_states = StatoFatturazione::listBillingStates();
                 $this->addBillableDurationToActivities($activities);
+                $_SESSION['last_viewed_activities_ids'] = $activities->pluck('id');
                 break;
         }
 
@@ -184,6 +185,27 @@ class ActivityController extends Controller
                 $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
         }
         return $this->indexActivityView($activities);
+    }
+
+    public function downloadCSV()
+    {
+        $user_id = $_SESSION['user_id'];
+
+        $result = Attivita::listActivitiesByID($user_id, $_SESSION['last_viewed_activities_ids']);
+        foreach ($result as $activity) {
+            $billable_duration = $activity->DurataFatturabile;
+
+            if ($billable_duration == null) {
+                $billable_duration = super_time_parser::parse($activity->Durata);
+                if ($billable_duration->minute % 15 != 0) {
+                    $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
+                }
+                $activity->DurataFatturabile = $billable_duration->format("H:i");
+            }
+        }
+        $export = new ActivitiesExport($result);
+
+        return Excel::download($export, 'activities.xlsx');
     }
 
 
@@ -383,6 +405,7 @@ class ActivityController extends Controller
     private function addBillableDuration($activity)
     {
         $billable_duration = $activity->durata_fatturabile;
+
         if ($billable_duration == null) {
             $billable_duration = super_time_parser::parse($activity->durata);
             if ($billable_duration->minute % 15 != 0) {

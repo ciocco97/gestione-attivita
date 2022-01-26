@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use phpDocumentor\Reflection\Types\False_;
 
 class Attivita extends Model
 {
@@ -41,6 +42,40 @@ class Attivita extends Model
         return $this->belongsTo(StatoFatturazione::class);
     }
 
+
+    public static function listActivitiesByID($user_id, $ids)
+    {
+        if (Persona::haveAdministrativePermissionOnActivity($user_id)) {
+            $query = DB::table('attivita')
+                ->join('commessa', 'attivita.commessa_id', '=', 'commessa.id')
+                ->join('cliente', 'commessa.cliente_id', '=', 'cliente.id')
+                ->join('stato_commessa', 'commessa.stato_commessa_id', '=', 'stato_commessa.id')
+                ->join('stato_attivita', 'attivita.stato_attivita_id', '=', 'stato_attivita.id')
+                ->join('persona', 'attivita.persona_id', '=', 'persona.id')
+                ->join('stato_fatturazione', 'attivita.stato_fatturazione_id', '=', 'stato_fatturazione.id')
+                ->selectRaw(" attivita.data AS DATA,
+                                    persona.nome AS Tecnico,
+                                    cliente.nome AS cliente,
+                                    commessa.descrizione_commessa AS commessa,
+                                    attivita.ora_inizio AS Da,
+                                    attivita.ora_fine AS A,
+                                    attivita.durata AS Durata,
+                                    attivita.luogo AS Luogo,
+                                    attivita.descrizione_attivita AS Descrizione,
+                                    stato_attivita.descrizione_stato_attivita AS Stato,
+                                    stato_fatturazione.descrizione_stato_fatturazione AS Fatturazione,
+                                    attivita.contabilizzata AS Contabilizzata,
+                                    attivita.rapportino_attivita AS Rapportino,
+                                    attivita.durata_fatturabile AS DurataFatturabile");
+            foreach ($ids as $id) {
+                $query = $query->orWhere('attivita.id', $id);
+            }
+
+            return $query->get();
+        }
+        return false;
+
+    }
 
     public static function getActivityByActivityAndUserID(int $activity_id, int $user_id)
     {

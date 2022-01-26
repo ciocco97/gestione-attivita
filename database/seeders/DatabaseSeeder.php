@@ -23,15 +23,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
-        $this->call([
-            RoleSeeder::class,
-            UserSeeder::class,
-            OrderStateSeeder::class,
-            BillingStateSeeder::class,
-            ActivityStateSeeder::class,
-            CostumerSeeder::class,
+//        $this->call([
+//            RoleSeeder::class,
+//            UserSeeder::class,
+//            OrderStateSeeder::class,
+//            BillingStateSeeder::class,
+//            ActivityStateSeeder::class,
+//            CostumerSeeder::class,
 //            OrderSeeder::class
-        ]);
+//        ]);
 
 
 //        $stati_attivita = StatoAttivita::all();
