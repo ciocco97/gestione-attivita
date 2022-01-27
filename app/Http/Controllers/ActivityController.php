@@ -399,7 +399,7 @@ class ActivityController extends Controller
     {
         foreach ($activities as $activity) {
             $activity->desc_attivita = strlen($activity->descrizione_attivita) >= 30 ?
-                substr($activity->descrizione_attivita, 0, 15) . "..." : $activity->descrizione_attivita;
+                substr($activity->descrizione_attivita, 0, 27) . "..." : $activity->descrizione_attivita;
         }
     }
 
