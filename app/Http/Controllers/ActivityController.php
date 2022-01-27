@@ -202,6 +202,7 @@ class ActivityController extends Controller
                 }
                 $activity->DurataFatturabile = $billable_duration->format("H:i");
             }
+            $activity->DurataFatturabile = super_time_parser::parse($activity->DurataFatturabile)->format("H:i");
         }
         $export = new ActivitiesExport($result);
 
