@@ -46,6 +46,9 @@ function show_activity_script() {
         $("#order").change(function () {
             filter_costumers_when_order_selected();
         });
+        $("#endTime").change(function () {
+            compute_duration_in_activity_show();
+        })
         $("#compute_duration").click(function () {
             compute_duration_in_activity_show();
         })
