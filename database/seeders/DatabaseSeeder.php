@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
     {
         // RUOLO
 
-        $administrator = Ruolo::create([
+        $administrative = Ruolo::create([
             'id' => 1,
             'descrizione_ruolo' => 'amministrativo'
         ]);
@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             'descrizione_ruolo' => 'manager'
         ]);
 
-        $amministratore = Ruolo::create([
+        $administrator = Ruolo::create([
             'id' => 4,
             'descrizione_ruolo' => 'amministratore'
         ]);
@@ -100,8 +100,9 @@ class DatabaseSeeder extends Seeder
         // RUOLI E TEAMS
 
         DB::table('persona_ruolo')->insert([
-            ['persona_id' => $luigi->id, 'ruolo_id' => 4],
-            ['persona_id' => $admin->id, 'ruolo_id' => 4],
+            ['persona_id' => $luigi->id, 'ruolo_id' => $administrative->id],
+            ['persona_id' => $admin->id, 'ruolo_id' => $administrative->id],
+            ['persona_id' => $giancarlo->id, 'ruolo_id' => $administrator->id],
         ]);
 
         DB::table('manager_sottoposto')->insert([

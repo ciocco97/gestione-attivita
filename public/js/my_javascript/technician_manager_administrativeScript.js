@@ -53,7 +53,7 @@ function show_activity_script() {
 }
 
 function disable_edit_delete_button(id) {
-    $("td > a.btn[id$=" + id + "][id!=show_" + id + "]")
+    $("td > a.btn[id$=_" + id + "][id!=show_" + id + "]")
         .addClass('disabled')
         .children().removeClass('text-danger text-warning text-success');
 }
@@ -65,8 +65,8 @@ function disable_report_button(id) {
 function disable_row(id, administrative, accounted) {
     if (!administrative) {
         disable_edit_delete_button(id)
-        $("td > div > input[id$=" + id + "]").attr("disabled", true);
-        $("td > div > select[id$=" + id + "]").attr("disabled", true);
+        $("td > div > input[id$=_" + id + "]").attr("disabled", true);
+        $("td > div > select[id$=_" + id + "]").attr("disabled", true);
         disable_report_button(id);
     }
 }
@@ -83,24 +83,29 @@ function table_setup(page) {
         $("tbody tr td[id^=state]").each(function () {
             let id = getSuffix($(this), "state_"); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
             let state_id = parseInt($(this).attr("data-state-id"));
+            console.log(id + ' ' + state_id)
             let description_td = $("#desc_" + id);
             switch (state_id) {
                 case GLOBAL.ACTIVITY_STATES['COMPLETE']:
+                    console.log(id + " complete")
                     description_td.addClass('text-primary', 1000); // Coloro di blu la descrizione dell'attività
                     $(this).addClass('text-primary'); // Coloro di blu lo stato dell'attività
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['OPEN']:
+                    console.log(id + " open")
                     // Non faccio nulla
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['CANCELLED']:
+                    console.log(id + " cancelled")
                     disable_report_button(id);
                     description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
                     $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['APPROVED']:
+                    console.log(id + " approved")
                     if (!manager) {
                         disable_row(id)
                     } else {

@@ -36,6 +36,7 @@ class AttivitaFactory extends Factory
             $random_date = $this->faker->dateTimeBetween('-' . $start_week . ' week', '-' . $end_week . ' week');
             $random_state = 4;
 //            Log::debug("last month", ['start_date' => $start_date, 'end_date' => $end_date, 'random_date' => $random_date]);
+            $billed = 2;
         } else {
             $random_date = $this->faker->dateTimeThisMonth();
             $random_date = Carbon::parse($random_date);
@@ -44,6 +45,7 @@ class AttivitaFactory extends Factory
             }
             $random_state = random_int(1, 3);
 //            Log::debug("current month", ['random_date' => $random_date]);
+            $billed = 1;
         }
 
         $start_time = Carbon::parse($random_date)->startOfDay();
@@ -73,7 +75,7 @@ class AttivitaFactory extends Factory
             'descrizione_attivita' => $this->faker->sentence(rand(2, 5)),
             'note_interne' => $this->faker->sentence(rand(0, 10)),
             'rapportino_attivita' => 0,
-            'contabilizzata' => 1,
+            'contabilizzata' => $billed,
             'stato_attivita_id' => $random_state,
         ];
     }
