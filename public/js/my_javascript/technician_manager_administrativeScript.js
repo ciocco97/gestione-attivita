@@ -53,7 +53,7 @@ function show_activity_script() {
 }
 
 function disable_edit_delete_button(id) {
-    $("td > a.btn[id$=" + id + "][id!=show_" + id + "]")
+    $("td > a.btn[id$=_" + id + "][id!=show_" + id + "]")
         .addClass('disabled')
         .children().removeClass('text-danger text-warning text-success');
 }
@@ -65,8 +65,8 @@ function disable_report_button(id) {
 function disable_row(id, administrative, accounted) {
     if (!administrative) {
         disable_edit_delete_button(id)
-        $("td > div > input[id$=" + id + "]").attr("disabled", true);
-        $("td > div > select[id$=" + id + "]").attr("disabled", true);
+        $("td > div > input[id$=_" + id + "]").attr("disabled", true);
+        $("td > div > select[id$=_" + id + "]").attr("disabled", true);
         disable_report_button(id);
     }
 }
