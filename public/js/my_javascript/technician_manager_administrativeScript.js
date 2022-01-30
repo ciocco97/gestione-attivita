@@ -87,25 +87,21 @@ function table_setup(page) {
             let description_td = $("#desc_" + id);
             switch (state_id) {
                 case GLOBAL.ACTIVITY_STATES['COMPLETE']:
-                    console.log(id + " complete")
                     description_td.addClass('text-primary', 1000); // Coloro di blu la descrizione dell'attività
                     $(this).addClass('text-primary'); // Coloro di blu lo stato dell'attività
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['OPEN']:
-                    console.log(id + " open")
                     // Non faccio nulla
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['CANCELLED']:
-                    console.log(id + " cancelled")
                     disable_report_button(id);
                     description_td.addClass('text-secondary', 1000); // Coloro di grigio la descrizione dell'attività
                     $(this).addClass('text-secondary'); // Coloro di grigio lo stato dell'attività
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['APPROVED']:
-                    console.log(id + " approved")
                     if (!manager) {
                         disable_row(id)
                     } else {
