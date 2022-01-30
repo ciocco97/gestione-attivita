@@ -276,7 +276,7 @@ class DatabaseSeeder extends Seeder
             'descrizione_attivita' => 'Configurazione switch per data center L3 a 64 porte QSFP28 100Gb',
             'note_interne' => 'Lavoro svolto da remoto',
             'rapportino_attivita' => 0,
-            'contabilizzata' => 1,
+            'contabilizzata' => 0,
             'stato_attivita_id' => 2,
         ]);
 
