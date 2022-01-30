@@ -21,9 +21,11 @@ class ClienteFactory extends Factory
      */
     public function definition()
     {
+        $name = $this->faker->company();
+        $email_prefix = preg_replace("/[^a-zA-Z]+/", "", $name);
         return [
-            'nome' => $this->faker->company(),
-            'email' => 'team.biteam.srl@gmail.com',
+            'nome' => $name,
+            'email' => $email_prefix.'@gmail.com',
             'rapportino_cliente' => random_int(0, 1)
         ];
     }
