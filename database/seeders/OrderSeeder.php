@@ -18,6 +18,15 @@ class OrderSeeder extends Seeder
      */
     public function run()
     {
-
+        $c = Cliente::all()->first();
+        $s = StatoCommessa::all()->first();
+        Commessa::create([
+            'descrizione_commessa' => '# Altra commessa',
+            'cliente_id' => $c->id,
+            'stato_commessa_id' => $s->id,
+            'persona_id' => Persona::take(1)->get()->first()->id,
+//            'stato_fatturazione_dafault_id' => 3,
+            'rapportino_commessa' => 0
+        ]);
     }
 }
