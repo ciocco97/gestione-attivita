@@ -18,8 +18,8 @@
             @endif
 
             @if($current_page == $PAGES['ADMINISTRATIVE'])
-                <a class="btn btn-outline-dark" href="">
-                    <i class="bi bi-cloud-arrow-down me-2"></i>@lang('labels.download') @lang('labels.csv')
+                <a id="button_download_csv" class="btn btn-outline-dark">
+                    <i class="bi bi-cloud-arrow-down me-2"></i>Download csv
                 </a>
             @endif
 

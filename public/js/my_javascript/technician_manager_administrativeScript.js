@@ -2,6 +2,9 @@ function common_for_tma_scripts(page) {
     // E' importante che prima ci sia il table setup e poi il change state setup
     table_setup(page);
     change_state_setup(page);
+    $("#call_legenda").on("click", function () {
+        $("#modal_legenda").modal("toggle")
+    })
 }
 
 function technician_script() {
@@ -29,6 +32,9 @@ function administrative_activity_script() {
         // Evidenzio il tab administrative nella navbar
         focus_nav_tab("administrative");
         common_for_tma_scripts(GLOBAL.PAGES['ADMINISTRATIVE'])
+        $("#button_download_csv").on("click", function () {
+            window.location.assign('/export/activity');
+        })
     });
 }
 
@@ -386,7 +392,7 @@ function filter_reset() {
 
 function change_activity_send_report_button(id_prefix, activity_id) {
     let report_button = $("[id=" + id_prefix + activity_id + "]");
-    if (report_button.attr("data-report-sent") == GLOBAL.REPORT_SENT["sent"]){
+    if (report_button.attr("data-report-sent") == GLOBAL.REPORT_SENT["sent"]) {
         report_button.html("<i class=\"bi bi-send-fill text-primary\"></i>");
         report_button.attr("data-report-sent", GLOBAL.REPORT_SENT["not_sent"]);
     } else {
@@ -395,6 +401,7 @@ function change_activity_send_report_button(id_prefix, activity_id) {
     }
 
 }
+
 function activity_change(element, id_prefix, ajax_method) {
     let activity_id = getSuffix(element, id_prefix);
     let value = element.val();
