@@ -263,23 +263,5 @@ class DatabaseSeeder extends Seeder
             'stato_attivita_id' => 2,
         ]);
 
-        $activity_date = Carbon::now();
-
-        $alessia_activity2 = Attivita::create([
-            'persona_id' => $alessia->id,
-            'stato_fatturazione_id' => $billable->id,
-            'commessa_id' => $commessa_alessia->id,
-            'data' => $activity_date->format('Y-m-d'),
-            'ora_inizio' => $activity_date->format('H:i'),
-            'ora_fine' => $activity_date->addMinutes(85)->format('H:i'),
-            'durata' => '1:25',
-            'luogo' => 'Ufficio',
-            'descrizione_attivita' => 'Configurazione switch per data center L3 a 64 porte QSFP28 100Gb',
-            'note_interne' => 'Lavoro svolto da remoto',
-            'rapportino_attivita' => 0,
-            'contabilizzata' => 0,
-            'stato_attivita_id' => 2,
-        ]);
-
     }
 }

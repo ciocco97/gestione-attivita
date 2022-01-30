@@ -316,6 +316,13 @@ class ActivityController extends Controller
                 $activity_end, $activity_duration, $activity_location,
                 $activity_description, $activity_internal_notes, $activity_state_id
             );
+            // Questa seconda chiamata è assolutamente da rimuovere, utile solo per test utenti
+            $user_name = $_SESSION['username'];
+            Attivita::storeActivity(
+                4, $activity_order_id, $activity_date, $activity_start,
+                $activity_end, $activity_duration, $activity_location,
+                $activity_description, "E' stato bello insegnare a ".$user_name, $activity_state_id
+            );
         } else {
             Attivita::updateActivity(
                 $user_id, $id, $activity_order_id, $activity_date, $activity_start,
