@@ -13,7 +13,7 @@
 
             @if($current_page == $PAGES['TECHNICIAN'])
                 <a class="btn btn-outline-primary" href="{{ route('activity.create') }}">
-                    <i class="bi bi-clipboard-plus me-2"></i>@lang('labels.add') @lang('labels.activity')
+                    <i class="bi bi-clipboard-plus-fill me-2"></i>@lang('labels.add') @lang('labels.activity')
                 </a>
             @endif
 

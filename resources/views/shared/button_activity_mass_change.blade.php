@@ -3,6 +3,6 @@
     @if($current_page == $PAGES['MANAGER'])
         <i class="bi bi-pencil me-2"></i>@lang('labels.approve')
     @elseif($current_page == $PAGES['ADMINISTRATIVE'])
-        <i class="bi bi-pencil me-2"></i>@lang('labels.set') @lang('labels.accounted')
+        <i class="bi bi-pencil-fill me-2"></i>@lang('labels.set') @lang('labels.accounted')
     @endif
 </button>
