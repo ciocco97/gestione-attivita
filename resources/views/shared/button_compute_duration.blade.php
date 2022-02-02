@@ -2,5 +2,5 @@
         data-bs-toggle="tooltip"
         title="@lang('labels.compute_duration')"
 >
-    <i class="bi bi-calculator"></i>
+    <i class="bi bi-calculator-fill"></i>
 </button>

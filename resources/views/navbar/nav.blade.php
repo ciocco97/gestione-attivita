@@ -11,19 +11,19 @@
             </span>
             @if(isset($username))
                 <button class="btn btm-sm dropdown-toggle text-light" id="dropdownUser" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-check me-1"></i>{{ $username }}
+                    <i class="bi bi-person-check-fill me-1"></i>{{ $username }}
                 </button>
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="dropdownUser">
                     <li>
                         <a class="dropdown-item" href="{{ route('user.choose.password') }}">
-                            <i class="bi bi-key me-2"></i>@lang('labels.change') password
+                            <i class="bi bi-key-fill me-2"></i>@lang('labels.change') password
                         </a>
                     </li>
                     @if(in_array($ROLES['ADMINISTRATOR'], $user_roles))
                         <li>
                             <a class="dropdown-item" href="{{ route('user.index') }}">
-                                <i class="bi bi-gear me-2"></i>@lang('labels.admin')
+                                <i class="bi bi-gear-fill me-2"></i>@lang('labels.admin')
                             </a>
                         </li>
                     @endif
