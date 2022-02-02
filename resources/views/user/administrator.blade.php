@@ -10,7 +10,7 @@
     <div class="d-flex justify-content-end">
         <div class="btn-group" role="group">
             <a class="btn btn-outline-success" href="{{ route('user.create') }}">
-                <i class="bi bi-emoji-smile me-2"></i>@lang('labels.add') @lang('labels.tech')
+                <i class="bi bi-file-earmark-person-fill me-2"></i>@lang('labels.add') @lang('labels.tech')
             </a>
         </div>
     </div>
