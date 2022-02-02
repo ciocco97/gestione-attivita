@@ -108,7 +108,7 @@
                         </div>
                     </div> <!-- Fine ultimo -->
 
-                    @include('shared.footer_add_edit.buttons', ['icon_code' => 'bi-journal-plus'])
+                    @include('shared.footer_add_edit.buttons', ['icon_code' => 'bi-clipboard-plus-fill'])
 
                 </form>
             </div>
