@@ -19,7 +19,7 @@
 
             @if($current_page == $PAGES['ADMINISTRATIVE'])
                 <a id="button_download_csv" class="btn btn-outline-dark">
-                    <i class="bi bi-cloud-arrow-down me-2"></i>Download csv
+                    <i class="bi bi-cloud-arrow-down-fill me-2"></i>Download csv
                 </a>
             @endif
 
