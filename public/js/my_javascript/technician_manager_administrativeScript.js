@@ -86,7 +86,6 @@ function table_setup(page) {
         $("tbody tr td[id^=state]").each(function () {
             let id = getSuffix($(this), "state_"); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
             let state_id = parseInt($(this).attr("data-state-id"));
-            console.log(id + ' ' + state_id)
             let description_td = $("#desc_" + id);
             switch (state_id) {
                 case GLOBAL.ACTIVITY_STATES['COMPLETE']:
