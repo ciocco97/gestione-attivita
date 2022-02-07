@@ -1,9 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3 sticky-top">
     <div class="container-fluid px-lg-5">
         <a class="order-lg-0 navbar-brand d-none d-sm-inline" href="{{ route('user.login') }}"><i
-                class="bi bi-house-door me-2"></i>@lang('labels.main_title')</a>
+                class="bi bi-house-door-fill me-2"></i>@lang('labels.main_title')</a>
         <a class="order-lg-0 navbar-brand d-sm-none" href="{{ route('user.login') }}"><i
-                class="bi bi-house-door"></i></a>
+                class="bi bi-house-door-fill"></i></a>
         <div class="order-lg-2 dropdown">
             <span class="d-none d-lg-inline">
                 @include('navbar.flag', ['lang_code' => 'it'])
@@ -11,19 +11,19 @@
             </span>
             @if(isset($username))
                 <button class="btn btm-sm dropdown-toggle text-light" id="dropdownUser" data-bs-toggle="dropdown">
-                    <i class="bi bi-person-check me-1"></i>{{ $username }}
+                    <i class="bi bi-person-check-fill me-1"></i>{{ $username }}
                 </button>
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="dropdownUser">
                     <li>
                         <a class="dropdown-item" href="{{ route('user.choose.password') }}">
-                            <i class="bi bi-key me-2"></i>@lang('labels.change') password
+                            <i class="bi bi-key-fill me-2"></i>@lang('labels.change') password
                         </a>
                     </li>
                     @if(in_array($ROLES['ADMINISTRATOR'], $user_roles))
                         <li>
                             <a class="dropdown-item" href="{{ route('user.index') }}">
-                                <i class="bi bi-gear me-2"></i>@lang('labels.admin')
+                                <i class="bi bi-gear-fill me-2"></i>@lang('labels.admin')
                             </a>
                         </li>
                     @endif

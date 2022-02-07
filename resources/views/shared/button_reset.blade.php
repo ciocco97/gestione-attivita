@@ -8,5 +8,5 @@
     $("{{ $change }}").change()
 @endif
     '>
-    <i class="bi bi-x-square"></i>
+    <i class="bi bi-x-square-fill text-secondary"></i>
 </button>
