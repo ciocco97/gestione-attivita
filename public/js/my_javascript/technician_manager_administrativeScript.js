@@ -85,6 +85,13 @@ function table_setup(page) {
 
     if (!administrative) {
 
+        $("[id^='send_report_']").children().filter(function () {
+            return $(this).attr('data-report-to-send') == 1
+        }).each(function () {
+            let id = getSuffix($(this).parent(), 'send_report_')
+            $("#activity_row_" + id).css("background-color", YELLOW_COLOR)
+        })
+
         // Modifico possibili azioni e colori per ogni attività
         $("tbody tr td[id^=state]").each(function () {
             let id = getSuffix($(this), "state_"); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
@@ -98,6 +105,7 @@ function table_setup(page) {
                     break
                 case GLOBAL.ACTIVITY_STATES['OPEN']:
                     // Non faccio nulla
+                    $("#activity_row_"+id).css("background-color", RED_COLOR)
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['CANCELLED']:
@@ -122,13 +130,6 @@ function table_setup(page) {
                     console.log("Stato attività non corretto (Table setup)")
             }
         });
-
-        $("[id^='send_report_']").children().filter(function () {
-            return $(this).attr('data-report-to-send') == 1
-        }).each(function () {
-            let id = getSuffix($(this).parent(), 'send_report_')
-            $("#activity_row_" + id).css("background-color", YELLOW_COLOR)
-        })
 
         $("[id^=send_report_]").on("click", function () {
             activity_change($(this), "send_report_", GLOBAL.AJAX_METHODS['activity_send_report_index']);

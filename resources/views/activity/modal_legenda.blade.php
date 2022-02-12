@@ -43,6 +43,22 @@
                 <p>
                     <svg class="bd-placeholder-img rounded me-2" width="20" height="20"
                          xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false">
+                        <rect width="100%" height="100%" fill="#ffe1e1"></rect>
+                    </svg>
+                    @lang('text.open_legenda')
+                </p>
+                <hr class="dropdown-divider">
+                <p>
+                    <svg class="bd-placeholder-img rounded me-2" width="20" height="20"
+                         xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false">
+                        <rect width="100%" height="100%" fill="#fff8a9"></rect>
+                    </svg>
+                    @lang('text.to_send_report_legenda')
+                </p>
+                <hr class="dropdown-divider">
+                <p>
+                    <svg class="bd-placeholder-img rounded me-2" width="20" height="20"
+                         xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false">
                         <rect width="100%" height="100%" fill="#c7edc9"></rect>
                     </svg>
                     @lang('text.accounted_legenda')

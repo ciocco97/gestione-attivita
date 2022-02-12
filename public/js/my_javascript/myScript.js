@@ -1,5 +1,6 @@
 GREEN_COLOR = "#c7edc9";
 YELLOW_COLOR = "#fff8de";
+RED_COLOR = "#ffe1e1";
 waiter_prefix = "wait_change_";
 
 $('document').ready(function () {
