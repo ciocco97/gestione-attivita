@@ -46,11 +46,12 @@ function show_activity_script() {
         $("#order").change(function () {
             filter_costumers_when_order_selected();
         });
-        $("#endTime").change(function () {
+        $("[id='startTime'],[id='endTime']").change(function () {
+            compare_and_switch_moments_if_necessary()
             compute_duration_in_activity_show();
         })
         $("#compute_duration").click(function () {
-            compute_duration_in_activity_show();
+            $("#endTime").trigger("change")
         })
     });
 }
@@ -577,4 +578,19 @@ function compute_duration_in_activity_show() {
 
         $("#duration").val(("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2))
     }
+}
+
+function compare_and_switch_moments_if_necessary() {
+    let start_time_string = $("#startTime").val();
+    let end_time_string = $("#endTime").val();
+    if (end_time_string !== "") {
+        let start_time = moment(start_time_string, "hh:mm");
+        let end_time = moment(end_time_string, "hh:mm");
+        if (end_time.diff(start_time) < 0) {
+            $("#startTime").val(end_time_string)
+            $("#endTime").val(start_time_string);
+        }
+
+    }
+
 }

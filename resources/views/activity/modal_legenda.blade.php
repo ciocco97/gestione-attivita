@@ -4,7 +4,7 @@
             <div class="modal-header">
 
                 <h5 class="modal-title" id="modal_legenda_title">
-                    Legenda colori e simboli
+                    @lang('labels.legend_title')
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -15,7 +15,7 @@
                          xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false">
                         <rect width="100%" height="100%" fill="#0d6efd"></rect>
                     </svg>
-                    Questo è il colore della descrizione e lo stato di un'attività COMPLETATA
+                    @lang('text.complete_legenda')
                 </p>
                 <hr class="dropdown-divider">
                 <p>
@@ -23,10 +23,10 @@
                          xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false">
                         <rect width="100%" height="100%" fill="#6c757d"></rect>
                     </svg>
-                    Questo è il colore della descrizione e lo stato di un'attività ANNULLATA
+                    @lang('text.cancelled_legenda')
                 </p>
                 <p>
-                    Quando un'attività è annullata, il bottone rapportino verrà disabilitato
+                    @lang('text.cancelled_legenda_description')
                 </p>
                 <hr class="dropdown-divider">
                 <p>
@@ -34,10 +34,10 @@
                          xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false">
                         <rect width="100%" height="100%" fill="#198754"></rect>
                     </svg>
-                    Questo è il colore della descrizione e lo stato di un'attività APPROVATA
+                    @lang('text.approved_legenda')
                 </p>
                 <p>
-                    Quando un'attività è approvata, il bottone rapportino, modifica ed elimina verranno disabilitati nella pagina del tecnico
+                    @lang('text.approved_legenda_description')
                 </p>
                 <hr class="dropdown-divider">
                 <p>
@@ -45,36 +45,36 @@
                          xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false">
                         <rect width="100%" height="100%" fill="#c7edc9"></rect>
                     </svg>
-                    Questo è il colore dello sfondo di un'attività CONTABILIZZATA
+                    @lang('text.accounted_legenda')
                 </p>
                 <p>
-                    Quando un'attività è contabilizzata, il bottone rapportino, modifica ed elimina verranno disabilitati anche nella pagina del manager
+                    @lang('text.accounted_legenda_description')
                 </p>
                 <hr class="dropdown-divider">
                 <p>
                     <i class="bi bi-send-fill text-primary"></i>
-                    Questo è il bottone che indica che il rapportino può essere inviato
+                    @lang('text.send_report_legenda')
                 </p>
                 <p>
                     <i class="bi bi-send-check-fill text-success"></i>
-                    Questo è il bottone che indica che il rapportino è stato inviato
+                    @lang('text.sent_report_legenda')
                 </p>
                 <p>
                     <i class="bi bi-send-slash-fill text-secondary"></i>
-                    Questo è il bottone che indica che il rapportino non può essere inviato
+                    @lang('text.forbidden_report_legenda')
                 </p>
                 <p>
                     <i class="bi bi-send-fill text-secondary"></i>
-                    Questo è il bottone che indica che il rapportino potrebbe essere inviato ma l'attività è in uno stato che non lo permette
+                    @lang('text.send_forbidden_report_legenda')
                 </p>
                 <p>
                     <i class="bi bi-send-check-fill text-secondary"></i>
-                    Questo è il bottone che indica che il rapportino è stato inviato e l'attività è in uno stato che non permette di modificare questo campo
+                    @lang('text.sent_forbidden_report_legenda')
                 </p>
                 <hr class="dropdown-divider">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('labels.close')</button>
             </div>
         </div>
     </div>

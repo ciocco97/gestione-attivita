@@ -38,13 +38,25 @@ function disable_enable_email_reset_confirm_button(element) {
     let user_id = getSuffix(element, "user_email_")
     let confirm_button = $("#confirm_button_"+user_id)
     let reset_button = $("#reset_button_"+user_id)
-    if (element.val() === element.attr("value")) {
+    let new_email = element.val()
+    if (new_email === element.attr("value")) {
         confirm_button.attr("disabled", true).removeClass("text-success border-success").addClass("text-secondary border-secondary")
         reset_button.attr("disabled", true).removeClass("text-warning border-warning").addClass("text-secondary border-secondary")
     } else {
-        confirm_button.attr("disabled", false).removeClass("text-secondary border-secondary").addClass("text-success border-success")
+        if (check_email(new_email)) {
+            confirm_button.attr("disabled", false).removeClass("text-secondary border-secondary").addClass("text-success border-success")
+        } else {
+            confirm_button.attr("disabled", true).removeClass("text-success border-success").addClass("text-secondary border-secondary")
+        }
         reset_button.attr("disabled", false).removeClass("text-secondary border-secondary").addClass("text-warning border-warning")
     }
+}
+
+function check_email(email) {
+    return email.toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )
 }
 
 function team_change_setup(){

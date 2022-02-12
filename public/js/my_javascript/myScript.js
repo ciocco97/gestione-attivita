@@ -22,11 +22,14 @@ function change_password_script() {
         $("#password_validity_alert").toggle(false);
         $("#retype_password_alert").toggle(false);
 
-        $("#newPassword").on('keyup', function () {
-            check_password_validity($(this).val());
-        });
-        $("#retype_password").on('keyup', function () {
-            check_password_equality($("#newPassword").val(), $(this).val())
+        $("[id='newPassword'],[id='retype_password']").on('keyup', function () {
+            let valid = check_password_validity($("#newPassword").val());
+            let equal = check_password_equality($("#newPassword").val(), $("#retype_password").val())
+            if (valid && equal) {
+                $("#change_password_button").attr('disabled', false)
+            } else {
+                $("#change_password_button").attr('disabled', true)
+            }
         });
         $("#change_password_button").on('click', function () {
             event.preventDefault();

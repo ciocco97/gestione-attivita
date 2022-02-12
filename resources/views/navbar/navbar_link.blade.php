@@ -4,6 +4,9 @@
        style="display: none;"
         @endif
     >
+        @if(isset($icon))
+            <i class="bi {{$icon}}"></i>
+        @endif
         {{ $navbar_link_text }}
     </a>
 </li>

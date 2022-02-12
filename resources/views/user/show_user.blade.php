@@ -28,13 +28,13 @@
                     @csrf
 
                     @if($method == $EDIT)
-                        <h3>@lang('labels.edit') @lang('labels.user')</h3>
+                        <h3>@lang('labels.edit') @lang('labels.tech')</h3>
                     @elseif($method == $SHOW)
-                        <h3>@lang('labels.show') @lang('labels.user')</h3>
+                        <h3>@lang('labels.show') @lang('labels.tech')</h3>
                     @elseif($method == $DELETE)
-                        <h3>@lang('labels.delete') @lang('labels.user')</h3>
+                        <h3>@lang('labels.delete') @lang('labels.tech')</h3>
                     @else
-                        <h3>@lang('labels.add') @lang('labels.user')</h3>
+                        <h3>@lang('labels.add') @lang('labels.tech')</h3>
                     @endif
 
 
@@ -55,7 +55,7 @@
                         </div>
                     </div> <!-- Fine primi 2 campi -->
 
-                    @include('shared.footer_add_edit.buttons', ['icon_code' => 'bi-emoji-smile'])
+                    @include('shared.footer_add_edit.buttons', ['icon_code' => 'bi-file-earmark-person-fill'])
 
                 </form>
             </div>

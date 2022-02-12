@@ -80,4 +80,7 @@ return [
     'team' => 'Team',
     'roles' => 'Roles',
     'surname' => 'Surname',
+    'compute_duration' => 'Compute duration',
+    'close' => 'Close',
+    'legend_title' => 'Color and symbol legend',
 ];

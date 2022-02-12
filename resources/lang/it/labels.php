@@ -80,4 +80,7 @@ return [
     'team' => 'Manager di...',
     'roles' => 'Ruoli',
     'surname' => 'Cognome',
+    'compute_duration' => 'Calcola durata',
+    'close' => 'Chiudi',
+    'legend_title' => 'Legenda colori e simboli',
 ];

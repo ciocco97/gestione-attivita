@@ -10,7 +10,7 @@
         @if($current_page == $PAGES['TECHNICIAN'] || $current_page == $PAGES['MANAGER'])
         <div class="d-flex justify-content-between mt-0 mt-md-1 mt-lg-0">
              @include('activity.modal_legenda')
-             <i id="call_legenda" class="bi bi-info-circle-fill text-secondary mt-2" style="font-size:20px;"></i>
+             <i id="call_legenda" class="bi bi-info-circle-fill text-secondary mt-2" style="font-size:20px; cursor: pointer"></i>
             @else
         <div class="row mt-0 mt-md-1 mt-lg-0">
             @endif

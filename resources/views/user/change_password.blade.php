@@ -44,8 +44,8 @@
                             <a class="btn btn-secondary justify-content-start" href="{{ $previous_url }}">
                                 <i class="bi bi-arrow-bar-left me-2"></i>@lang('labels.cancel')
                             </a>
-                            <button id="change_password_button" type="submit" class="btn btn-warning">
-                                <i class="bi bi-key me-2"></i>@lang('labels.change')
+                            <button id="change_password_button" type="submit" class="btn btn-warning" disabled>
+                                <i class="bi bi-key-fill me-2"></i>@lang('labels.change')
                             </button>
                         </div>
 

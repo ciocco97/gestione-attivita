@@ -103,7 +103,7 @@ class DatabaseSeeder extends Seeder
             'nome' => 'Luigi',
             'cognome' => 'Romoli',
             'email' => 'l.romoli@gmail.com',
-            'password' => md5('ETZZAM1biyp*')
+            'password' => md5('password')
         ]);
 
         $franco = Persona::create([
@@ -117,21 +117,21 @@ class DatabaseSeeder extends Seeder
             'nome' => 'Alessia',
             'cognome' => 'Zidi',
             'email' => 'a.zidi@gmail.com',
-            'password' => md5('ePaEpE@nEY&!'),
+            'password' => md5('password'),
         ]);
 
         $giancarlo = Persona::create([
             'nome' => 'Giancarlo',
             'cognome' => 'Pedroni',
             'email' => 'g.pedroni@gmail.com',
-            'password' => md5('$JEbkHg3tQoU'),
+            'password' => md5('password'),
         ]);
 
         $fausta = Persona::create([
             'nome' => 'Fausta',
             'cognome' => 'Rossi',
             'email' => 'f.rossi@gmail.com',
-            'password' => md5('y&D#RW!ggSZT'),
+            'password' => md5('password'),
         ]);
 
         $pietro = Persona::create([
