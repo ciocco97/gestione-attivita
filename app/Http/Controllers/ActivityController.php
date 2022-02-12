@@ -9,6 +9,7 @@ use App\Models\Commessa;
 use App\Models\Persona;
 use App\Models\StatoAttivita;
 use App\Models\StatoFatturazione;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
@@ -68,7 +69,7 @@ class ActivityController extends Controller
     {
         Log::debug('Home');
 
-        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
+        $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
         $activities = Attivita::listActiveActivityByUserID($_SESSION['user_id'], $start_date);
 
         $_SESSION['current_page'] = Shared::PAGES['TECHNICIAN'];
@@ -80,7 +81,7 @@ class ActivityController extends Controller
     {
         Log::debug('Manager index');
 
-        $start_date = super_time_parser::now()->subDays(7)->format('Y-m-d');
+        $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
         $activities = Attivita::listActiveActivityForManagerTableByUserID($_SESSION['user_id'], $start_date);
 
         $_SESSION['current_page'] = Shared::PAGES['MANAGER'];
@@ -103,14 +104,16 @@ class ActivityController extends Controller
         $period = $request->get('period');
         $costumer = $request->get('master_costumer_filter');
         $state = $request->get('master_state_filter');
-        $date = $request->get('master_date_filter');
+        $date_start = $request->get('master_date_filter1');
+        $date_end = $request->get('master_date_filter2');
         $team_member_id = $request->get('master_user_filter');
         $billing_accounted_selector = $request->get('billing-state');
 
         $period = $period == null ? -1 : $period;
         $costumer = $costumer == null ? -1 : $costumer;
         $state = $state == null ? -1 : $state;
-        $date = $date == null ? -1 : $date;
+        $date_start = $date_start == null ? -1 : $date_start;
+        $date_end = $date_end == null ? -1 : $date_end;
         $team_member_id = $team_member_id == null ? -1 : $team_member_id;
         $billing_accounted_selector = $billing_accounted_selector == null ? -1 : $billing_accounted_selector;
 
@@ -118,36 +121,49 @@ class ActivityController extends Controller
             'period' => $period,
             'costumer' => $costumer,
             'state' => $state,
-            'date' => $date,
+            'date_start' => $date_start,
+            'date_end' => $date_end,
             'user' => $team_member_id,
             'accounted' => $billing_accounted_selector]);
         return redirect()->route('activity.filter.get',
-            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date' => $date, 'user' => $team_member_id, 'billing_accounted_state' => $billing_accounted_selector]);
+            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date_start' => $date_start, 'date_end' => $date_end, 'user' => $team_member_id, 'billing_accounted_state' => $billing_accounted_selector]);
     }
 
-    public function filter($period, $costumer, $state, $date, $team_member_id, $billing_accounted_state)
+    public function filter($period, $costumer, $state, $date_start, $date_end, $team_member_id, $billing_accounted_state)
     {
         $user_id = $_SESSION['user_id'];
 
         $period = $period == -1 ? null : $period;
         $costumer = $costumer == -1 ? null : $costumer;
         $state = $state == -1 ? null : $state;
-        $date = $date == -1 ? null : $date;
+        $date_start = $date_start == -1 ? null : $date_start;
+        $date_end = $date_end == -1 ? null : $date_end;
         $team_member_id = $team_member_id == -1 ? null : $team_member_id;
         $billing_accounted_state = $billing_accounted_state == -1 ? null : $billing_accounted_state;
 
+        $date = null;
+        $start_date = null;
         $end_date = null;
-        if ($period == Shared::FILTER_PERIOD['CURRENT_WEEK']) { // current week
-            $start_date = super_time_parser::now()->startOf('week')->format('Y-m-d');
-        } else if ($period == Shared::FILTER_PERIOD['CURRENT_TWO_WEEKS']) { // current 2 weeks
-            $start_date = super_time_parser::now()->startOf('week')->subDays(7)->format('Y-m-d');
-        } else if ($period == Shared::FILTER_PERIOD['CURRENT_MONTH']) { // current month
-            $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
-        } else if ($period == Shared::FILTER_PERIOD['LAST_MONTH']) { // last month
-            $end_date = super_time_parser::now()->startOfMonth()->subDay()->format('Y-m-d');
-            $start_date = super_time_parser::parse($end_date)->startOfMonth()->format('Y-m-d');
+        if ($date_start != null) {
+            $start_date = $date_start;
+            if ($date_end != null) {
+                $end_date = $date_end;
+            } else {
+                $date_end = Carbon::now()->toDateString();
+            }
         } else {
-            $start_date = null;
+            if ($period == Shared::FILTER_PERIOD['CURRENT_WEEK']) { // current week
+                $start_date = super_time_parser::now()->startOf('week')->format('Y-m-d');
+            } else if ($period == Shared::FILTER_PERIOD['CURRENT_TWO_WEEKS']) { // current 2 weeks
+                $start_date = super_time_parser::now()->startOf('week')->subDays(7)->format('Y-m-d');
+            } else if ($period == Shared::FILTER_PERIOD['CURRENT_MONTH']) { // current month
+                $start_date = super_time_parser::now()->startOfMonth()->format('Y-m-d');
+            } else if ($period == Shared::FILTER_PERIOD['LAST_MONTH']) { // last month
+                $end_date = super_time_parser::now()->startOfMonth()->subDay()->format('Y-m-d');
+                $start_date = super_time_parser::parse($end_date)->startOfMonth()->format('Y-m-d');
+            } else {
+                $start_date = null;
+            }
         }
 
         Log::debug('filter_activity', [
@@ -155,7 +171,8 @@ class ActivityController extends Controller
             'end_date' => $end_date,
             'costumer' => $costumer,
             'state' => $state,
-            'date' => $date,
+            'date_start' => $date_start,
+            'date_end' => $date_end,
             'user' => $team_member_id,
             'billing_accounted_state' => $billing_accounted_state
         ]);

@@ -51,18 +51,18 @@
             <div class="order-lg-1 collapse navbar-collapse" id="navbar">
                 <ul class="navbar-nav">
                     @if(in_array($ROLES['COMMERCIAL'], $user_roles))
-                        @include('navbar.navbar_link', ['navbar_link_id' => "commercial_nav_tab", 'navbar_link_route' => route('costumer.index'), 'navbar_link_text' => __('labels.commercial_tab'), 'icon' => 'bi-briefcase-fill'])
+                        @include('navbar.navbar_link', ['navbar_link_id' => "commercial_nav_tab", 'navbar_link_route' => route('costumer.index'), 'navbar_link_text' => __('labels.commercial_tab'), 'icon' => 'bi-briefcase'])
                     @endif
 
                     @if(in_array($ROLES['ADMINISTRATIVE'], $user_roles))
-                        @include('navbar.navbar_link', ['navbar_link_id' => "administrative_nav_tab", 'navbar_link_route' => route('administrative.index'), 'navbar_link_text' => __('labels.administrative_tab'), 'icon' => 'bi-file-earmark-bar-graph-fill'])
+                        @include('navbar.navbar_link', ['navbar_link_id' => "administrative_nav_tab", 'navbar_link_route' => route('administrative.index'), 'navbar_link_text' => __('labels.administrative_tab'), 'icon' => 'bi-file-earmark-bar-graph'])
                     @endif
 
                     @if(in_array($ROLES['MANAGER'], $user_roles))
-                        @include('navbar.navbar_link', ['navbar_link_id' => "manager_nav_tab", 'navbar_link_route' => route('manager.index'), 'navbar_link_text' => __('labels.manager_tab'), 'icon' => 'bi-motherboard-fill'])
+                        @include('navbar.navbar_link', ['navbar_link_id' => "manager_nav_tab", 'navbar_link_route' => route('manager.index'), 'navbar_link_text' => __('labels.manager_tab'), 'icon' => 'bi-motherboard'])
                     @endif
 
-                    @include('navbar.navbar_link', ['navbar_link_id' => "technician_nav_tab", 'navbar_link_route' => route('activity.index'), 'navbar_link_text' => __('labels.tech_tab'), 'icon' => 'bi-pc'])
+                    @include('navbar.navbar_link', ['navbar_link_id' => "technician_nav_tab", 'navbar_link_route' => route('activity.index'), 'navbar_link_text' => __('labels.tech_tab'), 'icon' => 'bi-mouse'])
 
                     @if(in_array($ROLES['ADMINISTRATOR'], $user_roles))
                         @include('navbar.navbar_link', ['navbar_link_id' => "administrator_nav_tab", 'navbar_link_route' => route('user.index'), 'navbar_link_text' => __('labels.administrator_tab'), 'icon' => 'bi-gear-fill', 'hide' => true])

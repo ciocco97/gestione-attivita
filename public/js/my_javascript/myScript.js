@@ -1,4 +1,5 @@
 GREEN_COLOR = "#c7edc9";
+YELLOW_COLOR = "#fff8de";
 waiter_prefix = "wait_change_";
 
 $('document').ready(function () {
@@ -58,7 +59,14 @@ function check_password_equality(p_new, p_retipe) {
 
 
 function focus_nav_tab(nav_tab_id_prefix) {
-    $("[id^=" + nav_tab_id_prefix + "_nav_tab]").children().addClass("active");
+    let link = $("[id^=" + nav_tab_id_prefix + "_nav_tab]").children()
+    link.addClass("active")
+    let icon = link.children()
+    let str = icon.attr("class")
+    let classes = str.split(' ')
+    classes[1] = classes[1] + '-fill'
+    str = classes[0] + ' ' + classes[1]
+    icon.attr("class", str)
 }
 
 

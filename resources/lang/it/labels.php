@@ -83,4 +83,6 @@ return [
     'compute_duration' => 'Calcola durata',
     'close' => 'Chiudi',
     'legend_title' => 'Legenda colori e simboli',
+    'from_date' => 'Filtra dal',
+    'to_date' => 'Filtra fino al',
 ];

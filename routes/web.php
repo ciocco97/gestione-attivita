@@ -48,7 +48,7 @@ Route::middleware([Language::class])->group(function () {
         Route::get('/activity/{id}/destroy', [ActivityController::class, 'destroy'])->name('activity.destroy');
         Route::get('/activity/{id}/confirm', [ActivityController::class, 'confirmDestroy'])->name('activity.destroy.confirm');
         Route::post('/activity/index/filter', [ActivityController::class, 'filterPost'])->name('activity.filter');
-        Route::get('/activity/filter/{period}/{costumer}/{state}/{date}/{user}/{billing_accounted_state}', [ActivityController::class, 'filter'])->name('activity.filter.get');
+        Route::get('/activity/filter/{period}/{costumer}/{state}/{date_start}/{date_end}/{user}/{billing_accounted_state}', [ActivityController::class, 'filter'])->name('activity.filter.get');
 
         Route::get('/export/activity', [ActivityController::class, 'downloadCSV']);
 

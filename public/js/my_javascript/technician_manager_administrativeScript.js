@@ -46,6 +46,7 @@ function show_activity_script() {
         $("#order").change(function () {
             filter_costumers_when_order_selected();
         });
+        $("#costumer").change()
         $("[id='startTime'],[id='endTime']").change(function () {
             compare_and_switch_moments_if_necessary()
             compute_duration_in_activity_show();
@@ -83,6 +84,7 @@ function table_setup(page) {
     let num_selectable_rows = 0;
 
     if (!administrative) {
+
         // Modifico possibili azioni e colori per ogni attività
         $("tbody tr td[id^=state]").each(function () {
             let id = getSuffix($(this), "state_"); // Prendo l'activity_id dalla prima colonna della riga di appartenenza
@@ -120,6 +122,13 @@ function table_setup(page) {
                     console.log("Stato attività non corretto (Table setup)")
             }
         });
+
+        $("[id^='send_report_']").children().filter(function () {
+            return $(this).attr('data-report-to-send') == 1
+        }).each(function () {
+            let id = getSuffix($(this).parent(), 'send_report_')
+            $("#activity_row_" + id).css("background-color", YELLOW_COLOR)
+        })
 
         $("[id^=send_report_]").on("click", function () {
             activity_change($(this), "send_report_", GLOBAL.AJAX_METHODS['activity_send_report_index']);
@@ -309,21 +318,30 @@ function filter_setup() {
     $("#master_period_filter").on('change', function () {
         let value = $(this).val();
         if (value == "") {
-            $("#master_date_filter").prop("disabled", false);
+            // $("#master_date_filter").prop("disabled", false);
         } else {
-            $("#master_date_filter").prop("disabled", true);
+            // $("#master_date_filter").prop("disabled", true);
+            $("[id^='master_date_filter']").val("")
         }
     })
-    $("#master_date_filter").on('change', function () {
+    $("[id^='master_date_filter']").on('change', function () {
         let value = $(this).val();
         if (value == "") {
-            $("#master_period_filter").prop("disabled", false);
+            // $("#master_period_filter").prop("disabled", false);
         } else {
             let master_period_filter = $("#master_period_filter");
-            master_period_filter.prop("disabled", true);
+            // master_period_filter.prop("disabled", true);
             for (let i = 0; i < master_period_filter.length; i++) {
                 master_period_filter[i].selectedIndex = 0;
             }
+        }
+        let start_date_str = $("#master_date_filter1").val()
+        let end_date_str = $("#master_date_filter2").val()
+        let start_date = moment(start_date_str)
+        let end_date = moment(end_date_str)
+        if (end_date.diff(start_date) < 0) {
+            $("#master_date_filter1").val(end_date_str)
+            $("#master_date_filter2").val(start_date_str)
         }
     })
 
@@ -354,12 +372,19 @@ function filter_setup() {
         if (billing_state) {
             $("#master_billing_state_filter option[value=" + billing_state + "]").prop("selected", true);
         }
-        let date = localStorage["master_date_filter"];
+        let date = localStorage["master_date_filter1"];
         if (date) {
             if (date !== "") {
-                $("#master_period_filter").prop('disabled', true)
+                // $("#master_period_filter1").prop('disabled', true)
             } // Se la data è settata disabilita il filtro sul periodo
-            $("#master_date_filter").val(date);
+            $("#master_date_filter1").val(date);
+        }
+        date = localStorage["master_date_filter2"];
+        if (date) {
+            if (date !== "") {
+                // $("#master_period_filter").prop('disabled', true)
+            } // Se la data è settata disabilita il filtro sul periodo
+            $("#master_date_filter2").val(date);
         }
         let order_state = localStorage["master_order_state_filter"];
         if (order_state) {
@@ -376,7 +401,8 @@ function save_filters() {
     localStorage["master_period_filter"] = $("#master_period_filter").val();
     localStorage["master_costumer_filter"] = $("#master_costumer_filter").val();
     localStorage["master_state_filter"] = $("#master_state_filter").val();
-    localStorage["master_date_filter"] = $("#master_date_filter").val();
+    localStorage["master_date_filter1"] = $("#master_date_filter1").val();
+    localStorage["master_date_filter2"] = $("#master_date_filter2").val();
     localStorage["master_user_filter"] = $("#master_user_filter").val();
     localStorage["master_billing_state_filter"] = $("#master_billing_state_filter").val();
     localStorage["master_order_state_filter"] = $("#master_order_state_filter").val();
@@ -387,7 +413,8 @@ function filter_reset() {
     localStorage.removeItem("master_period_filter");
     localStorage.removeItem("master_costumer_filter");
     localStorage.removeItem("master_state_filter");
-    localStorage.removeItem("master_date_filter");
+    localStorage.removeItem("master_date_filter1");
+    localStorage.removeItem("master_date_filter2");
     localStorage.removeItem("master_user_filter");
     localStorage.removeItem("master_billing_state_filter");
     localStorage.removeItem("master_order_state_filter");
@@ -396,12 +423,15 @@ function filter_reset() {
 
 function change_activity_send_report_button(id_prefix, activity_id) {
     let report_button = $("[id=" + id_prefix + activity_id + "]");
+    let row = $("[id=activity_row_" + activity_id + "]");
     if (report_button.attr("data-report-sent") == GLOBAL.REPORT_SENT["sent"]) {
         report_button.html("<i class=\"bi bi-send-fill text-primary\"></i>");
         report_button.attr("data-report-sent", GLOBAL.REPORT_SENT["not_sent"]);
+        row.css("background-color", YELLOW_COLOR)
     } else {
         report_button.html("<i class=\"bi bi-send-check-fill text-success\"></i>");
         report_button.attr("data-report-sent", GLOBAL.REPORT_SENT["sent"]);
+        row.css("background-color", "")
     }
 
 }

@@ -40,7 +40,8 @@
     <div class="row">
         <div class="col-md-7"> <!-- Prima coppia/terna di filtri -->
             @include('shared.filter.period')
-            @include('shared.filter.date')
+            @include('shared.filter.date', ['input_order' => 1])
+            @include('shared.filter.date', ['input_order' => 2])
         </div>
 
         <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
