@@ -436,6 +436,9 @@ function change_activity_send_report_button(id_prefix, activity_id) {
         report_button.attr("data-report-sent", GLOBAL.REPORT_SENT["sent"]);
         row.css("background-color", "")
     }
+    if ($("#state_"+activity_id).attr("data-state-id") == GLOBAL["ACTIVITY_STATES"]["OPEN"]) {
+        row.css("background-color", RED_COLOR)
+    }
 
 }
 
