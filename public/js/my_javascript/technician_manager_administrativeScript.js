@@ -46,7 +46,9 @@ function show_activity_script() {
         $("#order").change(function () {
             filter_costumers_when_order_selected();
         });
-        $("#costumer").change()
+        if ($("#costumer").val()) {
+            $("#costumer").change()
+        }
         $("[id='startTime'],[id='endTime']").change(function () {
             compare_and_switch_moments_if_necessary()
             compute_duration_in_activity_show();
@@ -105,7 +107,7 @@ function table_setup(page) {
                     break
                 case GLOBAL.ACTIVITY_STATES['OPEN']:
                     // Non faccio nulla
-                    $("#activity_row_"+id).css("background-color", RED_COLOR)
+                    $("#activity_row_" + id).css("background-color", RED_COLOR)
                     num_selectable_rows++;
                     break
                 case GLOBAL.ACTIVITY_STATES['CANCELLED']:
