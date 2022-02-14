@@ -49,7 +49,7 @@ function show_activity_script() {
         if ($("#costumer").val()) {
             $("#costumer").change()
         }
-        $("[id='startTime'],[id='endTime']").change(function () {
+        $("[id='startTime'],[id='endTime']").focusout(function () {
             compare_and_switch_moments_if_necessary()
             compute_duration_in_activity_show();
         })
