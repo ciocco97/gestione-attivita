@@ -123,9 +123,9 @@
 
         @if($method == $ADD)
         $(document).ready(function () {
-            var now = moment();
-            $("#date").val(now.format("YYYY-MM-DD"));
-            $("#startTime").val(moment("8:00", "H:mm").format("HH:mm"));
+            var now = moment()
+            $("#date").val(now.format("YYYY-MM-DD"))
+            $("#startTime").val(moment("9:00", "H:mm").format("HH:mm"))
             $("#duration").val(moment("0:00", "H:mm").format("HH:mm"))
         });
         @endif

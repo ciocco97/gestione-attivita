@@ -276,13 +276,15 @@ class DatabaseSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
             foreach ($stati_fatturazione as $sf) {
                 foreach ($persone as $p) {
-                    $co = Commessa::find(rand(1, $commesse->count()));
-                    Attivita::factory()
-                        ->count(2)->state([
-                            'persona_id' => $p->id,
-                            'stato_fatturazione_id' => $sf->id,
-                            'commessa_id' => $co->id
-                        ])->create();
+                    if ($p->id != 1) {
+                        $co = Commessa::find(rand(1, $commesse->count()));
+                        Attivita::factory()
+                            ->count(2)->state([
+                                'persona_id' => $p->id,
+                                'stato_fatturazione_id' => $sf->id,
+                                'commessa_id' => $co->id
+                            ])->create();
+                    }
                 }
             }
         }
