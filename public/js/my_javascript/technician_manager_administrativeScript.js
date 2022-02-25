@@ -46,9 +46,9 @@ function show_activity_script() {
         $("#order").change(function () {
             filter_costumers_when_order_selected();
         });
-        if ($("#costumer").val()) {
-            $("#costumer").change()
-        }
+        // if ($("#costumer").val()) {
+        //     $("#costumer").change()
+        // }
         $("[id='startTime'],[id='endTime']").focusout(function () {
             compare_and_switch_moments_if_necessary()
             compute_duration_in_activity_show();

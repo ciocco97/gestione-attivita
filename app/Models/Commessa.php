@@ -48,9 +48,16 @@ class Commessa extends Model
         return Commessa::all();
     }
 
-    public static function listActiveOrder(): \Illuminate\Support\Collection
+    public static function listActiveOrder(int $costumer_id = null): \Illuminate\Support\Collection
     {
-        return StatoCommessa::find(1)->commesse()->orderBy('descrizione_commessa')->get();
+        $query = StatoCommessa::find(1)->commesse();
+
+        if ($costumer_id != null) {
+            $query->where('cliente_id', $costumer_id);
+        }
+
+        return $query->orderBy('descrizione_commessa')->get();
+
     }
 
     public static function listActiveOrderByCostumerID(int $costumer_id): \Illuminate\Support\Collection

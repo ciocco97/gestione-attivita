@@ -249,7 +249,8 @@ class ActivityController extends Controller
 
         if ($method == Shared::METHODS['ADD'] || $method == Shared::METHODS['EDIT']) {
             $costumers = Cliente::listActiveCostumer();
-            $orders = Commessa::listActiveOrder();
+            $temp_costumer_id = $costumer == null? null : $costumer->id;
+            $orders = Commessa::listActiveOrder($temp_costumer_id);
             if ($manager) {
                 $states = StatoAttivita::listActivityState();
                 $billing_states = StatoFatturazione::listBillingStates();
