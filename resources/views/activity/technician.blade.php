@@ -46,6 +46,7 @@
 
         <div class="col-md-5 ps-lg-5"> <!-- Seconda coppia di filtri -->
             @include('shared.filter.costumer')
+            @include('shared.filter.order')
             @if($current_page == $PAGES['ADMINISTRATIVE'])
                 @include('shared.filter.bill_or_accounted_state')
             @else

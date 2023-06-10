@@ -28,6 +28,7 @@ class ActivityController extends Controller
         $user_id = $_SESSION['user_id'];
 
         $costumers = null;
+        $orders = null;
         $states = null;
         $users = null;
         $billing_states = null;
@@ -35,6 +36,7 @@ class ActivityController extends Controller
         switch ($current_page) {
             case Shared::PAGES['TECHNICIAN']:
                 $costumers = Cliente::listActiveCostumerForCurrentUser();
+                $orders = Commessa::
                 $states = StatoAttivita::listActivityState();
                 break;
             case Shared::PAGES['MANAGER']:
@@ -103,6 +105,7 @@ class ActivityController extends Controller
     {
         $period = $request->get('period');
         $costumer = $request->get('master_costumer_filter');
+        $costumer = $request->get('master_order_filter');
         $state = $request->get('master_state_filter');
         $date_start = $request->get('master_date_filter1');
         $date_end = $request->get('master_date_filter2');
