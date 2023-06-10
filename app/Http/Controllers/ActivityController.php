@@ -36,11 +36,12 @@ class ActivityController extends Controller
         switch ($current_page) {
             case Shared::PAGES['TECHNICIAN']:
                 $costumers = Cliente::listActiveCostumerForCurrentUser();
-                $orders = Commessa::
+                $orders = Commessa::listActiveOrder();
                 $states = StatoAttivita::listActivityState();
                 break;
             case Shared::PAGES['MANAGER']:
                 $costumers = Cliente::listActiveCostumer();
+                $orders = [];
                 $states = StatoAttivita::listActivityState();
                 $users = Persona::listTeam($user_id);
                 $billing_states = StatoFatturazione::listBillingStates();
@@ -48,6 +49,7 @@ class ActivityController extends Controller
                 break;
             case Shared::PAGES['ADMINISTRATIVE']:
                 $costumers = Cliente::listCostumer();
+                $orders = [];
                 $users = Persona::listUsers();
                 $billing_states = StatoFatturazione::listBillingStates();
                 $this->addBillableDurationToActivities($activities);
@@ -61,6 +63,7 @@ class ActivityController extends Controller
         return view('activity.technician')
             ->with('activities', $activities)
             ->with('costumers', $costumers)
+            ->with('orders', $orders)
             ->with('states', $states)
             ->with('billing_states', $billing_states)
             ->with('users', $users)
@@ -105,7 +108,7 @@ class ActivityController extends Controller
     {
         $period = $request->get('period');
         $costumer = $request->get('master_costumer_filter');
-        $costumer = $request->get('master_order_filter');
+        $order = $request->get('master_order_filter');
         $state = $request->get('master_state_filter');
         $date_start = $request->get('master_date_filter1');
         $date_end = $request->get('master_date_filter2');
@@ -114,6 +117,7 @@ class ActivityController extends Controller
 
         $period = $period == null ? -1 : $period;
         $costumer = $costumer == null ? -1 : $costumer;
+        $order = $order == null ? -1 : $order;
         $state = $state == null ? -1 : $state;
         $date_start = $date_start == null ? -1 : $date_start;
         $date_end = $date_end == null ? -1 : $date_end;
@@ -123,21 +127,23 @@ class ActivityController extends Controller
         Log::debug('filterPost_activity', [
             'period' => $period,
             'costumer' => $costumer,
+            'order' => $order,
             'state' => $state,
             'date_start' => $date_start,
             'date_end' => $date_end,
             'user' => $team_member_id,
             'accounted' => $billing_accounted_selector]);
         return redirect()->route('activity.filter.get',
-            ['period' => $period, 'costumer' => $costumer, 'state' => $state, 'date_start' => $date_start, 'date_end' => $date_end, 'user' => $team_member_id, 'billing_accounted_state' => $billing_accounted_selector]);
+            ['period' => $period, 'costumer' => $costumer, 'order' => $order, 'state' => $state, 'date_start' => $date_start, 'date_end' => $date_end, 'user' => $team_member_id, 'billing_accounted_state' => $billing_accounted_selector]);
     }
 
-    public function filter($period, $costumer, $state, $date_start, $date_end, $team_member_id, $billing_accounted_state)
+    public function filter($period, $costumer, $order, $state, $date_start, $date_end, $team_member_id, $billing_accounted_state)
     {
         $user_id = $_SESSION['user_id'];
 
         $period = $period == -1 ? null : $period;
         $costumer = $costumer == -1 ? null : $costumer;
+        $order = $order == -1 ? null : $order;
         $state = $state == -1 ? null : $state;
         $date_start = $date_start == -1 ? null : $date_start;
         $date_end = $date_end == -1 ? null : $date_end;
@@ -173,6 +179,7 @@ class ActivityController extends Controller
             'start_date' => $start_date,
             'end_date' => $end_date,
             'costumer' => $costumer,
+            'order' => $order,
             'state' => $state,
             'date_start' => $date_start,
             'date_end' => $date_end,
