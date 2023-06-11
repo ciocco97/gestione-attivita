@@ -3,7 +3,7 @@
     <thead>
     <tr>
         <th scope="col">@lang('labels.order')</th>
-        <th scope="col">@lang('labels.num') @lang('labels.activity')</th>
+        <th scope="col">@lang('labels.activities')</th>
         <th scope="col">@lang('labels.state') @lang('labels.order')</th>
         <th scope="col">@lang('labels.report')</th>
         <th scope="col">@lang('labels.edit')</th>
@@ -18,7 +18,7 @@
                 {{ $costumer_order->descrizione_commessa }}
             </td>
             <td>
-                {{ $costumer_order->num_attivita }}
+                {{ $costumer_order->attivita_sum_durata }}h
             </td>
             <td>
                 <div class="d-flex justify-content-center">

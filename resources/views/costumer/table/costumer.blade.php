@@ -27,7 +27,7 @@
                             type="button" data-costumer-id="{{ $costumer_infos->id }}"
                             data-bs-toggle="collapse"
                             data-bs-target="#collapse_{{ $costumer_infos->id }}">
-                        @lang('labels.num_orders'): {{ count($costumer_infos->commesse) }}
+                        @lang('labels.num_orders'): {{ $costumer_infos->commesse_count }}
                     </button>
                 </h2>
                 <div id="collapse_{{ $costumer_infos->id }}"
@@ -47,9 +47,7 @@
             </div>
             <div class="card-footer text-muted">
                 <p class="mb-0">
-                    @lang('labels.activities'): {{ $costumer_infos->num_attivita }}
-                    <span class="px-2"></span>
-                    @lang('labels.accounted'): {{ $costumer_infos->num_attivita_contabilizzate }}
+                    @lang('labels.activities'): {{ $costumer_infos->attivita_sum_durata_tot }}h
                 </p>
             </div>
 

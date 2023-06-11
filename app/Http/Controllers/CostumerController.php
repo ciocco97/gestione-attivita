@@ -8,7 +8,6 @@ use App\Models\Cliente;
 use App\Models\Commessa;
 use App\Models\Persona;
 use App\Models\StatoCommessa;
-use Carbon\Carbon as super_time_parser;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -81,34 +80,40 @@ class CostumerController extends Controller
 
     private function getCostumerInfos($costumer_id_param = null, $state_id_param = null): \Illuminate\Support\Collection
     {
-        $costumers = Cliente::listCostumer($costumer_id_param);
-        $numActivities_perCostumer = Cliente::getNumActivitiesPerCostumer();
-        $numAccountedActivities_perCostumer = Cliente::getNumActivitiesPerCostumer(true);
-        $numOrders_perCostumer = Cliente::getNumOrdersPerCostumer();
-        $orders = Commessa::listOrderInfos($state_id_param);
+        $newCostumerQuery = Cliente::with([
+            'commesse' => function ($query) use ($state_id_param) {
+                $query->withCount('attivita')
+                    ->withSum('attivita', 'durata')
+                    ->withCount([
+                        'attivita as attivita_fatturabili_count' => function ($query) {
+                            $query->where('contabilizzata', true);
+                        }
+                    ]);
+                if ($state_id_param) {
+                    $query->whereHas('statoCommessa', function ($query) use ($state_id_param) {
+                        $query->where('id', $state_id_param);
+                    });
+                }
+                $query->orderByDesc('attivita_sum_durata');
+            }
+        ])
+            ->withCount('commesse');
+        if ($costumer_id_param)
+            $newCostumerQuery->where('id', $costumer_id_param);
+
+        $costumers = $newCostumerQuery->get();
 
         foreach ($costumers as $costumer) {
-            $costumer_id = $costumer->id;
-            $costumer->commesse = $orders->filter(function ($value) use (&$costumer_id) {
-                return $value->cliente_id == $costumer_id;
-            });
-            $costumer->num_attivita = $numActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
-                return $value->cliente_id == $costumer_id;
-            })->pluck('attivita_num')->first();
-            $costumer->num_attivita_contabilizzate = $numAccountedActivities_perCostumer->filter(function ($value) use (&$costumer_id) {
-                return $value->cliente_id == $costumer_id;
-            })->pluck('attivita_num')->first();
-            $costumer->num_commesse = $numOrders_perCostumer->filter(function ($value) use (&$costumer_id) {
-                return $value->cliente_id == $costumer_id;
-            })->pluck('commesse_num')->first();
-
-            if ($costumer->num_attivita == null) {
-                $costumer->num_attivita = 0;
+            $tot = 0;
+            foreach ($costumer->commesse as $order) {
+                $order->attivita_sum_durata = round($order->attivita_sum_durata / 3600, 0);
+                $tot += $order->attivita_sum_durata;
             }
-            if ($costumer->num_attivita_contabilizzate == null) {
-                $costumer->num_attivita_contabilizzate = 0;
-            }
+            $costumer->attivita_sum_durata_tot = $tot;
         }
+
+        echo $costumers;
+
         return $costumers;
     }
 
