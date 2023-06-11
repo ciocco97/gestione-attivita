@@ -36,12 +36,11 @@ class ActivityController extends Controller
         switch ($current_page) {
             case Shared::PAGES['TECHNICIAN']:
                 $costumers = Cliente::listActiveCostumerForCurrentUser();
-                $orders = Commessa::listActiveOrder();
                 $states = StatoAttivita::listActivityState();
                 break;
             case Shared::PAGES['MANAGER']:
                 $costumers = Cliente::listActiveCostumer();
-                $orders = [];
+                $orders = Commessa::listManagerOrder($user_id);
                 $states = StatoAttivita::listActivityState();
                 $users = Persona::listTeam($user_id);
                 $billing_states = StatoFatturazione::listBillingStates();
@@ -49,7 +48,6 @@ class ActivityController extends Controller
                 break;
             case Shared::PAGES['ADMINISTRATIVE']:
                 $costumers = Cliente::listCostumer();
-                $orders = [];
                 $users = Persona::listUsers();
                 $billing_states = StatoFatturazione::listBillingStates();
                 $this->addBillableDurationToActivities($activities);
@@ -204,12 +202,12 @@ class ActivityController extends Controller
         if ($_SESSION['current_page'] == Shared::PAGES['ADMINISTRATIVE']) {
             Log::debug('Administrative filter');
             $activities = Attivita::filterAdministrativeActivities(
-                $start_date, $end_date, $costumer, $state, $date, $team_member_id, $billing_accounted_state, $accounted);
+                $start_date, $end_date, $costumer, $order, $state, $date, $team_member_id, $billing_accounted_state, $accounted);
 
         } else {
             Log::debug('Tech filter');
             $activities = Attivita::filterActiveActivityByUserID(
-                $user_id, $start_date, $end_date, $costumer, $state, $date, $team_member_ids);
+                $user_id, $start_date, $end_date, $costumer, $order, $state, $date, $team_member_ids);
         }
         return $this->indexActivityView($activities);
     }

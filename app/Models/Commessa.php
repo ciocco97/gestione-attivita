@@ -11,8 +11,14 @@ class Commessa extends Model
     use HasFactory;
 
     protected $table = 'commessa';
-    protected $fillable = ['descrizione_commessa', 'cliente_id', 'stato_commessa_id',
-        'persona_id', 'stato_fatturazione_dafault_id', 'rapportino_commessa'];
+    protected $fillable = [
+        'descrizione_commessa',
+        'cliente_id',
+        'stato_commessa_id',
+        'persona_id',
+        'stato_fatturazione_dafault_id',
+        'rapportino_commessa'
+    ];
     public $timestamps = false;
 
     // Connections
@@ -63,6 +69,18 @@ class Commessa extends Model
     public static function listActiveOrderByCostumerID(int $costumer_id): \Illuminate\Support\Collection
     {
         return StatoCommessa::find(1)->commesse()->where('cliente_id', $costumer_id)->get();
+    }
+
+    public static function listManagerOrder(int $manager_id): \Illuminate\Support\Collection
+    {
+        return Commessa::
+            whereHas('attivita.persona.manager', function ($query) use ($manager_id) {
+                $query->where('manager_sottoposto.manager_id', $manager_id);
+            })
+            ->whereHas('statoCommessa', function ($query) {
+                $query->where('id', 1);
+            })
+            ->get();
     }
 
     public static function listOrderInfos(int $state_id = null): \Illuminate\Support\Collection

@@ -46,9 +46,6 @@ function show_activity_script() {
         $("#order").change(function () {
             filter_costumers_when_order_selected();
         });
-        // if ($("#costumer").val()) {
-        //     $("#costumer").change()
-        // }
         $("[id='startTime'],[id='endTime']").focusout(function () {
             compare_and_switch_moments_if_necessary()
             compute_duration_in_activity_show();
@@ -347,6 +344,12 @@ function filter_setup() {
             $("#master_date_filter2").val(start_date_str)
         }
     })
+    $("#master_costumer_filter").change(function () {
+        filter_orders_when_costumer_selected('#master_costumer_filter', '#master_order_filter');
+    });
+    $("#master_order_filter").change(function () {
+        filter_costumers_when_order_selected('#master_costumer_filter', '#master_order_filter');
+    });
 
     let pathname = window.location.pathname;
     if (pathname.includes("filter")) {
@@ -362,6 +365,10 @@ function filter_setup() {
         let costumer = localStorage["master_costumer_filter"];
         if (costumer) {
             $("#master_costumer_filter option[value=" + costumer + "]").prop("selected", true);
+        }
+        let order = localStorage["master_order_filter"];
+        if (order) {
+            $("#master_order_filter option[value=" + order + "]").prop("selected", true);
         }
         let state = localStorage["master_state_filter"];
         if (state) {
@@ -403,6 +410,7 @@ function save_filters() {
     console.log("{function: save_filters}");
     localStorage["master_period_filter"] = $("#master_period_filter").val();
     localStorage["master_costumer_filter"] = $("#master_costumer_filter").val();
+    localStorage["master_order_filter"] = $("#master_order_filter").val();
     localStorage["master_state_filter"] = $("#master_state_filter").val();
     localStorage["master_date_filter1"] = $("#master_date_filter1").val();
     localStorage["master_date_filter2"] = $("#master_date_filter2").val();
@@ -415,6 +423,7 @@ function save_filters() {
 function filter_reset() {
     localStorage.removeItem("master_period_filter");
     localStorage.removeItem("master_costumer_filter");
+    localStorage.removeItem("master_order_filter");
     localStorage.removeItem("master_state_filter");
     localStorage.removeItem("master_date_filter1");
     localStorage.removeItem("master_date_filter2");
@@ -567,16 +576,16 @@ function change_checked_activity_ids(activity_id, remove) {
 }
 
 
-function filter_orders_when_costumer_selected() {
+function filter_orders_when_costumer_selected(costumer_select_id = '', order_select_id = '') {
     console.log("{function: costumer_selected_activity}");
-    let costumer = $("#costumer").val();
+    let costumer = $(costumer_select_id || "#costumer").val();
     console.log("{costumer_id: " + costumer + "}");
     $.ajax({
         url: '/ajax/ordersByCostumer',
         type: 'GET',
         data: {costumer_id: costumer},
         success: function (data) {
-            let order_select = $('#order');
+            let order_select = $(order_select_id || '#order');
             order_select.find('option').remove().end();
             $.each(data, function () {
                 order_select.append($("<option />").val(this.id).text(this.descrizione_commessa));
@@ -585,17 +594,16 @@ function filter_orders_when_costumer_selected() {
     });
 }
 
-function filter_costumers_when_order_selected() {
+function filter_costumers_when_order_selected(costumer_select_id = '', order_select_id = '') {
     console.log("{function: order_selected_activity}");
-    var costumer = $('#costumer').val();
-    var order = $("#order").val();
+    var order = $(order_select_id || "#order").val();
     console.log("{order_id: " + order + "}");
     $.ajax({
         url: '/ajax/costumerByOrder',
         type: 'GET',
         data: {order_id: order},
         success: function (data) {
-            $("#costumer").val(data.id);
+            $(costumer_select_id || "#costumer").val(data.id);
         }
     });
 }

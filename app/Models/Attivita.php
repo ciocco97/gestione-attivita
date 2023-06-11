@@ -203,7 +203,7 @@ class Attivita extends Model
             ->get();
     }
 
-    public static function filterActiveActivityByUserID(int $user_id, $start_date, $end_date, $costumer, $state, $date, $team_selected_ids): \Illuminate\Support\Collection
+    public static function filterActiveActivityByUserID(int $user_id, $start_date, $end_date, $costumer, $order, $state, $date, $team_selected_ids): \Illuminate\Support\Collection
     {
         $basic_query = Attivita::basicActiveActivityQuery();
         $team_ids = Persona::listTeamIDS($user_id);
@@ -214,7 +214,7 @@ class Attivita extends Model
             $basic_query->where('attivita.persona_id', '=', $user_id);
         }
 
-        return Attivita::addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $state, $date)->get();
+        return Attivita::addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $order, $state, $date)->get();
     }
 
     public static function toggleActivityReport($activity_id, $user_id)
@@ -324,7 +324,7 @@ class Attivita extends Model
             ->where('attivita.data', '>=', $start_date)->get();
     }
 
-    public static function filterAdministrativeActivities($start_date, $end_date, $costumer, $state, $date, $user_selected_id, $billing_state, $accounted): \Illuminate\Support\Collection
+    public static function filterAdministrativeActivities($start_date, $end_date, $costumer, $order, $state, $date, $user_selected_id, $billing_state, $accounted): \Illuminate\Support\Collection
     {
         $basic_query = Attivita::basicQueryForListApprovedActivity();
 
@@ -336,10 +336,10 @@ class Attivita extends Model
         } else if ($billing_state != null) {
             $basic_query->where('attivita.stato_fatturazione_id', $billing_state);
         }
-        return Attivita::addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $state, $date)->get();
+        return Attivita::addFilterToQuery($basic_query, $start_date, $end_date, $costumer, $order, $state, $date)->get();
     }
 
-    public static function addFilterToQuery($query, $start_date, $end_date, $costumer, $state, $date): \Illuminate\Database\Query\Builder
+    public static function addFilterToQuery($query, $start_date, $end_date, $costumer, $order, $state, $date): \Illuminate\Database\Query\Builder
     {
         if ($date != null) {
             $query->where('attivita.data', '=', $date);
@@ -351,6 +351,9 @@ class Attivita extends Model
         }
         if ($costumer != null) {
             $query->where('cliente.id', '=', $costumer);
+        }
+        if ($order != null) {
+            $query->where('commessa.id', '=', $order);
         }
         if ($state != null) {
             $query->where('stato_attivita.id', '=', $state);
