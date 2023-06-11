@@ -112,8 +112,6 @@ class CostumerController extends Controller
             $costumer->attivita_sum_durata_tot = $tot;
         }
 
-        echo $costumers;
-
         return $costumers;
     }
 
