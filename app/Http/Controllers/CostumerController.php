@@ -84,6 +84,11 @@ class CostumerController extends Controller
             'commesse' => function ($query) use ($state_id_param) {
                 $query->withCount('attivita')
                     ->withSum('attivita', 'durata')
+                    ->withSum('attivita', 'durata_fatturabile', function ($query) {
+                        $query->select(DB::raw('SUM(CASE WHEN contabilizzata = false THEN 0
+                                                  WHEN contabilizzata = true AND durata_fatturabile IS NULL THEN durata
+                                                  ELSE durata_fatturabile END)'));
+                    })
                     ->withCount([
                         'attivita as attivita_fatturabili_count' => function ($query) {
                             $query->where('contabilizzata', true);
@@ -103,13 +108,19 @@ class CostumerController extends Controller
 
         $costumers = $newCostumerQuery->get();
 
+        echo $costumers;
+
         foreach ($costumers as $costumer) {
-            $tot = 0;
+            $tot_durata = 0;
+            $tot_durata_fatturabile = 0;
             foreach ($costumer->commesse as $order) {
                 $order->attivita_sum_durata = round($order->attivita_sum_durata / 3600, 0);
-                $tot += $order->attivita_sum_durata;
+                $order->attivita_sum_durata_fatturabile = round($order->attivita_sum_durata_fatturabile / 3600, 0);
+                $tot_durata += $order->attivita_sum_durata;
+                $tot_durata_fatturabile += ($order->attivita_sum_durata_fatturabile == null ? $order->attivita_sum_durata : $order->attivita_sum_durata_fatturabile);
             }
-            $costumer->attivita_sum_durata_tot = $tot;
+            $costumer->attivita_sum_durata_tot = $tot_durata;
+            $costumer->attivita_sum_durata_fatturabile_tot = $tot_durata_fatturabile;
         }
 
         return $costumers;

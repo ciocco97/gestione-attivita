@@ -48,6 +48,8 @@
             <div class="card-footer text-muted">
                 <p class="mb-0">
                     @lang('labels.activities'): {{ $costumer_infos->attivita_sum_durata_tot }}h
+                    <span class="px-2"></span>
+                    @lang('labels.billable_duration'): {{ $costumer_infos->attivita_sum_durata_fatturabile_tot }}h
                 </p>
             </div>
 
