@@ -12,6 +12,7 @@ use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 
 class CostumerController extends Controller
 {
@@ -56,8 +57,10 @@ class CostumerController extends Controller
             'costumer' => $costumer_id,
             'state' => $state_id
         ]);
-        return redirect()->route('costumer.filter.get',
-            ['costumer' => $costumer_id, 'state' => $state_id]);
+        return redirect()->route(
+            'costumer.filter.get',
+            ['costumer' => $costumer_id, 'state' => $state_id]
+        );
     }
 
     public function filter($costumer_id, $state_id)
@@ -83,12 +86,19 @@ class CostumerController extends Controller
         $newCostumerQuery = Cliente::with([
             'commesse' => function ($query) use ($state_id_param) {
                 $query->withCount('attivita')
-                    ->withSum('attivita', 'durata')
-                    ->withSum('attivita', 'durata_fatturabile', function ($query) {
-                        $query->select(DB::raw('SUM(CASE WHEN contabilizzata = false THEN 0
-                                                  WHEN contabilizzata = true AND durata_fatturabile IS NULL THEN durata
-                                                  ELSE durata_fatturabile END)'));
-                    })
+                    ->withSum([
+                        'attivita' => function ($query) {
+                            $query->select(DB::raw('SUM(TIME_TO_SEC(durata))'));
+                        }
+                    ], 'durata')
+                    ->withSum([
+                        'attivita' => function ($query) {
+                            $query->select(
+                                DB::raw('SUM(CASE WHEN contabilizzata = 2 AND durata_fatturabile IS NOT NULL THEN TIME_TO_SEC(durata_fatturabile) 
+                                WHEN contabilizzata = 2 AND durata_fatturabile IS NULL THEN TIME_TO_SEC(durata) ELSE 0 END)')
+                            );
+                        }
+                    ], 'durata_fatturabile')
                     ->withCount([
                         'attivita as attivita_fatturabili_count' => function ($query) {
                             $query->where('contabilizzata', true);
@@ -117,7 +127,7 @@ class CostumerController extends Controller
                 $order->attivita_sum_durata = round($order->attivita_sum_durata / 3600, 0);
                 $order->attivita_sum_durata_fatturabile = round($order->attivita_sum_durata_fatturabile / 3600, 0);
                 $tot_durata += $order->attivita_sum_durata;
-                $tot_durata_fatturabile += ($order->attivita_sum_durata_fatturabile == null ? $order->attivita_sum_durata : $order->attivita_sum_durata_fatturabile);
+                $tot_durata_fatturabile += $order->attivita_sum_durata_fatturabile;
             }
             $costumer->attivita_sum_durata_tot = $tot_durata;
             $costumer->attivita_sum_durata_fatturabile_tot = $tot_durata_fatturabile;

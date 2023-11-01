@@ -421,16 +421,19 @@ class ActivityController extends Controller
         }
     }
 
+    public function getBillableDurationFromDuration($activityDuration) {
+        $billable_duration = super_time_parser::parse($activityDuration);
+        if ($billable_duration->minute % 15 != 0) {
+            $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
+        }
+        return $billable_duration->format("H:i");
+    }
+
     private function addBillableDuration($activity)
     {
         $billable_duration = $activity->durata_fatturabile;
-
         if ($billable_duration == null) {
-            $billable_duration = super_time_parser::parse($activity->durata);
-            if ($billable_duration->minute % 15 != 0) {
-                $billable_duration->minute = $billable_duration->minute + 15 - $billable_duration->minute % 15;
-            }
-            $activity->durata_fatturabile = $billable_duration->format("H:i");
+            $activity->durata_fatturabile = $this->getBillableDurationFromDuration($activity->durata);
         }
     }
 

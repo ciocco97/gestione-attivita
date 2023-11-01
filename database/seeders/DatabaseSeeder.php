@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
+        // OLD SEED
 //        $this->call([
 //            RoleSeeder::class,
 //            UserSeeder::class,
@@ -35,7 +36,7 @@ class DatabaseSeeder extends Seeder
 //        ]);
 
 
-//        $stati_attivita = StatoAttivita::all();
+        //        $stati_attivita = StatoAttivita::all();
 //        $stati_fatturazione = StatoFatturazione::all();
 //        $persone = Persona::all();
 //        $clienti = Cliente::all();
@@ -147,6 +148,7 @@ class DatabaseSeeder extends Seeder
             ['persona_id' => $luigi->id, 'ruolo_id' => $administrator->id],
             ['persona_id' => $admin->id, 'ruolo_id' => $administrator->id],
             ['persona_id' => $giancarlo->id, 'ruolo_id' => $administrative->id],
+            ['persona_id' => $franco->id, 'ruolo_id' => $commercial->id],
         ]);
 
         DB::table('manager_sottoposto')->insert([
@@ -225,9 +227,9 @@ class DatabaseSeeder extends Seeder
             'rapportino_cliente' => 1
         ]);
 
-        for ($i = 0; $i < 10; $i++) {
-            Cliente::factory()->create();
-        }
+        // for ($i = 0; $i < 10; $i++) {
+        //     Cliente::factory()->create();
+        // }
 
         // COMMESSE
 
@@ -260,34 +262,34 @@ class DatabaseSeeder extends Seeder
         $clienti = Cliente::all();
 
 
-        for ($i = 0; $i < 30; $i++) {
-            $c = Cliente::find(rand(1, $clienti->count()));
-            Commessa::factory()
-                ->count(1)
-                ->state([
-                    'cliente_id' => $c->id,
-                    'persona_id' => 1,
-                    'stato_commessa_id' => 1
-                ])->create();
-        }
+        // for ($i = 0; $i < 30; $i++) {
+        //     $c = Cliente::find(rand(1, $clienti->count()));
+        //     Commessa::factory()
+        //         ->count(1)
+        //         ->state([
+        //             'cliente_id' => $c->id,
+        //             'persona_id' => 1,
+        //             'stato_commessa_id' => 1
+        //         ])->create();
+        // }
 
         $commesse = Commessa::all();
 
-        for ($i = 1; $i <= 10; $i++) {
-            foreach ($stati_fatturazione as $sf) {
-                foreach ($persone as $p) {
-                    if ($p->id != 1) {
-                        $co = Commessa::find(rand(1, $commesse->count()));
-                        Attivita::factory()
-                            ->count(2)->state([
-                                'persona_id' => $p->id,
-                                'stato_fatturazione_id' => $sf->id,
-                                'commessa_id' => $co->id
-                            ])->create();
-                    }
-                }
-            }
-        }
+        // for ($i = 1; $i <= 10; $i++) {
+        //     foreach ($stati_fatturazione as $sf) {
+        //         foreach ($persone as $p) {
+        //             if ($p->id != 1) {
+        //                 $co = Commessa::find(rand(1, $commesse->count()));
+        //                 Attivita::factory()
+        //                     ->count(2)->state([
+        //                         'persona_id' => $p->id,
+        //                         'stato_fatturazione_id' => $sf->id,
+        //                         'commessa_id' => $co->id
+        //                     ])->create();
+        //             }
+        //         }
+        //     }
+        // }
 
         // ATTIVITà DI ALESSIA
 

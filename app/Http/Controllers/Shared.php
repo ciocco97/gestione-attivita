@@ -91,6 +91,6 @@ class Shared
 //    Sto parametrizzando i valori dei filtri
 //    Ma quello che stavo cercando di capire è come mai se dalla pagina manager
 //    filtro senza selezionare un team member, mi fa lo stesso filtro del tecnico
-//    (vedo solamente le attività del curfrent user)
+//    (vedo solamente le attività del current user)
 
 }
