@@ -94,8 +94,23 @@ class CostumerController extends Controller
                     ->withSum([
                         'attivita' => function ($query) {
                             $query->select(
-                                DB::raw('SUM(CASE WHEN contabilizzata = 2 AND durata_fatturabile IS NOT NULL THEN TIME_TO_SEC(durata_fatturabile) 
-                                WHEN contabilizzata = 2 AND durata_fatturabile IS NULL THEN TIME_TO_SEC(durata) ELSE 0 END)')
+                                DB::raw('
+                                    SUM(
+                                        CASE 
+                                            WHEN contabilizzata = 2 AND durata_fatturabile IS NOT NULL THEN TIME_TO_SEC(durata_fatturabile)
+                                            WHEN contabilizzata = 2 AND durata_fatturabile IS NULL THEN 
+                                                TIME_TO_SEC(
+                                                    DATE_ADD(durata, INTERVAL 
+                                                        CASE
+                                                            WHEN MOD(MINUTE(durata), 15) != 0 THEN 15-MOD(MINUTE(durata), 15) 
+                                                            ELSE 0 
+                                                        END 
+                                                    MINUTE)
+                                                )
+                                            ELSE 0 
+                                        END
+                                    )
+                                ')
                             );
                         }
                     ], 'durata_fatturabile')
@@ -109,7 +124,7 @@ class CostumerController extends Controller
                         $query->where('id', $state_id_param);
                     });
                 }
-                $query->orderByDesc('attivita_sum_durata');
+                $query->orderByDesc('attivita_sum_durata_fatturabile')->orderByDesc('attivita_sum_durata');
             }
         ])
             ->withCount('commesse');
@@ -118,14 +133,14 @@ class CostumerController extends Controller
 
         $costumers = $newCostumerQuery->get();
 
-        echo $costumers;
+        // echo $costumers;
 
         foreach ($costumers as $costumer) {
             $tot_durata = 0;
             $tot_durata_fatturabile = 0;
             foreach ($costumer->commesse as $order) {
-                $order->attivita_sum_durata = round($order->attivita_sum_durata / 3600, 0);
-                $order->attivita_sum_durata_fatturabile = round($order->attivita_sum_durata_fatturabile / 3600, 0);
+                $order->attivita_sum_durata = round($order->attivita_sum_durata / 3600, 2);
+                $order->attivita_sum_durata_fatturabile = round($order->attivita_sum_durata_fatturabile / 3600, 2);
                 $tot_durata += $order->attivita_sum_durata;
                 $tot_durata_fatturabile += $order->attivita_sum_durata_fatturabile;
             }
